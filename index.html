@@ -3,181 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NFT Store</title>
+    <title>NFT Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #1c1c1d;
-            --secondary-bg: #2c2c2e;
-            --text-color: #ffffff;
-            --hint-color: #8e8e93;
-            --accent-color: #0a84ff;
-            --green-color: #30d158;
+            --bg: #0f0f10;
+            --card-bg: #1a1a1c;
+            --accent: #007aff;
+            --text: #ffffff;
+            --text-secondary: #8e8e93;
+            --green: #32d74b;
+            --red: #ff453a;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
             padding: 16px;
-            padding-bottom: 100px;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
-        h2 { font-weight: 600; font-size: 22px; margin-bottom: 20px; text-align: center; }
+        /* Уютные карточки */
+        .glass-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        h2 { font-size: 24px; font-weight: 700; margin: 0 0 20px 0; letter-spacing: -0.5px; }
         
-        /* Карточки NFT */
+        /* Сетка NFT */
         .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .nft-card {
-            background: var(--secondary-bg);
-            border-radius: 12px;
+        .nft-item {
+            background: var(--card-bg);
+            border-radius: 18px;
             padding: 12px;
             text-align: center;
-            transition: transform 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
-        .nft-card:active { transform: scale(0.97); }
-        .nft-img {
+        .nft-preview {
             width: 100%;
             aspect-ratio: 1/1;
-            background: linear-gradient(45deg, #3a3a3c, #48484a);
-            border-radius: 8px;
+            background: linear-gradient(135deg, #2c2c2e 0%, #1c1c1e 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
+            font-size: 32px;
             margin-bottom: 10px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
-        .nft-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
-        .nft-price { color: var(--green-color); font-weight: 600; font-size: 15px; }
+        .nft-price { color: var(--green); font-weight: 700; font-size: 14px; margin-top: 5px; }
 
-        /* Профиль */
-        .profile-card {
-            background: var(--secondary-bg);
-            border-radius: 14px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .balance-label { color: var(--hint-color); font-size: 13px; margin-bottom: 4px; }
-        .balance-value { font-size: 28px; font-weight: 700; margin-bottom: 15px; }
+        /* Баланс */
+        .balance-title { color: var(--text-secondary); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        .balance-val { font-size: 36px; font-weight: 800; margin: 5px 0 15px 0; }
         
         /* Кнопки */
-        .btn {
-            background-color: var(--accent-color);
+        .main-btn {
+            background: var(--accent);
             color: white;
             border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-size: 15px;
-            font-weight: 600;
+            border-radius: 14px;
+            padding: 14px;
             width: 100%;
-            cursor: pointer;
-            margin-top: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: opacity 0.2s;
         }
-        .btn-secondary { background-color: #3a3a3c; color: var(--text-color); }
+        .main-btn:active { opacity: 0.8; }
+        .secondary-btn { background: rgba(255, 255, 255, 0.08); margin-top: 10px; }
 
-        /* Навигация */
-        .nav {
+        /* Навбар */
+        .tab-bar {
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            background: rgba(28, 28, 29, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(15, 15, 16, 0.9);
+            backdrop-filter: blur(20px);
             display: flex;
-            border-top: 0.5px solid #38383a;
-            padding: 10px 0 25px 0;
+            padding: 10px 10px 25px 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .nav-item { flex: 1; text-align: center; color: var(--hint-color); font-size: 11px; }
-        .nav-item.active { color: var(--accent-color); }
-        .nav-icon { font-size: 20px; display: block; margin-bottom: 2px; }
+        .tab-item { flex: 1; text-align: center; color: var(--text-secondary); font-size: 10px; font-weight: 500; }
+        .tab-item.active { color: var(--accent); }
+        .tab-icon { font-size: 22px; display: block; margin-bottom: 4px; }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .content { display: none; padding-bottom: 80px; }
+        .content.active { display: block; animation: fade 0.3s ease; }
+        @keyframes fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div id="market" class="tab-content active">
+<div id="market" class="content active">
     <h2>Коллекции</h2>
     <div class="nft-grid">
-        <div class="nft-card" onclick="buy('Звезда 100', 100)">
-            <div class="nft-img">✨</div>
-            <div class="nft-title">Звезда 100</div>
-            <div class="nft-price">100.00 $</div>
-        </div>
-        <div class="nft-card" onclick="buy('Звезда 500', 500)">
-            <div class="nft-img">🌟</div>
-            <div class="nft-title">Звезда 500</div>
-            <div class="nft-price">500.00 $</div>
-        </div>
-        <div class="nft-card" onclick="buy('Звезда 1000', 1000)">
-            <div class="nft-img">💫</div>
-            <div class="nft-title">Звезда 1000</div>
-            <div class="nft-price">1000.00 $</div>
-        </div>
-        <div class="nft-card" onclick="buy('Звезда 1500', 1500)">
-            <div class="nft-img">💎</div>
-            <div class="nft-title">Звезда 1500</div>
-            <div class="nft-price">1500.00 $</div>
+        <div class="nft-item" onclick="action('buy_100')"><div class="nft-preview">✨</div><div>Star 100</div><div class="nft-price">100 $</div></div>
+        <div class="nft-item" onclick="action('buy_500')"><div class="nft-preview">🌟</div><div>Star 500</div><div class="nft-price">500 $</div></div>
+        <div class="nft-item" onclick="action('buy_1000')"><div class="nft-preview">💫</div><div>Star 1000</div><div class="nft-price">1000 $</div></div>
+        <div class="nft-item" onclick="action('buy_1500')"><div class="nft-preview">💎</div><div>Star 1500</div><div class="nft-price">1500 $</div></div>
+    </div>
+</div>
+
+<div id="profile" class="content">
+    <h2>Профиль</h2>
+    <div class="glass-card">
+        <div class="balance-title">Доступный баланс</div>
+        <div class="balance-val">0.00 $</div>
+        <div style="margin-bottom: 20px; font-size: 14px;">Статус: <span style="color: var(--red); font-weight: 600;">Basic (Unverified)</span></div>
+        <button class="main-btn" onclick="verify()">Пройти верификацию</button>
+    </div>
+</div>
+
+<div id="wallet" class="content">
+    <h2>Кошелек</h2>
+    <div class="glass-card">
+        <button class="main-btn" onclick="action('pay_card')">Пополнить картой</button>
+        <button class="main-btn secondary-btn" onclick="action('pay_crypto')">Криптовалюта (USDT)</button>
+        <div style="margin-top: 25px; text-align: center;">
+            <div class="balance-title" style="margin-bottom: 10px;">Вывод средств</div>
+            <button class="main-btn secondary-btn" style="opacity: 0.5;" onclick="tg.showAlert('Для вывода необходимо подтвердить номер телефона в профиле.')">Вывести на карту</button>
         </div>
     </div>
 </div>
 
-<div id="profile" class="tab-content">
-    <h2>Кабинет</h2>
-    <div class="profile-card">
-        <div class="balance-label">Ваш баланс</div>
-        <div class="balance-value">0.00 $</div>
-        <div style="font-size: 14px; margin-bottom: 20px;">
-            Статус: <span style="color: #ff453a;">Не верифицирован</span>
-        </div>
-        <button class="btn" onclick="requestVerify()">Пройти верификацию</button>
-    </div>
-</div>
-
-<div id="wallet" class="tab-content">
-    <h2>Финансы</h2>
-    <div class="profile-card">
-        <button class="btn" onclick="sendData('pay_card')">Пополнить картой</button>
-        <button class="btn btn-secondary" onclick="sendData('pay_crypto')">Криптовалюта USDT</button>
-        <button class="btn btn-secondary" style="margin-top: 20px; opacity: 0.6;" onclick="tg.showAlert('Вывод доступен после верификации')">Вывести средства</button>
-    </div>
-</div>
-
-<div class="nav">
-    <div class="nav-item active" onclick="showTab('market', this)">
-        <span class="nav-icon">🛍</span>Маркет
-    </div>
-    <div class="nav-item" onclick="showTab('profile', this)">
-        <span class="nav-icon">👤</span>Профиль
-    </div>
-    <div class="nav-item" onclick="showTab('wallet', this)">
-        <span class="nav-icon">💳</span>Кошелек
-    </div>
+<div class="tab-bar">
+    <div class="tab-item active" onclick="tab('market', this)"><span class="tab-icon">💎</span>Маркет</div>
+    <div class="tab-item" onclick="tab('profile', this)"><span class="tab-icon">👤</span>Кабинет</div>
+    <div class="tab-item" onclick="tab('wallet', this)"><span class="tab-icon">👛</span>Кошелек</div>
 </div>
 
 <script>
     let tg = window.Telegram.WebApp;
     tg.expand();
-    tg.backgroundColor = '#1c1c1d';
-    tg.headerColor = '#1c1c1d';
+    tg.backgroundColor = '#0f0f10';
+    tg.headerColor = '#0f0f10';
 
-    function showTab(id, el) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    function tab(id, el) {
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
     }
 
-    function buy(name, price) {
-        tg.showConfirm(`Купить ${name} за ${price}$?`, (ok) => {
-            if(ok) tg.showAlert("Недостаточно средств. Пополните баланс.");
-        });
+    function action(type) {
+        tg.sendData(type);
     }
 
-    function sendData(action) {
-        tg.sendData(action);
-    }
-
-    function requestVerify() {
-        // Отправляем специальный флаг боту, чтобы он запросил контакт
-        tg.sendData("verify_me");
+    function verify() {
+        tg.sendData("request_verification");
         tg.close();
     }
 </script>
