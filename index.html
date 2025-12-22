@@ -3,159 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NFT Premium</title>
+    <title>Crypto NFT</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f0f10;
-            --card-bg: #1a1a1c;
+            --bg: #0b0b0c;
+            --card: #161618;
             --accent: #007aff;
             --text: #ffffff;
-            --text-secondary: #8e8e93;
+            --secondary: #8e8e93;
             --green: #32d74b;
-            --red: #ff453a;
         }
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            margin: 0;
-            padding: 16px;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+            margin: 0; padding: 16px;
+            -webkit-user-select: none;
         }
-        /* Уютные карточки */
         .glass-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
+            background: var(--card);
+            border-radius: 24px;
+            padding: 24px;
             margin-bottom: 16px;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
-        h2 { font-size: 24px; font-weight: 700; margin: 0 0 20px 0; letter-spacing: -0.5px; }
-        
-        /* Сетка NFT */
+        h2 { font-size: 26px; font-weight: 700; margin: 0 0 20px 0; }
+
+        /* NFT Grid */
         .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .nft-item {
-            background: var(--card-bg);
-            border-radius: 18px;
+            background: var(--card);
+            border-radius: 20px;
             padding: 12px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.03);
         }
-        .nft-preview {
-            width: 100%;
-            aspect-ratio: 1/1;
-            background: linear-gradient(135deg, #2c2c2e 0%, #1c1c1e 100%);
-            border-radius: 12px;
+        .nft-icon {
+            font-size: 40px;
+            height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
+            background: #1c1c1e;
+            border-radius: 16px;
             margin-bottom: 10px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
-        .nft-price { color: var(--green); font-weight: 700; font-size: 14px; margin-top: 5px; }
+        .nft-price { color: var(--green); font-weight: 700; margin-top: 5px; }
 
-        /* Баланс */
-        .balance-title { color: var(--text-secondary); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
-        .balance-val { font-size: 36px; font-weight: 800; margin: 5px 0 15px 0; }
-        
         /* Кнопки */
-        .main-btn {
+        .btn {
             background: var(--accent);
             color: white;
             border: none;
-            border-radius: 14px;
-            padding: 14px;
+            border-radius: 16px;
+            padding: 16px;
             width: 100%;
             font-weight: 600;
             font-size: 16px;
-            transition: opacity 0.2s;
+            cursor: pointer;
         }
-        .main-btn:active { opacity: 0.8; }
-        .secondary-btn { background: rgba(255, 255, 255, 0.08); margin-top: 10px; }
+        .btn-crypto {
+            background: linear-gradient(90deg, #f2a900, #ffcd53);
+            color: #000;
+        }
 
-        /* Навбар */
-        .tab-bar {
+        /* Навигация */
+        .nav {
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            background: rgba(15, 15, 16, 0.9);
+            background: rgba(11, 11, 12, 0.95);
             backdrop-filter: blur(20px);
             display: flex;
-            padding: 10px 10px 25px 10px;
+            padding: 12px 12px 30px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .tab-item { flex: 1; text-align: center; color: var(--text-secondary); font-size: 10px; font-weight: 500; }
-        .tab-item.active { color: var(--accent); }
-        .tab-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-item { flex: 1; text-align: center; color: var(--secondary); font-size: 11px; }
+        .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 22px; display: block; margin-bottom: 4px; }
 
-        .content { display: none; padding-bottom: 80px; }
-        .content.active { display: block; animation: fade 0.3s ease; }
-        @keyframes fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<div id="market" class="content active">
-    <h2>Коллекции</h2>
+<div id="market" class="section active">
+    <h2>NFT Маркет</h2>
     <div class="nft-grid">
-        <div class="nft-item" onclick="action('buy_100')"><div class="nft-preview">✨</div><div>Star 100</div><div class="nft-price">100 $</div></div>
-        <div class="nft-item" onclick="action('buy_500')"><div class="nft-preview">🌟</div><div>Star 500</div><div class="nft-price">500 $</div></div>
-        <div class="nft-item" onclick="action('buy_1000')"><div class="nft-preview">💫</div><div>Star 1000</div><div class="nft-price">1000 $</div></div>
-        <div class="nft-item" onclick="action('buy_1500')"><div class="nft-preview">💎</div><div>Star 1500</div><div class="nft-price">1500 $</div></div>
+        <div class="nft-item" onclick="buy('Star 100', 100)"><div class="nft-icon">✨</div><div>Star 100</div><div class="nft-price">100 $</div></div>
+        <div class="nft-item" onclick="buy('Star 500', 500)"><div class="nft-icon">🌟</div><div>Star 500</div><div class="nft-price">500 $</div></div>
+        <div class="nft-item" onclick="buy('Star 1000', 1000)"><div class="nft-icon">💫</div><div>Star 1000</div><div class="nft-price">1000 $</div></div>
+        <div class="nft-item" onclick="buy('Star 1500', 1500)"><div class="nft-icon">💎</div><div>Star 1500</div><div class="nft-price">1500 $</div></div>
     </div>
 </div>
 
-<div id="profile" class="content">
-    <h2>Профиль</h2>
+<div id="profile" class="section">
+    <h2>Кабинет</h2>
     <div class="glass-card">
-        <div class="balance-title">Доступный баланс</div>
-        <div class="balance-val">0.00 $</div>
-        <div style="margin-bottom: 20px; font-size: 14px;">Статус: <span style="color: var(--red); font-weight: 600;">Basic (Unverified)</span></div>
-        <button class="main-btn" onclick="verify()">Пройти верификацию</button>
+        <div style="color: var(--secondary); font-size: 14px;">Баланс</div>
+        <div style="font-size: 38px; font-weight: 800; margin: 10px 0;">0.00 $</div>
+        <div style="color: #ff453a; font-weight: 600; margin-bottom: 20px;">• Требуется верификация</div>
+        <button class="btn" onclick="requestPhone()">🛡 Верифицировать аккаунт</button>
     </div>
 </div>
 
-<div id="wallet" class="content">
+<div id="wallet" class="section">
     <h2>Кошелек</h2>
     <div class="glass-card">
-        <button class="main-btn" onclick="action('pay_card')">Пополнить картой</button>
-        <button class="main-btn secondary-btn" onclick="action('pay_crypto')">Криптовалюта (USDT)</button>
-        <div style="margin-top: 25px; text-align: center;">
-            <div class="balance-title" style="margin-bottom: 10px;">Вывод средств</div>
-            <button class="main-btn secondary-btn" style="opacity: 0.5;" onclick="tg.showAlert('Для вывода необходимо подтвердить номер телефона в профиле.')">Вывести на карту</button>
-        </div>
+        <p style="color: var(--secondary); margin-bottom: 20px;">Пополнение доступно только в криптовалюте через защищенный шлюз.</p>
+        <button class="btn btn-crypto" onclick="payCrypto()">💎 Пополнить USDT (TRC-20)</button>
+        <button class="btn" style="background: #2c2c2e; margin-top: 15px; color: #555;" onclick="tg.showAlert('Вывод заблокирован до подтверждения личности.')">Вывести средства</button>
     </div>
 </div>
 
-<div class="tab-bar">
-    <div class="tab-item active" onclick="tab('market', this)"><span class="tab-icon">💎</span>Маркет</div>
-    <div class="tab-item" onclick="tab('profile', this)"><span class="tab-icon">👤</span>Кабинет</div>
-    <div class="tab-item" onclick="tab('wallet', this)"><span class="tab-icon">👛</span>Кошелек</div>
+<div class="nav">
+    <div class="nav-item active" onclick="tab('market', this)"><span class="nav-icon">🛒</span>Маркет</div>
+    <div class="nav-item" onclick="tab('profile', this)"><span class="nav-icon">👤</span>Профиль</div>
+    <div class="nav-item" onclick="tab('wallet', this)"><span class="nav-icon">👛</span>Кошелек</div>
 </div>
 
 <script>
     let tg = window.Telegram.WebApp;
     tg.expand();
-    tg.backgroundColor = '#0f0f10';
-    tg.headerColor = '#0f0f10';
 
     function tab(id, el) {
-        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
     }
 
-    function action(type) {
-        tg.sendData(type);
+    function requestPhone() {
+        // Системный вызов Telegram для передачи номера телефона
+        tg.requestContact((ok) => {
+            if (ok) {
+                tg.showAlert("Данные успешно переданы на проверку!");
+            } else {
+                tg.showAlert("Для верификации необходимо предоставить доступ к номеру.");
+            }
+        });
     }
 
-    function verify() {
-        tg.sendData("request_verification");
+    function buy(n, p) { tg.showConfirm(`Купить ${n} за ${p}$?`, (o) => { if(o) tg.showAlert("Недостаточно средств."); }); }
+    
+    function payCrypto() {
+        tg.sendData("pay_crypto"); // Отправляем сигнал боту
         tg.close();
     }
 </script>
