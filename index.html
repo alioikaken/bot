@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NFT Marketplace App</title>
+    <title>NFT Premium Market</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --bg: #111111; --card-bg: #1c1c1c; --text: #ffffff; --accent: #0088cc; --green: #4caf50; }
@@ -11,17 +11,14 @@
         .card { background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid #333; }
         .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .nft-item { background: var(--card-bg); border-radius: 12px; padding: 10px; text-align: center; border: 1px solid #222; }
-        .nft-item img { width: 100%; border-radius: 8px; margin-bottom: 8px; }
+        .nft-item img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
         .price { color: var(--green); font-weight: bold; margin: 8px 0; }
         .btn { background: var(--accent); color: white; border: none; padding: 10px; width: 100%; border-radius: 10px; font-weight: 600; cursor: pointer; }
-        .btn-wallet { background: #333; margin-top: 10px; }
         
-        /* Вкладки */
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Навигация */
         .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #181818; display: flex; border-top: 1px solid #333; padding: 10px 0; padding-bottom: 25px; }
         .nav-item { flex: 1; text-align: center; color: #666; font-size: 11px; cursor: pointer; }
         .nav-item.active { color: var(--accent); }
@@ -31,33 +28,9 @@
 <body>
 
 <div id="market" class="tab-content active">
-    <h2 style="text-align: center;">✨ NFT STARS</h2>
-    <div class="nft-grid">
-        <div class="nft-item">
-            <div style="font-size: 40px;">⭐</div>
-            <div>Звезда 100</div>
-            <div class="price">100.00 $</div>
-            <button class="btn" onclick="buy('Звезда 100', 100)">Купить</button>
+    <h2 style="text-align: center;">🔥 NFT Маркет</h2>
+    <div id="nft-list" class="nft-grid">
         </div>
-        <div class="nft-item">
-            <div style="font-size: 40px;">🌟</div>
-            <div>Звезда 500</div>
-            <div class="price">500.00 $</div>
-            <button class="btn" onclick="buy('Звезда 500', 500)">Купить</button>
-        </div>
-        <div class="nft-item">
-            <div style="font-size: 40px;">💫</div>
-            <div>Звезда 1000</div>
-            <div class="price">1000.00 $</div>
-            <button class="btn" onclick="buy('Звезда 1000', 1000)">Купить</button>
-        </div>
-        <div class="nft-item">
-            <div style="font-size: 40px;">💎</div>
-            <div>Звезда 1500</div>
-            <div class="price">1500.00 $</div>
-            <button class="btn" onclick="buy('Звезда 1500', 1500)">Купить</button>
-        </div>
-    </div>
 </div>
 
 <div id="profile" class="tab-content">
@@ -66,8 +39,11 @@
         <p>Пользователь: <b id="u-name">Загрузка...</b></p>
         <p>ID: <span id="u-id">---</span></p>
         <hr style="border: 0.1px solid #333;">
-        <p>Баланс: <b class="price">0.00 $</b></p>
+        <p>Ваш Баланс: <b class="price" id="u-balance">0.00 $</b></p>
         <p>Статус: <span style="color: #ff4d4d;">Не верифицирован</span></p>
+        <h3 style="margin-top:20px;">Мои NFT:</h3>
+        <ul id="my-nfts" style="list-style: none; padding: 0;">
+            </ul>
         <button class="btn" onclick="tg.showAlert('Для прохождения верификации обратитесь в поддержку @Ваш_Ник')">Пройти верификацию</button>
     </div>
 </div>
@@ -82,7 +58,7 @@
     <div class="card">
         <h3>Вывод средств</h3>
         <p style="font-size: 13px; color: #888;">Минимальная сумма вывода: 50.00 $</p>
-        <button class="btn btn-wallet" onclick="tg.showAlert('Ошибка: Вывод доступен только верифицированным пользователям.')">Вывести на карту</button>
+        <button class="btn" style="background:#7f8c8d;" onclick="tg.showAlert('Ошибка: Вывод доступен только верифицированным пользователям.')">Вывести на карту</button>
     </div>
 </div>
 
@@ -96,30 +72,126 @@
     let tg = window.Telegram.WebApp;
     tg.expand();
     
-    // Подгрузка данных юзера
-    const user = tg.initDataUnsafe.user;
-    if (user) {
-        document.getElementById('u-name').innerText = user.first_name;
-        document.getElementById('u-id').innerText = user.id;
-    }
+    // --- Настройки сервера ---
+    const API_URL = "http://ТВОЙ_IP_ИЛИ_ДОМЕН:5000"; // ЗАМЕНИ НА IP СВОЕГО СЕРВЕРА!
+    let currentUserId = null;
 
+    // --- Функции UI ---
     function showTab(id, el) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
+        if (id === 'profile') loadUserProfile();
     }
 
-    function buy(name, price) {
-        tg.showConfirm(`Вы подтверждаете покупку ${name} за ${price}$?`, (ok) => {
-            if(ok) tg.showAlert("Ошибка: Недостаточно средств. Пополните баланс в разделе Кошелек.");
+    async function loadNFTs() {
+        try {
+            const response = await fetch(`${API_URL}/get_nfts`);
+            const nfts = await response.json();
+            const nftListDiv = document.getElementById('nft-list');
+            nftListDiv.innerHTML = ''; // Очищаем список
+
+            for (const category in nfts) {
+                if (category === 'id') continue;
+                for (const name in nfts[category]) {
+                    const nft = nfts[category][name];
+                    const nftHtml = `
+                        <div class="nft-item">
+                            <img src="${nft.photo || 'https://via.placeholder.com/120x120?text=NFT'}" alt="${name}">
+                            <div>${name}</div>
+                            <div class="price">${nft.price}$</div>
+                            <button class="btn" onclick="buyNFT('${category}', '${name}', ${nft.price})">Купить</button>
+                        </div>
+                    `;
+                    nftListDiv.innerHTML += nftHtml;
+                }
+            }
+        } catch (error) {
+            console.error('Ошибка загрузки NFT:', error);
+            tg.showAlert('Не удалось загрузить NFT. Проверьте соединение с сервером.');
+        }
+    }
+
+    async function loadUserProfile() {
+        if (!currentUserId) {
+            document.getElementById('u-name').innerText = "Гость";
+            document.getElementById('u-id').innerText = "Нет данных";
+            return;
+        }
+        try {
+            const response = await fetch(`${API_URL}/get_user_data`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: currentUserId })
+            });
+            const userData = await response.json();
+            document.getElementById('u-balance').innerText = `${userData.balance.toFixed(2)} $`;
+            document.getElementById('u-name').innerText = userData.username || "Неизвестный";
+            
+            const myNftsList = document.getElementById('my-nfts');
+            myNftsList.innerHTML = '';
+            for (const nftName in userData.nft) {
+                myNftsList.innerHTML += `<li>- ${nftName} (${userData.nft[nftName].category})</li>`;
+            }
+            if (Object.keys(userData.nft).length === 0) {
+                myNftsList.innerHTML = `<li>У вас пока нет NFT.</li>`;
+            }
+
+        } catch (error) {
+            console.error('Ошибка загрузки профиля:', error);
+            tg.showAlert('Не удалось загрузить профиль. Проверьте соединение.');
+        }
+    }
+
+    async function buyNFT(category, name, price) {
+        if (!currentUserId) {
+            tg.showAlert('Ошибка: Сначала запустите бота командой /start в Telegram.');
+            return;
+        }
+        tg.showConfirm(`Вы хотите купить ${name} за ${price}$?`, async (ok) => {
+            if (ok) {
+                try {
+                    const response = await fetch(`${API_URL}/buy_nft`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: currentUserId, category, name })
+                    });
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        tg.showAlert(`🎉 ${result.message}`);
+                        await loadUserProfile(); // Обновить баланс
+                    } else {
+                        tg.showAlert(`❌ ${result.message}`);
+                    }
+                } catch (error) {
+                    console.error('Ошибка покупки:', error);
+                    tg.showAlert('Произошла ошибка при покупке. Попробуйте снова.');
+                }
+            }
         });
     }
 
     function sendToBot(action) {
-        tg.sendData(action); // Отправляет текст боту
-        tg.close(); // Закрывает приложение после выбора
+        tg.sendData(action); 
+        tg.showAlert('Реквизиты высланы в чат с ботом. Приложение будет закрыто.');
+        tg.close();
     }
+
+    // --- Инициализация при загрузке ---
+    tg.ready();
+    tg.headerColor = '#111111';
+
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        currentUserId = tg.initDataUnsafe.user.id.toString();
+        document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
+        document.getElementById('u-id').innerText = currentUserId;
+    } else {
+        tg.showAlert('Ошибка авторизации. Пожалуйста, запустите бота командой /start.');
+    }
+
+    loadNFTs(); // Загружаем NFT при старте
+    loadUserProfile(); // Загружаем профиль пользователя
 </script>
 </body>
 </html>
