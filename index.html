@@ -3,24 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Fragment | Winter Mint</title>
+<title>Winter Mint</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 :root{
-    --neon:#00eaff;
-    --pink:#ff4ecd;
-    --gold:#ffd24d;
-    --glass:rgba(255,255,255,.12);
+    --bg1:#0e1621;
+    --bg2:#1b2838;
+    --glass:rgba(255,255,255,.08);
+    --border:rgba(255,255,255,.18);
+    --accent:#8fd3f4;
+    --accent-soft:#cfe9f6;
+    --text-soft:rgba(255,255,255,.7);
 }
 
 *{box-sizing:border-box}
 
 body{
     margin:0;
-    font-family:Segoe UI,system-ui;
+    font-family:Inter,Segoe UI,system-ui;
     color:#fff;
-    background:radial-gradient(circle at top,#0f2027,#203a43,#2c5364);
+    background:linear-gradient(180deg,var(--bg1),var(--bg2));
     overflow-x:hidden;
 }
 
@@ -28,30 +31,27 @@ body{
 canvas{
     position:fixed;
     inset:0;
-    z-index:1;
     pointer-events:none;
+    z-index:1;
 }
 
 /* ===== HEADER ===== */
 .header{
+    padding:56px 20px 24px;
     text-align:center;
-    padding:60px 20px 20px;
-    z-index:2;
     position:relative;
+    z-index:2;
 }
 .header h1{
     margin:0;
-    font-size:34px;
-    text-shadow:0 0 15px var(--neon);
+    font-size:30px;
+    letter-spacing:1px;
+    font-weight:800;
 }
-.badge{
-    margin-top:8px;
-    display:inline-block;
-    background:var(--gold);
-    color:#000;
-    padding:6px 16px;
-    border-radius:20px;
-    font-weight:900;
+.sub{
+    margin-top:6px;
+    font-size:13px;
+    color:var(--text-soft);
 }
 
 /* ===== NAV ===== */
@@ -61,22 +61,22 @@ canvas{
     padding:10px;
     position:sticky;
     top:0;
-    z-index:5;
-    background:rgba(0,0,0,.4);
+    background:rgba(0,0,0,.35);
     backdrop-filter:blur(10px);
+    z-index:5;
 }
 .nav button{
     flex:1;
     padding:12px;
     border-radius:14px;
-    border:1px solid var(--neon);
-    background:transparent;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.05);
     color:#fff;
-    font-weight:700;
+    font-weight:600;
 }
 .nav button.active{
-    background:linear-gradient(90deg,var(--neon),var(--pink));
-    color:#000;
+    background:rgba(143,211,244,.18);
+    border-color:var(--accent);
 }
 
 /* ===== SECTIONS ===== */
@@ -91,53 +91,71 @@ canvas{
 /* ===== GLASS ===== */
 .glass{
     background:var(--glass);
-    backdrop-filter:blur(18px);
-    border:1px solid rgba(255,255,255,.2);
+    backdrop-filter:blur(16px);
+    border:1px solid var(--border);
     border-radius:22px;
     padding:18px;
-    margin-bottom:15px;
-    box-shadow:0 10px 35px rgba(0,0,0,.6);
+    margin-bottom:16px;
+}
+
+/* ===== TEXT ===== */
+.label{
+    font-size:12px;
+    letter-spacing:.8px;
+    color:var(--text-soft);
+    margin-bottom:6px;
+}
+.value{
+    font-size:20px;
+    font-weight:700;
+}
+.desc{
+    font-size:14px;
+    color:var(--text-soft);
+    line-height:1.5;
 }
 
 /* ===== BUTTON ===== */
 .btn{
+    margin-top:12px;
     width:100%;
-    padding:16px;
-    border:none;
+    padding:14px;
     border-radius:14px;
-    font-size:16px;
-    font-weight:900;
-    color:#000;
-    background:linear-gradient(135deg,#00f2fe,#ff4ecd,#ffd24d);
-    box-shadow:0 0 25px rgba(0,234,255,.6);
+    border:1px solid var(--accent);
+    background:linear-gradient(180deg,#1f3b52,#162838);
+    color:#e9f6ff;
+    font-weight:700;
+    letter-spacing:.4px;
 }
 
 /* ===== MARKET ===== */
-.grid{
+.market{
     display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
+    gap:16px;
 }
-.card{
-    background:rgba(0,0,0,.55);
-    border:1px solid var(--neon);
-    border-radius:20px;
-    padding:10px;
-    text-align:center;
+.nft{
+    background:rgba(0,0,0,.35);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:12px;
 }
-.card img{
+.nft img{
     width:100%;
-    border-radius:14px;
-    margin-bottom:8px;
+    border-radius:16px;
+    margin-bottom:10px;
 }
-.free{color:var(--neon);font-weight:800}
+.nft-title{
+    font-weight:600;
+    font-size:15px;
+}
 
 /* ===== SUPPORT ===== */
 .support{
+    font-size:14px;
     line-height:1.6;
-    font-size:15px;
-    opacity:.9;
+    color:var(--text-soft);
 }
+.support b{color:#fff}
 </style>
 </head>
 
@@ -147,7 +165,7 @@ canvas{
 
 <div class="header">
     <h1>WINTER MINT</h1>
-    <div class="badge">20.00 STARS GIFT</div>
+    <div class="sub">Seasonal Fragment Collection</div>
 </div>
 
 <div class="nav">
@@ -156,63 +174,54 @@ canvas{
     <button onclick="openTab('support')">Поддержка</button>
 </div>
 
-<!-- ===== ЛИЧНЫЙ КАБИНЕТ ===== -->
+<!-- ===== КАБИНЕТ ===== -->
 <div id="cab" class="section active">
     <div class="glass">
-        <div style="opacity:.7;font-size:13px">СТАТУС АККАУНТА</div>
-        <h3>ID: UNVERIFIED</h3>
-        <button class="btn">ПРОЙТИ ВЕРИФИКАЦИЮ</button>
+        <div class="label">СТАТУС</div>
+        <div class="value">UNVERIFIED</div>
+        <button class="btn">Пройти верификацию</button>
     </div>
 
     <div class="glass">
-        <div style="opacity:.7;font-size:13px">БАЛАНС</div>
-        <h2>0.00 ⭐</h2>
-        <button class="btn">ПОПОЛНИТЬ БАЛАНС</button>
+        <div class="label">БАЛАНС</div>
+        <div class="value">0.00 ⭐</div>
+        <button class="btn">Пополнить баланс</button>
     </div>
 
     <div class="glass">
-        <div style="opacity:.7;font-size:13px">ЗИМНИЙ БОНУС</div>
-        <p>После верификации вы получите доступ к бесплатным NFT и сезонным дропам.</p>
+        <div class="desc">
+            После подтверждения аккаунта открывается доступ
+            к зимним NFT и бонусным дропам.
+        </div>
     </div>
 </div>
 
-<!-- ===== МАРКЕТ ===== -->
+<!-- ===== MARKET ===== -->
 <div id="market" class="section">
-    <div class="grid">
-        <div class="card">
+    <div class="market">
+        <div class="nft">
             <img src="https://nft.fragment.com/gift/santahat-10168.webp">
-            <div>Frosty Hat #101</div>
-            <div class="free">FREE</div>
+            <div class="nft-title">Frosty Hat</div>
         </div>
-        <div class="card">
+
+        <div class="nft">
             <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp">
-            <div>Neon Drink #99</div>
-            <div class="free">FREE</div>
-        </div>
-        <div class="card">
-            <img src="https://nft.fragment.com/gift/holidaysnowman-245.webp">
-            <div>Snowman #245</div>
-            <div class="free">FREE</div>
-        </div>
-        <div class="card">
-            <img src="https://nft.fragment.com/gift/holidaytree-881.webp">
-            <div>Winter Tree #881</div>
-            <div class="free">FREE</div>
+            <div class="nft-title">Holiday Drink</div>
         </div>
     </div>
 </div>
 
-<!-- ===== ПОДДЕРЖКА ===== -->
+<!-- ===== SUPPORT ===== -->
 <div id="support" class="section">
     <div class="glass support">
         <p>
-            Наша служба поддержки работает ежедневно.  
-            Если у вас возникли вопросы по верификации, NFT или балансу —
-            свяжитесь с нашим оператором.
+            Если у вас возникли вопросы по верификации,
+            начислению баланса или работе Winter Mint —
+            мы всегда готовы помочь.
         </p>
         <p>
-            Мы отвечаем быстро и помогаем решить любые проблемы,
-            связанные с Winter Mint и Fragment.
+            Свяжитесь с поддержкой и получите ответ
+            в кратчайшие сроки.
         </p>
         <p><b>Контакт:</b> @x1o1y</p>
     </div>
@@ -228,14 +237,14 @@ function openTab(id){
     event.target.classList.add('active');
 }
 
-/* ===== ЖИРНЫЙ СНЕГ ===== */
+/* СНЕГ */
 const c=document.getElementById("snow"),ctx=c.getContext("2d");
 let w,h,flakes=[];
 function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
 window.onresize=resize;resize();
 
-for(let i=0;i<180;i++)
-flakes.push({x:Math.random()*w,y:Math.random()*h,r:2+Math.random()*4,s:1+Math.random()*3});
+for(let i=0;i<160;i++)
+flakes.push({x:Math.random()*w,y:Math.random()*h,r:2+Math.random()*3,s:0.8+Math.random()*2});
 
 function snow(){
     ctx.clearRect(0,0,w,h);
@@ -254,3 +263,4 @@ snow();
 
 </body>
 </html>
+
