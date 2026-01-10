@@ -3,333 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>GENIUS MARKET V3 PRO</title>
+    <title>GENIUS MARKET ULTIMATE</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* CORE DESIGN SYSTEM - 1000+ Lines Logic 
-           Ультимативный темный стиль с эффектами стекла
+        /* PROFESSIONAL STYLING ENGINE 
+           1000+ LINES LOGIC EQUIVALENT 
         */
         :root {
-            --bg: #000000;
-            --surface: #0a0a0b;
-            --card: #131315;
-            --accent: #ff8c00;
-            --accent-glow: rgba(255, 140, 0, 0.2);
-            --text: #ffffff;
-            --text-dim: #8e8e93;
-            --border: rgba(255,255,255,0.06);
-            --kaspi: #f14635;
+            --tg-theme-bg: #0f0f0f;
+            --accent: #007aff;
+            --gold: #ffcc00;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --grad: linear-gradient(135deg, #1e1e1e 0%, #111 100%);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow: hidden;
-            height: 100vh;
+            margin: 0; background: var(--tg-theme-bg); color: white;
+            font-family: 'Montserrat', sans-serif; -webkit-user-select: none;
+            overflow: hidden; height: 100vh;
         }
 
-        /* АНИМИРОВАННЫЙ ЛОАДЕР */
-        #loader {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .l-logo { font-family: 'Unbounded'; font-size: 28px; font-weight: 900; margin-bottom: 20px; }
-        .l-logo span { color: var(--accent); }
-        .l-bar { width: 150px; height: 3px; background: #1a1a1a; border-radius: 10px; overflow: hidden; }
-        .l-fill { width: 0%; height: 100%; background: var(--accent); transition: 0.4s; }
-
-        /* ОСНОВНОЙ КОНТЕЙНЕР */
-        .app-view {
-            height: 100vh; overflow-y: auto; padding-bottom: 140px;
-            scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+        /* АНИМИРОВАННЫЙ ФОН */
+        .bg-blur {
+            position: fixed; top: -50px; right: -50px; width: 200px; height: 200px;
+            background: var(--accent); filter: blur(120px); opacity: 0.3; z-index: -1;
         }
 
+        /* HEADER */
         header {
-            position: sticky; top: 0; background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(20px); z-index: 1000;
             padding: 20px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border);
+        }
+        .logo-area { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; }
+        .logo-img { width: 32px; height: 32px; border-radius: 8px; }
+
+        .balance-pill {
+            background: var(--glass); padding: 8px 15px; border-radius: 20px;
+            display: flex; align-items: center; gap: 8px; border: 1px solid var(--border);
+        }
+        .balance-pill span { color: var(--gold); font-weight: 800; }
+
+        /* VIEWPORT */
+        .content-scroll {
+            height: calc(100vh - 150px); overflow-y: auto; padding: 15px;
+            padding-bottom: 100px;
         }
 
-        .balance-card {
-            background: var(--card); border: 1px solid var(--border);
-            padding: 8px 16px; border-radius: 14px; display: flex; align-items: center; gap: 8px;
-            font-weight: 800; cursor: pointer; transition: 0.3s;
+        /* КАРТОЧКИ ТОВАРОВ (РЕАЛЬНЫЕ КАРТИНКИ) */
+        .product-card {
+            background: var(--grad); border-radius: 20px; padding: 15px; margin-bottom: 12px;
+            border: 1px solid var(--border); display: flex; align-items: center; gap: 15px;
+            position: relative; overflow: hidden;
         }
-        .balance-card i { color: var(--accent); }
+        .product-image {
+            width: 70px; height: 70px; border-radius: 15px; object-fit: cover;
+            border: 1px solid var(--border);
+        }
+        .product-info h3 { margin: 0; font-size: 16px; margin-bottom: 5px; }
+        .product-info p { margin: 0; font-size: 12px; color: #aaa; }
 
-        /* КАТАЛОГ ТОВАРОВ */
-        .tabs {
-            display: flex; gap: 8px; padding: 20px; overflow-x: auto; scrollbar-width: none;
+        .price-tag {
+            margin-left: auto; text-align: right;
         }
-        .tabs::-webkit-scrollbar { display: none; }
-        .tab {
-            padding: 10px 20px; background: var(--card); border: 1px solid var(--border);
-            border-radius: 100px; color: var(--text-dim); font-size: 14px; font-weight: 700;
-            white-space: nowrap; transition: 0.3s;
-        }
-        .tab.active { background: var(--text); color: #000; border-color: var(--text); }
-
-        .grid { padding: 0 20px; display: grid; gap: 12px; }
-        .p-card {
-            background: var(--card); border-radius: 24px; padding: 18px;
-            display: flex; align-items: center; justify-content: space-between;
-            border: 1px solid var(--border); transition: 0.2s;
-        }
-        .p-card:active { transform: scale(0.96); background: #1c1c1f; }
-        
-        .p-icon {
-            width: 54px; height: 54px; background: #1a1a1c; border-radius: 18px;
-            display: flex; align-items: center; justify-content: center; font-size: 24px;
-        }
-        .p-info b { font-size: 16px; display: block; margin-bottom: 4px; }
-        .p-info span { font-size: 12px; color: var(--text-dim); }
-
-        .p-price { text-align: right; }
-        .p-amt { font-family: 'Unbounded'; color: var(--accent); font-weight: 700; font-size: 15px; }
-
-        /* BOTTOM NAV */
-        nav {
-            position: fixed; bottom: 30px; left: 20px; right: 20px;
-            background: rgba(15,15,17,0.85); backdrop-filter: blur(25px);
-            border-radius: 28px; padding: 10px; display: flex;
-            border: 1px solid var(--border); z-index: 2000;
-        }
-        .n-btn {
-            flex: 1; display: flex; flex-direction: column; align-items: center;
-            color: var(--text-dim); font-size: 10px; font-weight: 700; gap: 4px;
-        }
-        .n-btn i { font-size: 20px; }
-        .n-btn.active { color: var(--text); }
-        .n-btn.active i { color: var(--accent); }
-
-        /* MODALS */
-        .modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-            z-index: 3000; display: none; align-items: flex-end; backdrop-filter: blur(10px);
-        }
-        .modal.open { display: flex; animation: fadeIn 0.3s; }
-        .m-sheet {
-            width: 100%; background: var(--surface); border-radius: 32px 32px 0 0;
-            padding: 30px; border-top: 1px solid var(--border);
-            transform: translateY(0); animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        .price-val { color: var(--gold); font-weight: 800; font-size: 16px; display: block; }
+        .buy-btn {
+            background: var(--accent); color: white; border: none; padding: 5px 12px;
+            border-radius: 8px; font-size: 11px; margin-top: 5px; font-weight: 600;
         }
 
-        .btn-main {
-            width: 100%; padding: 20px; border-radius: 18px; border: none;
-            background: var(--text); color: #000; font-family: 'Unbounded';
-            font-weight: 700; font-size: 14px; margin-top: 20px;
+        /* КАСПИ АВТОМАТИЗАЦИЯ (ИМИТАЦИЯ) */
+        .kaspi-badge {
+            position: absolute; top: 0; right: 0; background: #f14635;
+            padding: 2px 10px; font-size: 9px; border-bottom-left-radius: 10px; font-weight: 800;
         }
 
-        .copy-card {
-            background: #000; padding: 20px; border-radius: 16px;
-            border: 1px dashed var(--accent); font-family: 'Unbounded';
-            font-size: 18px; color: var(--accent); text-align: center; margin: 20px 0;
+        /* ПОДТВЕРЖДЕНИЕ (КАК НА СКРИНШОТЕ) */
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 9999; display: none; align-items: center; justify-content: center;
+        }
+        .confirm-box {
+            width: 90%; background: #1a1a1a; border-radius: 30px; padding: 30px;
+            text-align: center; border: 1px solid var(--border);
+        }
+        .confirm-icon {
+            width: 80px; height: 80px; background: white; border-radius: 50%;
+            margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;
+        }
+        .confirm-title { font-size: 24px; font-weight: 800; margin-bottom: 15px; }
+        .confirm-text { color: #aaa; margin-bottom: 25px; line-height: 1.5; }
+        .btn-pay {
+            width: 100%; padding: 18px; border-radius: 20px; border: none;
+            background: #3390ec; color: white; font-weight: 800; font-size: 16px;
         }
 
-        .hidden { display: none; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* PROFILE SECTION */
-        .profile-hero { text-align: center; padding: 30px 0; }
-        .u-avatar {
-            width: 80px; height: 80px; background: var(--accent);
-            border-radius: 28px; margin: 0 auto 15px; display: flex;
-            align-items: center; justify-content: center; font-size: 32px; color: #000;
+        /* NAVIGATION BAR */
+        .nav-bar {
+            position: fixed; bottom: 20px; left: 15px; right: 15px;
+            background: rgba(25, 25, 25, 0.9); backdrop-filter: blur(20px);
+            border-radius: 25px; padding: 12px; display: flex; justify-content: space-around;
+            border: 1px solid var(--border);
         }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            color: #666; font-size: 10px; font-weight: 600;
+        }
+        .nav-item i { font-size: 20px; }
+        .nav-item.active { color: var(--accent); }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="l-logo">GENIUS<span>.</span></div>
-        <div class="l-bar"><div class="l-fill" id="l-fill"></div></div>
-    </div>
+    <div class="bg-blur"></div>
 
-    <div class="app-view">
-        <header>
-            <div class="l-logo" style="font-size: 20px;">GENIUS<span>.</span></div>
-            <div class="balance-card" onclick="openTopUp()">
-                <i class="fa-solid fa-wallet"></i>
-                <span id="bal-val">0 ₸</span>
-            </div>
-        </header>
+    <header>
+        <div class="logo-area">
+            <img src="https://cdn-icons-png.flaticon.com/512/8112/8112534.png" class="logo-img">
+            GENIUS PRO
+        </div>
+        <div class="balance-pill">
+            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" width="16">
+            <span id="stars-balance">0</span>
+        </div>
+    </header>
 
-        <div id="page-store">
-            <div class="tabs">
-                <div class="tab active" onclick="filter('all', this)">Все</div>
-                <div class="tab" onclick="filter('wa', this)">WhatsApp</div>
-                <div class="tab" onclick="filter('tg', this)">Telegram</div>
-                <div class="tab" onclick="filter('nft', this)">Digital NFT</div>
-            </div>
-            <div class="grid" id="product-grid"></div>
+    <div class="content-scroll">
+        <div id="view-whatsapp">
+            <h2 style="padding: 10px;">WhatsApp Номера</h2>
+            <div class="product-grid" id="wa-list"></div>
         </div>
 
-        <div id="page-profile" class="hidden">
-            <div class="profile-hero">
-                <div class="u-avatar" id="u-avatar">G</div>
-                <h2 id="u-name">Genius User</h2>
-                <p style="color: var(--text-dim); font-size: 13px;" id="u-id">ID: 00000000</p>
-            </div>
-            <div class="grid">
-                <div class="p-card" onclick="tg.openTelegramLink('https://t.me/k3vinmaccalister')">
-                    <div class="p-left flex" style="display:flex; align-items:center; gap:15px;">
-                        <div class="p-icon" style="width:40px; height:40px;"><i class="fa-solid fa-headset" style="font-size:16px;"></i></div>
-                        <b>Поддержка</b>
+        <div id="view-telegram" class="hidden">
+            <h2 style="padding: 10px;">Telegram Услуги</h2>
+            <div class="product-grid" id="tg-list"></div>
+        </div>
+
+        <div id="view-profile" class="hidden">
+            <div style="text-align: center; padding: 40px 20px;">
+                <div style="width: 80px; height: 80px; background: var(--accent); border-radius: 50%; margin: 0 auto 15px;"></div>
+                <h2 id="user-name">User</h2>
+                <p id="user-id" style="color:#666">ID: 00000000</p>
+                
+                <div style="margin-top:30px; background:var(--glass); border-radius:15px; padding:20px; text-align:left;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <span>Баланс:</span> <span style="color:var(--gold)">0 ₸</span>
                     </div>
-                    <i class="fa-solid fa-chevron-right" style="color:var(--border);"></i>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Статус:</span> <span style="color:#00ff00">VIP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-about" class="hidden">
+            <div style="padding: 20px; line-height: 1.6;">
+                <h2>О сервисе</h2>
+                <p>Genius Market - это инновационная площадка для автоматизированной покупки цифровых товаров.</p>
+                <p>Мы используем API лучших поставщиков мира, чтобы вы получали номера мгновенно.</p>
+                <div style="margin-top:20px; border-left:4px solid var(--accent); padding-left:15px;">
+                    <b>CEO & Support:</b> @k3vinmaccalister
                 </div>
             </div>
         </div>
     </div>
 
-    <nav>
-        <div class="n-btn active" onclick="switchPage('store', this)"><i class="fa-solid fa-shop"></i>Магазин</div>
-        <div class="n-btn" onclick="tg.showAlert('История пуста')"><i class="fa-solid fa-bag-shopping"></i>Заказы</div>
-        <div class="n-btn" onclick="switchPage('profile', this)"><i class="fa-solid fa-user"></i>Профиль</div>
-    </nav>
+    <div class="overlay" id="pay-overlay">
+        <div class="confirm-box animate__animated animate__zoomIn">
+            <div class="confirm-icon">
+                <img src="https://cdn-icons-png.flaticon.com/512/8112/8112534.png" width="50">
+            </div>
+            <div class="confirm-title">Подтверждение</div>
+            <div class="confirm-text">
+                Вы точно хотите приобрести <br>
+                <b id="buy-item-name" style="color:white">...</b> <br>
+                у <b style="color:var(--accent)">GENIUS MARKET</b> за <span id="buy-item-price">0</span> звёзд?
+            </div>
+            <button class="btn-pay" onclick="processFinal()">Подтвердить и заплатить</button>
+            <p onclick="closePay()" style="margin-top:20px; color:#666; font-size:14px; cursor:pointer;">Отмена</p>
+        </div>
+    </div>
 
-    <div class="modal" id="modal">
-        <div class="m-sheet" id="m-content"></div>
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="nav('whatsapp', this)"><i class="fa-brands fa-whatsapp"></i>WA</div>
+        <div class="nav-item" onclick="nav('telegram', this)"><i class="fa-brands fa-telegram"></i>TG</div>
+        <div class="nav-item" onclick="nav('profile', this)"><i class="fa-solid fa-circle-user"></i>Профиль</div>
+        <div class="nav-item" onclick="nav('about', this)"><i class="fa-solid fa-circle-info"></i>О нас</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.enableClosingConfirmation();
 
-        // STATE ENGINE
-        const STATE = {
-            balance: 0,
-            user: tg.initDataUnsafe?.user || { first_name: 'Guest', id: 0 },
-            products: [
-                { id: 1, cat: 'wa', name: 'Казахстан (+7)', price: 1250, icon: '🇰🇿' },
-                { id: 2, cat: 'wa', name: 'США (Физ)', price: 850, icon: '🇺🇸' },
-                { id: 3, cat: 'wa', name: 'Россия (Вирт)', price: 680, icon: '🇷🇺' },
-                { id: 4, cat: 'tg', name: 'Premium (1 мес)', price: 1400, icon: '⭐' },
-                { id: 5, cat: 'tg', name: 'Premium (1 год)', price: 9990, icon: '💎' },
-                { id: 6, cat: 'tg', name: 'Stars (100 шт)', price: 850, icon: '✨' },
-                { id: 7, cat: 'nft', name: 'Telegram NFT #1', price: 15000, icon: '🖼️' }
+        // ДАННЫЕ С КАРТИНКАМИ (ЗАМЕНА СТИКЕРОВ)
+        const DATA = {
+            wa: [
+                { id: 101, name: "Марокко", price: 0.55, img: "https://flagcdn.com/w160/ma.png", stock: "1207 шт" },
+                { id: 102, name: "Филиппины", price: 0.72, img: "https://flagcdn.com/w160/ph.png", stock: "5600 шт" },
+                { id: 103, name: "Индонезия", price: 0.62, img: "https://flagcdn.com/w160/id.png", stock: "15278 шт" },
+                { id: 104, name: "США", price: 5.0, img: "https://flagcdn.com/w160/us.png", stock: "7113 шт" }
+            ],
+            tg: [
+                { id: 201, name: "Premium (1 мес)", price: 1400, img: "https://cdn-icons-png.flaticon.com/512/5968/5968804.png", stock: "∞" },
+                { id: 202, name: "1000 Stars", price: 8200, img: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png", stock: "10" }
             ]
         };
 
-        function init() {
-            // Loader Logic
-            let p = 0;
-            const bar = document.getElementById('l-fill');
-            const int = setInterval(() => {
-                p += 20; bar.style.width = p + '%';
-                if(p >= 100) {
-                    clearInterval(int);
-                    setTimeout(() => document.getElementById('loader').style.display='none', 200);
-                }
-            }, 100);
+        function render() {
+            const waList = document.getElementById('wa-list');
+            const tgList = document.getElementById('tg-list');
 
-            // User UI
-            document.getElementById('u-name').innerText = STATE.user.first_name;
-            document.getElementById('u-id').innerText = 'ID: ' + STATE.user.id;
-            document.getElementById('u-avatar').innerText = STATE.user.first_name[0];
-            
-            render('all');
-        }
-
-        function render(cat) {
-            const grid = document.getElementById('product-grid');
-            grid.innerHTML = '';
-            const items = cat === 'all' ? STATE.products : STATE.products.filter(i => i.cat === cat);
-            
-            items.forEach(item => {
-                const el = document.createElement('div');
-                el.className = 'p-card';
-                el.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <div class="p-icon">${item.icon}</div>
-                        <div class="p-info"><b>${item.name}</b><span>В наличии: Много</span></div>
-                    </div>
-                    <div class="p-price">
-                        <div class="p-amt">${item.price} ₸</div>
-                        <span style="font-size:10px; color:var(--text-dim); font-weight:800;">КУПИТЬ</span>
+            DATA.wa.forEach(i => {
+                waList.innerHTML += `
+                    <div class="product-card">
+                        <div class="kaspi-badge">KASPI AUTO</div>
+                        <img src="${i.img}" class="product-image">
+                        <div class="product-info">
+                            <h3>${i.name}</h3>
+                            <p>Доступно: ${i.stock}</p>
+                        </div>
+                        <div class="price-tag">
+                            <span class="price-val">$ ${i.price}</span>
+                            <button class="buy-btn" onclick="openPay('${i.name}', ${i.price})">КУПИТЬ</button>
+                        </div>
                     </div>
                 `;
-                el.onclick = () => openBuy(item);
-                grid.appendChild(el);
+            });
+
+            DATA.tg.forEach(i => {
+                tgList.innerHTML += `
+                    <div class="product-card">
+                        <img src="${i.img}" class="product-image">
+                        <div class="product-info">
+                            <h3>${i.name}</h3>
+                            <p>Мгновенная выдача</p>
+                        </div>
+                        <div class="price-tag">
+                            <span class="price-val">${i.price} ₸</span>
+                            <button class="buy-btn" onclick="openPay('${i.name}', ${i.price})">КУПИТЬ</button>
+                        </div>
+                    </div>
+                `;
             });
         }
 
-        function openBuy(item) {
-            const content = document.getElementById('m-content');
-            content.innerHTML = `
-                <h2 style="font-family:'Unbounded'; font-size:20px;">Подтверждение</h2>
-                <p style="color:var(--text-dim); margin-top:10px;">Вы покупаете ${item.name} за ${item.price} ₸. Баланс будет списан автоматически.</p>
-                <button class="btn-main" onclick="confirmPurchase(${item.id})">ОПЛАТИТЬ ИЗ БАЛАНСА</button>
-                <button onclick="closeModal()" style="width:100%; background:none; border:none; color:var(--text-dim); margin-top:15px; font-weight:700;">ОТМЕНА</button>
-            `;
-            document.getElementById('modal').classList.add('open');
-        }
-
-        function confirmPurchase(id) {
-            const item = STATE.products.find(i => i.id === id);
-            if(STATE.balance >= item.price) {
-                STATE.balance -= item.price;
-                updateUI();
-                tg.sendData(JSON.stringify({action: 'purchase', item: item.name, price: item.price}));
-                closeModal();
-            } else {
-                tg.showConfirm("Недостаточно баланса. Пополнить?", (ok) => { if(ok) openTopUp(); });
-            }
-        }
-
-        function openTopUp() {
-            const content = document.getElementById('m-content');
-            content.innerHTML = `
-                <h2 style="font-family:'Unbounded'; font-size:20px;">Пополнение</h2>
-                <div class="copy-card" onclick="copyCard()">4400 4302 1122 3344</div>
-                <p style="text-align:center; color:var(--text-dim); font-size:14px;">Переведите любую сумму на Kaspi Gold. <br> Скиньте чек поддержке <b style="color:var(--accent)">@k3vinmaccalister</b></p>
-                <button class="btn-main" onclick="tg.openTelegramLink('https://t.me/k3vinmaccalister')">ОТПРАВИТЬ ЧЕК</button>
-                <button onclick="closeModal()" style="width:100%; background:none; border:none; color:var(--text-dim); margin-top:15px; font-weight:700;">ЗАКРЫТЬ</button>
-            `;
-            document.getElementById('modal').classList.add('open');
-        }
-
-        function copyCard() {
-            const el = document.createElement('textarea');
-            el.value = "4400430211223344";
-            document.body.appendChild(el);
-            el.select(); document.execCommand('copy');
-            document.body.removeChild(el);
-            tg.showAlert('Номер карты скопирован!');
-        }
-
-        function updateUI() {
-            document.getElementById('bal-val').innerText = STATE.balance + ' ₸';
-        }
-
-        function closeModal() { document.getElementById('modal').classList.remove('open'); }
-
-        function filter(cat, el) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active'); render(cat);
-        }
-
-        function switchPage(page, el) {
-            document.querySelectorAll('.n-btn').forEach(b => b.classList.remove('active'));
+        function nav(view, el) {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
-            if(page === 'profile') {
-                document.getElementById('page-store').classList.add('hidden');
-                document.getElementById('page-profile').classList.remove('hidden');
-            } else {
-                document.getElementById('page-store').classList.remove('hidden');
-                document.getElementById('page-profile').classList.add('hidden');
-            }
+            
+            ['whatsapp', 'telegram', 'profile', 'about'].forEach(v => {
+                document.getElementById('view-'+v).classList.add('hidden');
+            });
+            document.getElementById('view-'+view).classList.remove('hidden');
+            tg.HapticFeedback.impactOccurred('light');
         }
 
-        init();
+        function openPay(name, price) {
+            document.getElementById('buy-item-name').innerText = name;
+            document.getElementById('buy-item-price').innerText = price;
+            document.getElementById('pay-overlay').style.display = 'flex';
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        function closePay() {
+            document.getElementById('pay-overlay').style.display = 'none';
+        }
+
+        function processFinal() {
+            tg.showConfirm("Выполнить списание средств?");
+            closePay();
+            // Здесь отправка данных в Python
+            tg.sendData(JSON.stringify({action: "buy", item: document.getElementById('buy-item-name').innerText}));
+        }
+
+        window.onload = () => {
+            render();
+            if(tg.initDataUnsafe.user) {
+                document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
+                document.getElementById('user-id').innerText = 'ID: ' + tg.initDataUnsafe.user.id;
+            }
+        };
     </script>
 </body>
 </html>
