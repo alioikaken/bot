@@ -3,435 +3,326 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Genius Маркет</title>
+    <title>Genius Маркет - WhatsApp</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #0f0f0f;
-            --card-bg: #1c1c1e;
-            --text-main: #ffffff;
-            --text-hint: #8e8e93;
-            --accent: #007aff;
-            --accent-gradient: linear-gradient(135deg, #007aff 0%, #00c6ff 100%);
-            --success: #34c759;
-        }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+            --bg-main: #f4f7f9;
+            --white: #ffffff;
+            --accent-blue: #007aff;
+            --accent-orange: #ff8c00;
+            --text-dark: #333333;
+            --text-gray: #888888;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
             margin: 0;
             padding: 0;
-            padding-bottom: 80px; /* Отступ для нижней навигации */
-            overflow-x: hidden;
+            padding-bottom: 90px;
         }
 
-        /* Анимации */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Шапка приложения */
+        .header {
+            background: var(--white);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e6ed;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        /* Приветственный экран */
-        .welcome-section {
-            padding: 25px;
-            background: var(--accent-gradient);
-            border-bottom-left-radius: 30px;
-            border-bottom-right-radius: 30px;
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            animation: fadeIn 0.5s ease;
-        }
-
-        .welcome-section h1 {
-            margin: 0;
-            font-size: 26px;
+        .logo {
             font-weight: 800;
+            font-size: 20px;
+            color: var(--accent-blue);
         }
 
-        .welcome-section p {
+        .balance-badge {
+            background: var(--accent-orange);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
             font-size: 14px;
-            opacity: 0.9;
-            margin-top: 8px;
         }
 
-        .container {
+        /* Поиск */
+        .search-container {
             padding: 15px;
-            max-width: 600px;
-            margin: 0 auto;
         }
 
-        /* Категории */
-        .category-title {
+        .search-box {
+            background: var(--white);
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 15px;
+        }
+
+        /* Категория заголовка */
+        .category-header {
+            padding: 0 20px;
             font-size: 18px;
             font-weight: 700;
-            margin: 20px 0 10px 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: var(--accent-orange);
+            margin-bottom: 10px;
         }
 
-        /* Карточки товаров */
-        .products-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+        /* Список стран (WhatsApp) */
+        .country-list {
+            padding: 0 15px;
         }
 
-        .product-card {
-            background: var(--card-bg);
-            border-radius: 18px;
+        .country-item {
+            background: var(--white);
+            border-radius: 15px;
             padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            border: 1px solid rgba(255,255,255,0.05);
-            animation: fadeIn 0.6s ease backwards;
-        }
-
-        .product-icon {
-            width: 45px;
-            height: 45px;
-            background: rgba(0, 122, 255, 0.15);
-            border-radius: 12px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: var(--accent);
-            font-size: 20px;
-        }
-
-        .product-name {
-            font-size: 15px;
-            font-weight: 600;
-            min-height: 40px;
-        }
-
-        .product-price {
-            font-size: 17px;
-            font-weight: 800;
-            color: var(--success);
-        }
-
-        .add-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 8px;
-            font-weight: 600;
-            cursor: pointer;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
             transition: 0.2s;
         }
 
-        .add-btn:active {
-            transform: scale(0.95);
-            opacity: 0.8;
-        }
-
-        /* Преимущества */
-        .features-list {
-            margin-top: 30px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 15px;
-        }
-
-        .feature-item {
+        .country-info {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            gap: 15px;
         }
 
-        .feature-item:last-child { border: none; }
+        .flag-icon {
+            font-size: 24px;
+            width: 35px;
+            text-align: center;
+        }
 
-        .feature-item i { color: var(--success); }
+        .country-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
 
-        /* Нижняя навигация */
+        .country-stock {
+            font-size: 12px;
+            color: var(--text-gray);
+            display: block;
+        }
+
+        .buy-action {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .price-tag {
+            background: rgba(255, 140, 0, 0.1);
+            color: var(--accent-orange);
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .btn-buy {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Модальное окно описания */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: flex-end;
+        }
+
+        .modal-content {
+            background: var(--white);
+            width: 100%;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            padding: 25px;
+            box-sizing: border-box;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        /* Навигация */
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 70px;
-            background: rgba(28, 28, 30, 0.95);
-            backdrop-filter: blur(10px);
+            bottom: 0; left: 0; right: 0;
+            background: var(--white);
             display: flex;
             justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            z-index: 1000;
+            padding: 12px 0;
+            border-top: 1px solid #e0e6ed;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
 
         .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-hint);
-            text-decoration: none;
+            text-align: center;
+            color: var(--text-gray);
             font-size: 11px;
-            transition: 0.3s;
+            text-decoration: none;
+            flex: 1;
         }
 
         .nav-item.active {
-            color: var(--accent);
+            color: var(--accent-blue);
         }
 
         .nav-item i {
             font-size: 20px;
-        }
-
-        /* Скрытые разделы */
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        /* Корзина */
-        .cart-item {
-            background: var(--card-bg);
-            margin-bottom: 10px;
-            padding: 15px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .empty-status {
-            text-align: center;
-            margin-top: 100px;
-            color: var(--text-hint);
-        }
-
-        /* Бейдж корзины */
-        .badge {
-            position: absolute;
-            top: 10px;
-            right: 25%;
-            background: red;
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            display: none;
+            margin-bottom: 4px;
         }
     </style>
 </head>
 <body>
 
+    <div class="header">
+        <div class="logo">Genius Маркет</div>
+        <div class="balance-badge" onclick="topUp()">$ 0.00</div>
+    </div>
+
+    <div id="whatsapp-section">
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fas fa-search" style="color: var(--text-gray);"></i>
+                <input type="text" placeholder="Поиск по странам...">
+            </div>
+        </div>
+
+        <div class="category-header">Выбор страны для WhatsApp</div>
+
+        <div class="country-list" id="countries">
+            </div>
+    </div>
+
+    <div class="modal" id="buyModal">
+        <div class="modal-content">
+            <h2 id="modalTitle" style="margin-top:0">Описание товара</h2>
+            <div id="modalDesc" style="color: var(--text-gray); line-height: 1.5; margin-bottom: 20px;">
+                Вы приобретаете физический номер для активации WhatsApp. 
+                <br>• Гарантия на получение SMS: 20 минут.
+                <br>• Чистые номера, ранее не использовались.
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="modalPrice" style="font-size: 20px; font-weight: 800; color: var(--accent-orange);"></span>
+                <button onclick="confirmPurchase()" style="background: var(--accent-orange); color: white; border: none; padding: 15px 40px; border-radius: 12px; font-weight: bold; cursor: pointer;">
+                    Оплатить покупку
+                </button>
+            </div>
+            <button onclick="closeModal()" style="width: 100%; margin-top: 15px; background: none; border: none; color: var(--text-gray);">Отмена</button>
+        </div>
+    </div>
+
     <nav class="bottom-nav">
-        <a href="#" class="nav-item active" onclick="showPage('market', this)">
-            <i class="fas fa-store"></i>
-            <span>Маркет</span>
+        <a href="#" class="nav-item active">
+            <i class="fab fa-whatsapp"></i><br>WhatsApp
         </a>
-        <a href="#" class="nav-item" onclick="showPage('cart', this)">
-            <i class="fas fa-shopping-cart"></i>
-            <span id="cart-badge" class="badge">0</span>
-            <span>Корзина</span>
+        <a href="#" class="nav-item" onclick="tg.showAlert('Раздел Telegram в разработке')">
+            <i class="fab fa-telegram"></i><br>Telegram
         </a>
-        <a href="#" class="nav-item" onclick="showPage('profile', this)">
-            <i class="fas fa-user"></i>
-            <span>Профиль</span>
+        <a href="#" class="nav-item" onclick="tg.showAlert('Раздел NFT в разработке')">
+            <i class="fas fa-hexagon-nodes"></i><br>NFT
+        </a>
+        <a href="#" class="nav-item" onclick="tg.showAlert('Раздел Профиль в разработке')">
+            <i class="fas fa-user-circle"></i><br>Профиль
         </a>
     </nav>
-
-    <div id="market" class="page active">
-        <div class="welcome-section">
-            <h1>Genius Маркет</h1>
-            <p>Надежность. Качество. Скорость.</p>
-        </div>
-
-        <div class="container">
-            <div class="category-title"><i class="fas fa-sim-card"></i> Физические номера</div>
-            <div class="products-grid">
-                <div class="product-card" style="animation-delay: 0.1s">
-                    <div class="product-icon"><i class="fas fa-flag-usa"></i></div>
-                    <div class="product-name">США (Физический)</div>
-                    <div class="product-price">450 ₽</div>
-                    <button class="add-btn" onclick="addToCart('США Номер', 450)">В корзину</button>
-                </div>
-                <div class="product-card" style="animation-delay: 0.2s">
-                    <div class="product-icon"><i class="fas fa-map-marker-alt"></i></div>
-                    <div class="product-name">Индонезия (Физ)</div>
-                    <div class="product-price">300 ₽</div>
-                    <button class="add-btn" onclick="addToCart('Индонезия Номер', 300)">В корзину</button>
-                </div>
-            </div>
-
-            <div class="category-title"><i class="fas fa-globe"></i> Онлайн сервисы</div>
-            <div class="products-grid">
-                <div class="product-card" style="animation-delay: 0.3s">
-                    <div class="product-icon"><i class="fab fa-discord"></i></div>
-                    <div class="product-name">Discord Nitro 1 мес.</div>
-                    <div class="product-price">590 ₽</div>
-                    <button class="add-btn" onclick="addToCart('Discord Nitro', 590)">В корзину</button>
-                </div>
-                <div class="product-card" style="animation-delay: 0.4s">
-                    <div class="product-icon"><i class="fab fa-spotify"></i></div>
-                    <div class="product-name">Spotify Premium</div>
-                    <div class="product-price">250 ₽</div>
-                    <button class="add-btn" onclick="addToCart('Spotify Prem', 250)">В корзину</button>
-                </div>
-            </div>
-
-            <div class="features-list">
-                <div class="feature-item"><i class="fas fa-user-shield"></i> Полная конфиденциальность</div>
-                <div class="feature-item"><i class="fas fa-bolt"></i> Быстрое обслуживание</div>
-                <div class="feature-item"><i class="fas fa-check-double"></i> Проверенный сервис</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="cart" class="page">
-        <div class="container">
-            <h2>Ваша корзина</h2>
-            <div id="cart-items-container">
-                <div class="empty-status">В корзине пока пусто...</div>
-            </div>
-            <div id="cart-total" style="margin-top: 20px; font-size: 20px; font-weight: bold; display: none; text-align: right;">
-                Итого: <span id="total-sum">0</span> ₽
-            </div>
-        </div>
-    </div>
-
-    <div id="profile" class="page">
-        <div class="container">
-            <div style="text-align: center; margin-top: 40px;">
-                <div style="width: 80px; height: 80px; background: var(--accent); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 30px;">
-                    <i class="fas fa-user"></i>
-                </div>
-                <h2 id="user-name">Клиент Genius</h2>
-                <p style="color: var(--text-hint)">ID: <span id="user-id">00000000</span></p>
-            </div>
-            
-            <div class="features-list" style="margin-top: 40px;">
-                <div class="feature-item" onclick="tg.showAlert('История пуста')"><i class="fas fa-history"></i> Мои покупки</div>
-                <div class="feature-item" onclick="contactSupport()"><i class="fas fa-headset"></i> Поддержка</div>
-            </div>
-        </div>
-    </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.MainButton.text = "ОФОРМИТЬ ЗАКАЗ";
-        tg.MainButton.textColor = "#FFFFFF";
-        tg.MainButton.color = "#34c759";
 
-        // Состояние приложения
-        let cart = [];
-        let total = 0;
+        const countryData = [
+            { id: 1, name: "США", flag: "🇺🇸", price: 2.20, stock: 7113 },
+            { id: 2, name: "Казахстан", flag: "🇰🇿", price: 1.50, stock: 1205 },
+            { id: 3, name: "Великобритания", flag: "🇬🇧", price: 3.75, stock: 3260 },
+            { id: 4, name: "Россия", flag: "🇷🇺", price: 0.90, stock: 15052 },
+            { id: 5, name: "Бангладеш", flag: "🇧🇩", price: 0.45, stock: 8900 }
+        ];
 
-        // Данные пользователя из Telegram
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
-            document.getElementById('user-id').innerText = tg.initDataUnsafe.user.id;
-        }
-
-        // Переключение страниц
-        function showPage(pageId, element) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            document.getElementById(pageId).classList.add('active');
-            element.classList.add('active');
-
-            if (pageId === 'cart' && cart.length > 0) {
-                tg.MainButton.show();
-            } else {
-                tg.MainButton.hide();
-            }
-            tg.HapticFeedback.impactOccurred('light');
-        }
-
-        // Логика корзины
-        function addToCart(name, price) {
-            cart.push({name, price});
-            total += price;
-            updateCartUI();
-            tg.HapticFeedback.notificationOccurred('success');
-            
-            // Показываем временную подсказку
-            tg.MainButton.setText(`В корзине товаров на ${total} ₽`);
-            tg.MainButton.show();
-            setTimeout(() => {
-                if(document.getElementById('market').classList.contains('active')) {
-                    tg.MainButton.hide();
-                }
-            }, 2000);
-        }
-
-        function updateCartUI() {
-            const container = document.getElementById('cart-items-container');
-            const badge = document.getElementById('cart-badge');
-            const totalDisplay = document.getElementById('cart-total');
-            
-            if (cart.length === 0) {
-                container.innerHTML = '<div class="empty-status">В корзине пока пусто...</div>';
-                badge.style.display = 'none';
-                totalDisplay.style.display = 'none';
-                tg.MainButton.hide();
-            } else {
-                badge.innerText = cart.length;
-                badge.style.display = 'block';
-                totalDisplay.style.display = 'block';
-                document.getElementById('total-sum').innerText = total;
-                
-                container.innerHTML = '';
-                cart.forEach((item, index) => {
-                    container.innerHTML += `
-                        <div class="cart-item">
-                            <div>
-                                <b>${item.name}</b><br>
-                                <small style="color: var(--success)">${item.price} ₽</small>
-                            </div>
-                            <i class="fas fa-trash" style="color: #ff3b30" onclick="removeFromCart(${index})"></i>
+        function renderCountries() {
+            const container = document.getElementById('countries');
+            container.innerHTML = countryData.map(c => `
+                <div class="country-item" onclick="openBuyModal('${c.name}', ${c.price})">
+                    <div class="country-info">
+                        <div class="flag-icon">${c.flag}</div>
+                        <div>
+                            <span class="country-name">${c.name}</span>
+                            <span class="country-stock">${c.stock} шт.</span>
                         </div>
-                    `;
-                });
-            }
+                    </div>
+                    <div class="buy-action">
+                        <div class="price-tag">$ ${c.price}</div>
+                        <button class="btn-buy">Купить</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function removeFromCart(index) {
-            total -= cart[index].price;
-            cart.splice(index, 1);
-            updateCartUI();
-            if (cart.length === 0) tg.MainButton.hide();
+        let selectedProduct = null;
+
+        function openBuyModal(name, price) {
+            selectedProduct = { name, price };
+            document.getElementById('modalTitle').innerText = "WhatsApp: " + name;
+            document.getElementById('modalPrice').innerText = "$ " + price;
+            document.getElementById('buyModal').style.display = 'flex';
             tg.HapticFeedback.impactOccurred('medium');
         }
 
-        function contactSupport() {
-            tg.openTelegramLink("k3vinmaccalister");
+        function closeModal() {
+            document.getElementById('buyModal').style.display = 'none';
         }
 
-        // Клик по главной кнопке Telegram
-        tg.onEvent('mainButtonClicked', function() {
-            const orderInfo = cart.map(i => i.name).join(", ");
-            tg.showConfirm(`Подтвердить заказ на сумму ${total} ₽?\n(${orderInfo})`, (ok) => {
-                if(ok) {
-                    tg.sendData(JSON.stringify({
-                        items: cart,
-                        total_price: total,
-                        type: 'new_order'
-                    }));
-                }
-            });
-        });
+        function confirmPurchase() {
+            if(confirm(`Вы уверены, что хотите купить номер ${selectedProduct.name} за $${selectedProduct.price}?`)) {
+                tg.showConfirm("Перейти к оплате через Telegram?");
+                // Здесь будет вызов платежной системы или отправка данных боту
+                closeModal();
+            }
+        }
 
+        function topUp() {
+            tg.showPopup({
+                title: 'Пополнение баланса',
+                message: 'Выберите способ пополнения в боте.',
+                buttons: [{text: 'Ок'}]
+            });
+        }
+
+        // Инициализация
+        renderCountries();
         tg.ready();
     </script>
 </body>
