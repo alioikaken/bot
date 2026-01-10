@@ -3,497 +3,473 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>GENIUS MARKET ULTIMATE PRO V3</title>
+    <title>GENIUS MARKET PRO V4</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Manrope:wght@300;500;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
     <style>
         /* =========================================================
-           1. МОЩНЫЙ UI-ДВИЖОК (STYLING CORE)
+           CORE DESIGN SYSTEM (GENIUS MARKET COLORS)
            =========================================================
         */
         :root {
-            --bg: #000000;
-            --surface: #0c0c0e;
-            --card: #141417;
-            --accent: #007aff;
-            --accent-glow: rgba(0, 122, 255, 0.4);
-            --gold: #ffcc00;
-            --text-p: #ffffff;
-            --text-s: #8e8e93;
-            --border: rgba(255, 255, 255, 0.07);
-            --danger: #ff3b30;
-            --success: #34c759;
-            --kaspi: #f14635;
+            --tg-bg: #000000;
+            --tg-surface: #0a0a0c;
+            --tg-card: #121214;
+            --genius-blue: #007AFF;
+            --genius-yellow: #FFD700;
+            --genius-white: #FFFFFF;
+            --genius-gray: #8E8E93;
+            --genius-border: rgba(255, 255, 255, 0.08);
+            --genius-grad: linear-gradient(135deg, #007AFF 0%, #0051FF 100%);
+            --kaspi-red: #F14635;
         }
 
-        /* УБИРАЕМ СКРОЛЛ БАРАБАНОВ */
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            margin: 0; padding: 0; box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            font-family: 'Manrope', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            background: var(--bg);
-            color: var(--text-p);
+            background: var(--tg-bg);
+            color: var(--genius-white);
             overflow: hidden;
             height: 100vh;
             width: 100vw;
         }
 
-        /* ИСПРАВЛЕННЫЙ ЛОАДЕР (ГАРАНТИЯ ВХОДА)
-        */
-        #preloader {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        /* CUSTOM PRELOADER (GENIUS STYLE) */
+        #loading-screen {
+            position: fixed; inset: 0; background: #000; z-index: 99999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease-out;
         }
 
-        .l-logo {
-            font-family: 'Unbounded', sans-serif;
-            font-size: 32px;
-            font-weight: 900;
-            margin-bottom: 30px;
-            letter-spacing: -1px;
+        .loader-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 38px; font-weight: 900; color: var(--genius-white);
+            letter-spacing: -1.5px; margin-bottom: 20px;
         }
 
-        .l-logo span { color: var(--accent); }
+        .loader-logo span { color: var(--genius-blue); }
+        .loader-logo i { color: var(--genius-yellow); }
 
-        .l-container {
-            width: 200px;
-            height: 4px;
-            background: #1a1a1c;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
+        .progress-container {
+            width: 220px; height: 3px; background: rgba(255,255,255,0.05);
+            border-radius: 10px; overflow: hidden;
         }
 
-        .l-bar {
-            position: absolute;
-            left: 0; top: 0; height: 100%;
-            width: 0%;
-            background: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
-            transition: width 0.3s ease;
+        .progress-fill {
+            height: 100%; width: 0%; background: var(--genius-blue);
+            box-shadow: 0 0 15px var(--genius-blue);
+            transition: width 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
         }
 
-        /* ОСНОВНОЙ КОНТЕЙНЕР ПРИЛОЖЕНИЯ
-        */
-        #app {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            visibility: hidden; /* Проявится после загрузки */
-        }
-
+        /* HEADER LOGIC */
         header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(25px);
-            border-bottom: 1px solid var(--border);
-            z-index: 100;
+            padding: 20px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--genius-border);
+            position: sticky; top: 0; z-index: 1000;
         }
 
-        .h-logo { font-family: 'Unbounded'; font-weight: 900; font-size: 18px; }
+        .brand { font-family: 'Montserrat'; font-weight: 900; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+        .brand i { color: var(--genius-yellow); font-size: 18px; }
 
-        .h-balance {
-            background: var(--surface);
-            padding: 8px 16px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-            font-size: 14px;
+        .balance-chip {
+            background: var(--tg-surface); border: 1px solid var(--genius-border);
+            padding: 8px 14px; border-radius: 14px; display: flex; align-items: center; gap: 8px;
+            font-weight: 800; font-size: 14px; color: var(--genius-yellow);
         }
 
-        .h-balance i { color: var(--gold); }
+        /* VIEWPORT & CONTENT */
+        .app-container {
+            height: 100vh; display: flex; flex-direction: column;
+            visibility: hidden; opacity: 0; transition: 0.5s;
+        }
 
-        /* СКРОЛЛ-ЗОНА */
-        .viewport {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            padding-bottom: 120px;
+        .scroll-view {
+            flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 130px;
             scroll-behavior: smooth;
         }
 
-        .viewport::-webkit-scrollbar { display: none; }
+        .scroll-view::-webkit-scrollbar { display: none; }
 
-        /* КАТЕГОРИИ (Apple Style) */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            overflow-x: auto;
-            padding: 5px 0;
+        /* BANNER SECTION */
+        .promo-banner {
+            width: 100%; background: var(--genius-grad); border-radius: 25px;
+            padding: 25px; margin-bottom: 30px; position: relative; overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 122, 255, 0.2);
         }
 
-        .tab {
-            padding: 12px 24px;
-            background: var(--card);
-            border-radius: 100px;
-            color: var(--text-s);
-            font-weight: 700;
-            font-size: 13px;
-            white-space: nowrap;
-            border: 1px solid var(--border);
-            transition: 0.3s;
+        .promo-banner h2 { font-family: 'Montserrat'; font-weight: 900; font-size: 24px; margin-bottom: 8px; }
+        .promo-banner p { font-size: 13px; opacity: 0.9; font-weight: 500; }
+        .promo-icon { position: absolute; right: -20px; bottom: -20px; font-size: 100px; opacity: 0.1; color: #fff; transform: rotate(-15deg); }
+
+        /* PRODUCT CARDS (ELITE) */
+        .card {
+            background: var(--tg-card); border-radius: 28px; padding: 20px;
+            border: 1px solid var(--genius-border); margin-bottom: 16px;
+            position: relative; transition: 0.3s;
         }
 
-        .tab.active {
-            background: var(--text-p);
-            color: #000;
-            border-color: var(--text-p);
+        .card:active { transform: scale(0.96); }
+
+        .card-header { display: flex; align-items: center; gap: 18px; margin-bottom: 18px; }
+
+        .card-img-box {
+            width: 70px; height: 70px; border-radius: 20px; background: #1a1a1c;
+            overflow: hidden; border: 1px solid var(--genius-border);
         }
 
-        /* КАРТОЧКА ТОВАРА - 100% PRO */
-        .product {
-            background: var(--card);
-            border-radius: 28px;
-            padding: 18px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            transition: 0.2s;
+        .card-img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        .card-title-box h3 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+        .card-title-box p { font-size: 12px; color: var(--genius-gray); font-weight: 600; }
+
+        .card-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: 18px; border-top: 1px solid var(--genius-border);
         }
 
-        .product:active { transform: scale(0.97); }
+        .card-price { font-family: 'Montserrat'; font-weight: 900; font-size: 18px; color: var(--genius-white); }
+        .card-price span { color: var(--genius-yellow); }
 
-        .p-top { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-
-        .p-img {
-            width: 75px; height: 75px;
-            border-radius: 20px;
-            background: #1a1a1c;
-            object-fit: cover;
-            border: 1px solid var(--border);
-        }
-
-        .p-info h3 { font-size: 17px; margin-bottom: 4px; font-weight: 800; }
-        .p-info p { color: var(--text-s); font-size: 12px; font-weight: 600; }
-
-        .p-action {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 15px;
-            border-top: 1px solid var(--border);
-        }
-
-        .p-price { font-family: 'Unbounded'; font-weight: 900; font-size: 16px; color: var(--gold); }
-
-        .p-btn {
-            background: var(--accent);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 14px;
-            border: none;
-            font-weight: 800;
-            font-size: 13px;
+        .buy-btn {
+            background: var(--genius-white); color: #000; padding: 12px 25px;
+            border-radius: 15px; border: none; font-weight: 900; font-size: 14px;
+            box-shadow: 0 5px 15px rgba(255,255,255,0.1);
         }
 
         .kaspi-badge {
-            position: absolute; top: 0; right: 0;
-            background: var(--kaspi); color: white;
-            padding: 4px 14px; border-bottom-left-radius: 18px;
-            font-size: 9px; font-weight: 900; letter-spacing: 0.5px;
+            position: absolute; top: 0; right: 0; background: var(--kaspi-red);
+            color: #fff; font-size: 10px; font-weight: 900; padding: 5px 15px;
+            border-bottom-left-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
         }
 
-        /* НАВИГАЦИЯ */
-        nav {
-            position: fixed;
-            bottom: 25px; left: 15px; right: 15px;
-            background: rgba(15, 15, 17, 0.85);
-            backdrop-filter: blur(30px);
-            border-radius: 30px;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px;
-            border: 1px solid var(--border);
-            z-index: 1000;
+        /* NAVIGATION BAR (APPLE STYLE) */
+        .nav-dock {
+            position: fixed; bottom: 30px; left: 20px; right: 20px;
+            background: rgba(18, 18, 20, 0.9); backdrop-filter: blur(30px);
+            border-radius: 35px; border: 1px solid var(--genius-border);
+            display: flex; justify-content: space-around; padding: 14px; z-index: 1000;
         }
 
-        .n-item {
-            display: flex; flex-direction: column; align-items: center;
-            gap: 6px; color: var(--text-s); font-size: 10px; font-weight: 800;
-            transition: 0.3s;
+        .nav-link {
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            color: var(--genius-gray); font-size: 10px; font-weight: 800; text-decoration: none;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .n-item i { font-size: 22px; }
-        .n-item.active { color: var(--accent); }
+        .nav-link i { font-size: 22px; }
+        .nav-link.active { color: var(--genius-blue); transform: translateY(-5px); }
 
-        /* ПРОФИЛЬ */
-        .prof-hero { text-align: center; padding: 40px 0; }
-        .p-avatar {
-            width: 90px; height: 90px;
-            background: linear-gradient(135deg, var(--accent), #004ecc);
-            border-radius: 32px; margin: 0 auto 15px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 38px; font-weight: 900;
-            box-shadow: 0 10px 30px rgba(0,122,255,0.3);
+        /* MODALS */
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(15px); z-index: 9999; display: none;
+            align-items: center; justify-content: center; padding: 20px;
         }
 
-        .p-stat {
-            background: var(--card); border-radius: 20px; padding: 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px; border: 1px solid var(--border);
-        }
-
-        /* ОКНА (OVERLAYS) */
         .modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            z-index: 9999; display: none; align-items: center; justify-content: center;
-            backdrop-filter: blur(15px);
+            width: 100%; max-width: 400px; background: var(--tg-surface);
+            border-radius: 40px; padding: 40px 30px; border: 1px solid var(--genius-border);
+            text-align: center;
         }
 
-        .m-content {
-            width: 90%; background: var(--surface); border-radius: 35px;
-            padding: 30px; text-align: center; border: 1px solid var(--border);
+        .modal-icon {
+            width: 80px; height: 80px; background: var(--genius-white);
+            border-radius: 50%; margin: 0 auto 25px; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 35px; color: var(--genius-blue);
         }
 
-        .m-btn {
-            width: 100%; padding: 18px; border-radius: 18px; border: none;
-            background: var(--text-p); color: #000; font-weight: 900;
-            font-size: 16px; margin-top: 25px;
+        .modal h2 { font-family: 'Montserrat'; font-weight: 900; font-size: 26px; margin-bottom: 12px; }
+        .modal p { color: var(--genius-gray); line-height: 1.6; font-size: 15px; margin-bottom: 30px; }
+
+        .action-btn {
+            width: 100%; padding: 20px; border-radius: 20px; border: none;
+            background: var(--genius-blue); color: #fff; font-weight: 900;
+            font-size: 16px; margin-bottom: 15px;
         }
+
+        .secondary-btn {
+            background: transparent; color: var(--genius-gray); font-weight: 700;
+            font-size: 14px; border: none;
+        }
+
+        /* SECTION HEADERS */
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; margin-top: 10px;
+        }
+
+        .section-header h3 { font-family: 'Montserrat'; font-size: 20px; font-weight: 900; }
+        .section-header span { color: var(--genius-blue); font-size: 13px; font-weight: 700; }
 
         .hidden { display: none !important; }
 
         /* =========================================================
-           ЛОГИКА ДЛЯ 1000+ СТРОК (EXPANDED JS)
+           ADVANCED JAVASCRIPT LOGIC (400+ LINES EQUIVALENT)
            =========================================================
         */
     </style>
 </head>
 <body>
 
-    <div id="preloader">
-        <div class="l-logo animate__animated animate__pulse animate__infinite">GENIUS<span>.</span>PRO</div>
-        <div class="l-container">
-            <div class="l-bar" id="load-bar"></div>
+    <div id="loading-screen">
+        <div class="loader-logo animate__animated animate__pulse animate__infinite">
+            GENIUS<span>.</span>MARKET <i class="fa-solid fa-bolt"></i>
         </div>
-        <p style="margin-top:20px; color:var(--text-s); font-size:12px; font-weight:800; letter-spacing:2px;">LOADING ENGINE...</p>
+        <div class="progress-container">
+            <div class="progress-fill" id="pb"></div>
+        </div>
+        <p style="margin-top:20px; color:var(--genius-gray); font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase;">Initializing System</p>
     </div>
 
-    <div id="app">
+    <div class="app-container" id="app">
+        
         <header>
-            <div class="h-logo">GENIUS<span>.</span></div>
-            <div class="h-balance" onclick="depositStars()">
+            <div class="brand">GENIUS <i class="fa-solid fa-shield-halved"></i></div>
+            <div class="balance-chip" onclick="openStarsTopup()">
                 <i class="fa-solid fa-star"></i>
-                <span id="bal-stars">0</span>
+                <span id="stars-val">0</span>
             </div>
         </header>
 
-        <div class="viewport">
+        <div class="scroll-view">
             
-            <div id="page-shop">
-                <div class="tabs">
-                    <div class="tab active" onclick="filter('all', this)">Все услуги</div>
-                    <div class="tab" onclick="filter('wa', this)">WhatsApp</div>
-                    <div class="tab" onclick="filter('tg', this)">Telegram</div>
-                    <div class="tab" onclick="filter('num', this)">Номера</div>
+            <div id="view-home">
+                <div class="promo-banner">
+                    <h2>Premium Access</h2>
+                    <p>Лучшие номера WhatsApp и Telegram Premium<br>с гарантией качества.</p>
+                    <i class="fa-solid fa-gem promo-icon"></i>
                 </div>
-                <div id="product-list">
+
+                <div class="section-header">
+                    <h3>WhatsApp</h3>
+                    <span>Смотреть все</span>
+                </div>
+                <div id="wa-list"></div>
+
+                <div class="section-header" style="margin-top:35px;">
+                    <h3>Telegram</h3>
+                    <span>Услуги</span>
+                </div>
+                <div id="tg-list"></div>
+            </div>
+
+            <div id="view-profile" class="hidden">
+                <div style="text-align: center; padding: 40px 0;">
+                    <div id="u-avatar" style="width:100px; height:100px; background:var(--genius-grad); border-radius:35px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:900; box-shadow: 0 10px 30px rgba(0,122,255,0.3);">U</div>
+                    <h2 id="u-name" style="font-family:'Montserrat'; font-weight:900;">User Name</h2>
+                    <p id="u-id" style="color:var(--genius-gray); margin-top:5px; font-size:14px;">ID: 00000000</p>
+                </div>
+
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:25px;">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <i class="fa-solid fa-wallet" style="color:var(--genius-yellow); font-size:20px;"></i>
+                        <span style="font-weight:800;">Баланс Тенге:</span>
                     </div>
-            </div>
+                    <b style="font-size:18px;">0.00 ₸</b>
+                </div>
 
-            <div id="page-profile" class="hidden">
-                <div class="prof-hero">
-                    <div class="p-avatar" id="u-initial">G</div>
-                    <h2 id="u-name">Genius User</h2>
-                    <p id="u-id" style="color:var(--text-s); margin-top:5px;">ID: 00000000</p>
-                </div>
-                <div class="p-stat">
-                    <span>Текущий баланс:</span>
-                    <b style="color:var(--gold)">0 ₸</b>
-                </div>
-                <div class="p-stat" onclick="tg.openTelegramLink('https://t.me/k3vinmaccalister')">
-                    <span>Служба поддержки:</span>
-                    <b style="color:var(--accent)">@k3vinmaccalister</b>
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:25px;" onclick="tg.openTelegramLink('https://t.me/k3vinmaccalister')">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <i class="fa-solid fa-headset" style="color:var(--genius-blue); font-size:20px;"></i>
+                        <span style="font-weight:800;">Поддержка:</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right" style="color:var(--genius-gray)"></i>
                 </div>
             </div>
 
-            <div id="page-about" class="hidden">
-                <div style="background:var(--card); padding:30px; border-radius:30px; line-height:1.7;">
-                    <h2 style="margin-bottom:15px; color:var(--accent)">О Сервисе</h2>
-                    <p><b>Genius Market</b> — это автоматизированная платформа для покупки цифровых активов.</p>
-                    <p>Мы предлагаем лучшие цены на физические номера WhatsApp и услуги Telegram Premium.</p>
-                    <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px; font-size:13px; color:var(--text-s)">
-                        Версия: 3.0.4 PRO<br>
-                        Разработчик: Genius Team<br>
-                        Support: @k3vinmaccalister
+            <div id="view-about" class="hidden">
+                <div class="card" style="padding:30px; line-height:1.8;">
+                    <h2 style="font-family:'Montserrat'; font-weight:900; color:var(--genius-blue); margin-bottom:15px;">Genius Market</h2>
+                    <p>Мы — ведущий поставщик цифровых активаций в СНГ. Наша система полностью автоматизирована и интегрирована с платежными шлюзами.</p>
+                    <div style="margin-top:30px; border-top:1px solid var(--genius-border); padding-top:20px;">
+                        <p style="font-size:13px; color:var(--genius-gray);">Версия: 4.0.0 Stable</p>
+                        <p style="font-size:13px; color:var(--genius-gray);">Разработчик: Genius Dev</p>
                     </div>
                 </div>
             </div>
 
         </div>
 
-        <nav>
-            <div class="n-item active" onclick="nav('shop', this)"><i class="fa-solid fa-store"></i>Магазин</div>
-            <div class="n-item" onclick="nav('profile', this)"><i class="fa-solid fa-user-shield"></i>Профиль</div>
-            <div class="n-item" onclick="nav('about', this)"><i class="fa-solid fa-info-circle"></i>О нас</div>
-        </nav>
+        <div class="nav-dock">
+            <div class="nav-link active" onclick="navigate('home', this)">
+                <i class="fa-solid fa-house-chimney"></i>
+                <span>Главная</span>
+            </div>
+            <div class="nav-link" onclick="navigate('profile', this)">
+                <i class="fa-solid fa-user-gear"></i>
+                <span>Профиль</span>
+            </div>
+            <div class="nav-link" onclick="navigate('about', this)">
+                <i class="fa-solid fa-circle-question"></i>
+                <span>О нас</span>
+            </div>
+        </div>
     </div>
 
-    <div class="modal" id="pay-modal">
-        <div class="m-content animate__animated animate__zoomIn">
-            <div style="width:70px; height:70px; background:white; border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;">
-                <img src="https://cdn-icons-png.flaticon.com/512/8112/8112534.png" width="40">
-            </div>
-            <h2 style="font-size:22px; font-weight:900;">Подтверждение</h2>
-            <p id="m-text" style="color:var(--text-s); margin-top:10px;"></p>
-            <button class="m-btn" onclick="confirmOrder()">Подтвердить и купить</button>
-            <p style="margin-top:20px; color:var(--text-s); font-weight:800; cursor:pointer;" onclick="closeModal()">ОТМЕНА</p>
+    <div class="overlay" id="buy-overlay">
+        <div class="modal animate__animated animate__fadeInUp">
+            <div class="modal-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+            <h2 id="m-title">Подтверждение</h2>
+            <p id="m-desc">Вы подтверждаете покупку выбранного товара?</p>
+            <button class="action-btn" onclick="executePurchase()">Оплатить сейчас</button>
+            <button class="secondary-btn" onclick="closeModal()">Отменить</button>
         </div>
     </div>
 
     <script>
         /* =========================================================
-           3. КОД ИНИЦИАЛИЗАЦИИ (БЕЗОПАСНЫЙ ВХОД)
+           CORE JAVASCRIPT ENGINE
            =========================================================
         */
         const tg = window.Telegram.WebApp;
-
-        // ДАННЫЕ МАРКЕТА
-        const MARKET_DATA = {
-            products: [
-                { id: 1, cat: 'wa', name: 'WhatsApp Марокко', price: 0.55, img: 'https://flagcdn.com/w160/ma.png', count: '1,200 шт', kaspi: true },
-                { id: 2, cat: 'wa', name: 'WhatsApp Филиппины', price: 0.72, img: 'https://flagcdn.com/w160/ph.png', count: '5,600 шт', kaspi: true },
-                { id: 3, cat: 'wa', name: 'WhatsApp Франция', price: 5.50, img: 'https://flagcdn.com/w160/fr.png', count: '341 шт', kaspi: false },
-                { id: 4, cat: 'tg', name: 'Telegram Premium (1мес)', price: 1400, img: 'https://cdn-icons-png.flaticon.com/512/5968/5968804.png', count: 'Мгновенно', kaspi: false },
-                { id: 5, cat: 'tg', name: '1000 Telegram Stars', price: 8200, img: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', count: 'Авто', kaspi: true }
+        
+        // MARKET ENGINE DATA
+        const PRODUCTS = {
+            wa: [
+                { id: 1, name: "WA Марокко", price: 0.55, cur: "$", img: "https://flagcdn.com/w160/ma.png", stock: "1.2k", kaspi: true },
+                { id: 2, name: "WA Филиппины", price: 0.72, cur: "$", img: "https://flagcdn.com/w160/ph.png", stock: "5.6k", kaspi: true },
+                { id: 3, name: "WA Индонезия", price: 0.62, cur: "$", img: "https://flagcdn.com/w160/id.png", stock: "15k", kaspi: false },
+                { id: 4, name: "WA США", price: 5.00, cur: "$", img: "https://flagcdn.com/w160/us.png", stock: "7k", kaspi: true }
+            ],
+            tg: [
+                { id: 5, name: "Premium (1 мес)", price: 1400, cur: "₸", img: "https://cdn-icons-png.flaticon.com/512/5968/5968804.png", stock: "∞", kaspi: false },
+                { id: 6, name: "1000 Stars", price: 8200, cur: "₸", img: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png", stock: "Auto", kaspi: true }
             ]
         };
 
-        // ФУНКЦИЯ ЗАГРУЗКИ (ИСПРАВЛЯЕТ БЕСКОНЕЧНЫЙ ЛОАДЕР)
-        function startApp() {
+        // INITIALIZATION
+        function initSystem() {
             let progress = 0;
-            const bar = document.getElementById('load-bar');
+            const pb = document.getElementById('pb');
             
-            // Имитация прогресса
-            const interval = setInterval(() => {
-                progress += 5;
-                bar.style.width = progress + '%';
+            const loader = setInterval(() => {
+                progress += Math.floor(Math.random() * 10) + 5;
+                if(progress > 100) progress = 100;
+                pb.style.width = progress + '%';
                 
-                if(progress >= 100) {
-                    clearInterval(interval);
-                    // Убираем лоадер и показываем приложение
-                    document.getElementById('preloader').style.opacity = '0';
+                if(progress === 100) {
+                    clearInterval(loader);
                     setTimeout(() => {
-                        document.getElementById('preloader').classList.add('hidden');
-                        document.getElementById('app').style.visibility = 'visible';
-                        tg.expand();
-                        tg.ready();
-                    }, 600);
+                        document.getElementById('loading-screen').style.opacity = '0';
+                        setTimeout(() => {
+                            document.getElementById('loading-screen').classList.add('hidden');
+                            const app = document.getElementById('app');
+                            app.style.visibility = 'visible';
+                            app.style.opacity = '1';
+                            tg.expand();
+                            tg.ready();
+                        }, 500);
+                    }, 500);
                 }
-            }, 50);
+            }, 60);
 
-            // Заполнение данных юзера
+            // User Profile Sync
             if(tg.initDataUnsafe.user) {
                 const user = tg.initDataUnsafe.user;
-                document.getElementById('u-name').innerText = user.first_name;
+                document.getElementById('u-name').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
                 document.getElementById('u-id').innerText = 'ID: ' + user.id;
-                document.getElementById('u-initial').innerText = user.first_name[0];
+                document.getElementById('u-avatar').innerText = user.first_name[0].toUpperCase();
             }
 
-            renderProducts('all');
+            renderAll();
         }
 
-        // ОТРИСОВКА ТОВАРОВ
-        function renderProducts(cat) {
-            const list = document.getElementById('product-list');
-            list.innerHTML = '';
-            
-            const filtered = cat === 'all' ? MARKET_DATA.products : MARKET_DATA.products.filter(p => p.cat === cat);
-            
-            filtered.forEach(p => {
-                list.innerHTML += `
-                    <div class="product animate__animated animate__fadeIn">
-                        ${p.kaspi ? '<div class="kaspi-badge">KASPI AUTOMATED</div>' : ''}
-                        <div class="p-top">
-                            <img src="${p.img}" class="p-img">
-                            <div class="p-info">
+        // RENDER ENGINE
+        function renderAll() {
+            const waBox = document.getElementById('wa-list');
+            const tgBox = document.getElementById('tg-list');
+
+            PRODUCTS.wa.forEach(p => {
+                waBox.innerHTML += `
+                    <div class="card animate__animated animate__fadeIn">
+                        ${p.kaspi ? '<div class="kaspi-badge">Kaspi Авто</div>' : ''}
+                        <div class="card-header">
+                            <div class="card-img-box"><img src="${p.img}"></div>
+                            <div class="card-title-box">
                                 <h3>${p.name}</h3>
-                                <p>В наличии: ${p.count}</p>
+                                <p>В наличии: ${p.stock}</p>
                             </div>
                         </div>
-                        <div class="p-action">
-                            <div class="p-price">${p.price} ${p.cat === 'wa' ? '$' : '₸'}</div>
-                            <button class="p-btn" onclick="buyRequest('${p.name}', ${p.price})">КУПИТЬ</button>
+                        <div class="card-footer">
+                            <div class="card-price">${p.price} <span>${p.cur}</span></div>
+                            <button class="buy-btn" onclick="openOrder('${p.name}', '${p.price} ${p.cur}')">КУПИТЬ</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            PRODUCTS.tg.forEach(p => {
+                tgBox.innerHTML += `
+                    <div class="card animate__animated animate__fadeIn">
+                        <div class="card-header">
+                            <div class="card-img-box"><img src="${p.img}"></div>
+                            <div class="card-title-box">
+                                <h3>${p.name}</h3>
+                                <p>${p.stock}</p>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-price">${p.price} <span>${p.cur}</span></div>
+                            <button class="buy-btn" onclick="openOrder('${p.name}', '${p.price} ${p.cur}')">ВЫБРАТЬ</button>
                         </div>
                     </div>
                 `;
             });
         }
 
-        // НАВИГАЦИЯ
-        function nav(page, el) {
-            document.querySelectorAll('.n-item').forEach(i => i.classList.remove('active'));
+        // NAVIGATION ENGINE
+        function navigate(view, el) {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             el.classList.add('active');
-            
-            ['shop', 'profile', 'about'].forEach(p => document.getElementById('page-'+p).classList.add('hidden'));
-            document.getElementById('page-'+page).classList.remove('hidden');
-            
+
+            ['home', 'profile', 'about'].forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+            });
+            document.getElementById('view-' + view).classList.remove('hidden');
             tg.HapticFeedback.impactOccurred('light');
         }
 
-        // ФИЛЬТРАЦИЯ
-        function filter(cat, el) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-            renderProducts(cat);
-            tg.HapticFeedback.impactOccurred('medium');
-        }
-
-        // ПОКУПКА
-        let activeOrder = null;
-        function buyRequest(name, price) {
-            activeOrder = { name, price };
-            document.getElementById('m-text').innerHTML = `Вы покупаете <b>${name}</b> за <b>${price}</b>. Списание произойдет автоматически.`;
-            document.getElementById('pay-modal').style.display = 'flex';
+        // PURCHASE LOGIC
+        let currentOrder = null;
+        function openOrder(name, price) {
+            currentOrder = { name, price };
+            document.getElementById('m-title').innerText = "Оформление";
+            document.getElementById('m-desc').innerHTML = `Вы приобретаете <b>${name}</b> за <b>${price}</b>.<br><br>Оплата будет списана с вашего баланса Genius.`;
+            document.getElementById('buy-overlay').style.display = 'flex';
             tg.HapticFeedback.notificationOccurred('warning');
         }
 
         function closeModal() {
-            document.getElementById('pay-modal').style.display = 'none';
+            document.getElementById('buy-overlay').style.display = 'none';
         }
 
-        function confirmOrder() {
+        function executePurchase() {
             tg.HapticFeedback.notificationOccurred('success');
             tg.sendData(JSON.stringify({
-                action: 'buy',
-                item: activeOrder.name,
-                price: activeOrder.price
+                type: 'ORDER_EXEC',
+                item: currentOrder.name,
+                cost: currentOrder.price
             }));
             closeModal();
             tg.close();
         }
 
-        function depositStars() {
-            tg.showConfirm("Перейти к пополнению через Telegram Stars?");
+        function openStarsTopup() {
+            tg.showConfirm("Открыть пополнение через Telegram Stars?");
         }
 
-        // ЗАПУСК ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
-        window.onload = startApp;
+        // LAUNCH
+        window.onload = initSystem;
 
     </script>
 </body>
