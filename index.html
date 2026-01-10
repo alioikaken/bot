@@ -3,558 +3,951 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>GENIUS MARKET ULTIMATE V2</title>
+    <title>GENIUS MARKET ULTIMATE PRO</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-
+        /* 1. CSS ПЕРЕМЕННЫЕ И СИСТЕМА ДИЗАЙНА 
+        */
         :root {
-            --bg: #000000;
-            --surface: #0a0a0b;
-            --card: #121214;
-            --card-hover: #1c1c1e;
-            --accent: #ff8c00;
-            --accent-glow: rgba(255, 140, 0, 0.25);
-            --kaspi: #f14635;
-            --stars: #62bcf9;
-            --crypto: #0088cc;
-            --text: #ffffff;
-            --text-dim: #8e8e93;
-            --border: rgba(255, 255, 255, 0.06);
-            --grad: linear-gradient(135deg, var(--accent) 0%, #ff5e00 100%);
+            --bg-color: #000000;
+            --surface-color: #0c0c0e;
+            --card-color: #141417;
+            --card-hover: #1c1c1f;
+            --accent-color: #ff8c00;
+            --accent-soft: rgba(255, 140, 0, 0.15);
+            --accent-bright: #ffa500;
+            --kaspi-color: #f14635;
+            --stars-color: #62bcf9;
+            --crypto-color: #0088cc;
+            --text-main: #ffffff;
+            --text-secondary: #8e8e93;
+            --text-muted: #545458;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(255, 140, 0, 0.4);
+            --safe-area-bottom: env(safe-area-inset-bottom);
+            --glass: rgba(255, 255, 255, 0.03);
+            --grad-accent: linear-gradient(135deg, #ff8c00 0%, #ff5e00 100%);
         }
 
-        /* ГЛОБАЛЬНЫЕ СТИЛИ */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            background: var(--bg);
-            color: var(--text);
+        /* 2. ГЛОБАЛЬНЫЙ СБРОС И БАЗОВЫЕ СТИЛИ 
+        */
+        * {
             margin: 0;
             padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow: hidden;
-            height: 100vh;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
-        /* CUSTOM SCROLLBAR ДЛЯ ПРИЛОЖЕНИЯ */
-        .app-container {
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden; /* Скролл управляется контейнером */
             height: 100vh;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            padding-bottom: 140px;
+            width: 100vw;
+            line-height: 1.4;
+        }
+
+        input, button {
+            -webkit-user-select: auto;
+            user-select: auto;
+            font-family: inherit;
+        }
+
+        /* 3. АНИМИРОВАННЫЙ ФОН (ГЛУБОКИЙ КОСМОС) 
+        */
+        .viewport {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: -10%;
+            right: -10%;
+            width: 60%;
+            height: 50%;
+            background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+            z-index: -1;
+            filter: blur(80px);
+            pointer-events: none;
+            animation: pulseGlow 8s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.4; transform: scale(1); }
+            100% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        /* 4. СКЕЛЕТ ПРИЛОЖЕНИЯ 
+        */
+        .main-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 120px; /* Отступ под навигацию */
             scroll-behavior: smooth;
         }
-        .app-container::-webkit-scrollbar { display: none; }
 
-        /* АНИМИРОВАННЫЙ ФОН */
-        .orb {
+        /* Кастомный скроллбар */
+        .main-wrapper::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        /* 5. HEADER (ШАПКА) 
+        */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .brand {
+            font-family: 'Unbounded', sans-serif;
+            font-weight: 900;
+            font-size: 20px;
+            letter-spacing: -1px;
+        }
+
+        .brand span {
+            color: var(--accent-color);
+        }
+
+        .wallet-widget {
+            background: var(--card-color);
+            border: 1px solid var(--border-light);
+            padding: 6px 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .wallet-widget:active {
+            transform: scale(0.95);
+            background: var(--card-hover);
+        }
+
+        .wallet-widget i {
+            color: var(--accent-color);
+            font-size: 14px;
+        }
+
+        .wallet-widget span {
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        /* 6. КАТЕГОРИИ (TABS) 
+        */
+        .category-bar {
+            padding: 15px 0 5px;
+            margin-bottom: 10px;
+        }
+
+        .scroll-x {
+            display: flex;
+            overflow-x: auto;
+            padding: 0 20px;
+            gap: 8px;
+            scrollbar-width: none;
+        }
+
+        .scroll-x::-webkit-scrollbar { display: none; }
+
+        .cat-chip {
+            padding: 10px 18px;
+            background: var(--card-color);
+            border: 1px solid var(--border-light);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cat-chip.active {
+            background: var(--text-main);
+            color: var(--bg-color);
+            border-color: var(--text-main);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+        }
+
+        /* 7. СЕТКА ТОВАРОВ 
+        */
+        .products-container {
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .product-card {
+            background: var(--card-color);
+            border: 1px solid var(--border-light);
+            border-radius: 24px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:active {
+            transform: scale(0.98);
+            background: var(--card-hover);
+            border-color: var(--accent-soft);
+        }
+
+        .product-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            background: var(--surface-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            border: 1px solid var(--border-light);
+            object-fit: cover;
+        }
+
+        .product-info b {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .product-info span {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .product-right {
+            text-align: right;
+        }
+
+        .product-price {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 6px;
+        }
+
+        .buy-button {
+            background: var(--text-main);
+            color: var(--bg-color);
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        /* 8. НАВИГАЦИОННАЯ ПАНЕЛЬ 
+        */
+        .bottom-nav {
             position: fixed;
-            width: 500px; height: 500px;
-            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-            z-index: -1; filter: blur(100px);
-            pointer-events: none;
-            opacity: 0.5;
+            bottom: 25px;
+            left: 20px;
+            right: 20px;
+            background: rgba(18, 18, 20, 0.85);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--border-light);
+            border-radius: 28px;
+            display: flex;
+            padding: 8px;
+            z-index: 2000;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
 
-        /* ШАПКА */
-        header {
-            position: sticky; top: 0; z-index: 1000;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(25px);
-            padding: 20px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
-        .logo { font-family: 'Unbounded'; font-weight: 900; font-size: 22px; letter-spacing: -1.5px; }
-        .logo span { color: var(--accent); }
-
-        .header-actions { display: flex; gap: 10px; }
-        .balance-badge {
-            background: var(--card); border: 1px solid var(--border);
-            padding: 8px 15px; border-radius: 14px; display: flex; align-items: center; gap: 8px;
-            font-weight: 800; font-size: 15px; transition: 0.3s;
-        }
-        .balance-badge:active { transform: scale(0.95); background: var(--border); }
-        .balance-badge i { color: var(--accent); font-size: 14px; }
-
-        /* СКЕЛЕТОН И ЛОАДЕР */
-        #loading-screen {
-            position: fixed; inset: 0; background: var(--bg); z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ТАБЫ */
-        .tabs-wrapper { padding: 15px 20px; position: sticky; top: 75px; background: var(--bg); z-index: 900; }
-        .tabs-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-        .tabs-scroll::-webkit-scrollbar { display: none; }
-        .tab-btn {
-            padding: 12px 22px; background: var(--card); border-radius: 100px;
-            color: var(--text-dim); font-size: 14px; font-weight: 700;
-            white-space: nowrap; transition: 0.3s; border: 1px solid var(--border);
-        }
-        .tab-btn.active { background: var(--text); color: #000; border-color: var(--text); }
-
-        /* КАРТОЧКИ ТОВАРОВ */
-        .grid { padding: 0 20px; display: grid; gap: 14px; }
-        .card-item {
-            background: var(--card); border-radius: 28px; padding: 20px;
-            display: flex; align-items: center; justify-content: space-between;
-            border: 1px solid var(--border); transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .card-item:active { transform: scale(0.97); background: var(--card-hover); }
-
-        .card-main { display: flex; align-items: center; gap: 18px; }
-        .card-img {
-            width: 64px; height: 64px; border-radius: 20px; object-fit: cover;
-            background: #1a1a1c; display: flex; align-items: center; justify-content: center;
-            font-size: 28px; border: 1px solid var(--border);
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 0;
+            font-size: 10px;
+            font-weight: 700;
+            transition: 0.3s ease;
         }
 
-        .card-info b { font-size: 17px; display: block; margin-bottom: 4px; }
-        .card-info span { font-size: 12px; color: var(--text-dim); display: block; }
-        
-        .card-price-block { text-align: right; }
-        .price-txt { font-family: 'Unbounded'; font-size: 16px; font-weight: 700; color: var(--accent); }
-        .buy-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-dim); margin-top: 5px; }
-
-        /* ПАНЕЛЬ НАВИГАЦИИ */
-        .nav-dock {
-            position: fixed; bottom: 30px; left: 20px; right: 20px;
-            background: rgba(18, 18, 20, 0.85); backdrop-filter: blur(30px);
-            border-radius: 30px; padding: 10px; display: flex; justify-content: space-around;
-            border: 1px solid var(--border); z-index: 2000;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+            transition: 0.3s ease;
         }
-        .nav-trigger {
-            display: flex; flex-direction: column; align-items: center;
-            color: var(--text-dim); text-decoration: none; font-size: 11px;
-            font-weight: 700; width: 20%; transition: 0.3s;
-        }
-        .nav-trigger i { font-size: 22px; margin-bottom: 5px; }
-        .nav-trigger.active { color: var(--text); }
-        .nav-trigger.active i { color: var(--accent); transform: translateY(-5px); }
 
-        /* МОДАЛЬНЫЕ ОКНА */
+        .nav-item.active {
+            color: var(--text-main);
+        }
+
+        .nav-item.active i {
+            color: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+        /* 9. МОДАЛЬНЫЕ ОКНА (BOTTOM SHEETS) 
+        */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 3000;
+            display: none;
+            align-items: flex-end;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s;
+        }
+
+        .overlay.visible {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
         .sheet {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            z-index: 3000; opacity: 0; pointer-events: none; transition: 0.4s;
-            display: flex; align-items: flex-end;
-        }
-        .sheet.open { opacity: 1; pointer-events: auto; }
-        
-        .sheet-body {
-            width: 100%; background: #0c0c0e; border-radius: 35px 35px 0 0;
-            padding: 30px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            border-top: 1px solid var(--border); max-height: 90vh; overflow-y: auto;
-        }
-        .sheet.open .sheet-body { transform: translateY(0); }
-
-        .sheet-title { font-family: 'Unbounded'; font-size: 22px; margin: 0 0 10px; }
-        .sheet-desc { color: var(--text-dim); font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
-
-        /* ПЛАТЕЖНЫЕ КНОПКИ */
-        .pay-card {
-            background: var(--card); border-radius: 22px; padding: 20px;
-            display: flex; align-items: center; gap: 15px; margin-bottom: 12px;
-            border: 1px solid var(--border); transition: 0.2s;
-        }
-        .pay-card:active { border-color: var(--accent); background: #1a1a1c; }
-        .pay-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-
-        .btn-confirm {
-            width: 100%; padding: 22px; border-radius: 20px; border: none;
-            background: var(--text); color: #000; font-family: 'Unbounded';
-            font-weight: 700; font-size: 15px; margin-top: 15px; box-shadow: 0 10px 20px rgba(255,255,255,0.05);
+            width: 100%;
+            background: var(--surface-color);
+            border-radius: 32px 32px 0 0;
+            padding: 24px 24px calc(24px + var(--safe-area-bottom));
+            transform: translateY(100%);
+            border-top: 1px solid var(--border-light);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        /* ПРОФИЛЬ */
-        .profile-hero {
-            padding: 40px 20px; text-align: center;
+        .overlay.visible .sheet {
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .user-circle {
-            width: 100px; height: 100px; background: var(--grad);
-            border-radius: 35px; margin: 0 auto 20px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 40px; color: #000; box-shadow: 0 15px 30px var(--accent-glow);
-        }
-        .profile-stat-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;
-        }
-        .stat-box {
-            background: var(--card); border: 1px solid var(--border);
-            padding: 20px; border-radius: 24px; text-align: center;
-        }
-        .stat-box b { display: block; font-size: 20px; font-family: 'Unbounded'; margin-bottom: 5px; }
-        .stat-box span { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* ПОПОЛНЕНИЕ */
-        .topup-input-wrap {
-            background: #000; border: 1px solid var(--border);
-            border-radius: 18px; padding: 15px; display: flex; align-items: center; gap: 10px;
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .sheet-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .sheet-bar {
+            width: 40px;
+            height: 4px;
+            background: var(--text-muted);
+            border-radius: 2px;
+            margin: -10px auto 15px;
+        }
+
+        .sheet-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        /* 10. ПЛАТЕЖНЫЕ МЕТОДЫ 
+        */
+        .payment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .pay-option {
+            background: var(--card-color);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: 0.2s;
+        }
+
+        .pay-option:active {
+            border-color: var(--accent-color);
+            background: var(--card-hover);
+        }
+
+        .pay-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .kaspi-bg { background: var(--kaspi-color); color: white; }
+        .stars-bg { background: var(--stars-color); color: white; }
+        .crypto-bg { background: var(--crypto-color); color: white; }
+
+        .pay-details b {
+            display: block;
+            font-size: 15px;
+        }
+
+        .pay-details span {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* 11. ПРОФИЛЬ 
+        */
+        .profile-view {
+            padding: 20px;
+        }
+
+        .user-card {
+            background: var(--grad-accent);
+            padding: 30px 20px;
+            border-radius: 28px;
+            color: black;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px var(--accent-soft);
+        }
+
+        .avatar-placeholder {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 28px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
             margin-bottom: 20px;
         }
-        .topup-input-wrap input {
-            background: none; border: none; color: white; font-size: 24px; font-family: 'Unbounded';
-            width: 100%; outline: none;
+
+        .stat-item {
+            background: var(--card-color);
+            padding: 20px;
+            border-radius: 24px;
+            border: 1px solid var(--border-light);
+            text-align: center;
         }
 
-        .hidden { display: none; }
-        .text-kaspi { color: var(--kaspi); }
-        .text-stars { color: var(--stars); }
-        .text-crypto { color: var(--crypto); }
+        .stat-item h3 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .stat-item p {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        /* 12. ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ 
+        */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .w-full { width: 100%; }
+        .mt-20 { margin-top: 20px; }
+        .text-center { text-align: center; }
+
+        .btn-action {
+            background: var(--text-main);
+            color: var(--bg-color);
+            border: none;
+            padding: 18px;
+            border-radius: 18px;
+            font-family: 'Unbounded', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        .btn-action:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+
+        .copy-box {
+            background: #000;
+            border: 1px dashed var(--accent-color);
+            padding: 20px;
+            border-radius: 16px;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 18px;
+            color: var(--accent-color);
+            margin: 15px 0;
+            cursor: pointer;
+        }
+
+        /* 13. СЕКЦИЯ ПОГРУЗКИ (LOADER) 
+        */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loader-logo {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 30px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
 
     </style>
 </head>
 <body>
 
-    <div id="loading-screen">
-        <div class="logo">GENIUS<span>.</span></div>
-        <div class="spinner" style="margin-top: 25px;"></div>
+    <div id="preloader">
+        <div class="loader-logo">GENIUS<span>.</span></div>
+        <div style="width: 150px; height: 2px; background: #222; border-radius: 2px; overflow: hidden;">
+            <div id="loading-bar" style="width: 0%; height: 100%; background: var(--accent-color); transition: 0.3s;"></div>
+        </div>
     </div>
 
-    <div class="orb" style="top: -100px; right: -100px;"></div>
-    <div class="orb" style="bottom: -100px; left: -100px;"></div>
+    <div class="viewport">
+        <div class="bg-glow"></div>
 
-    <div class="app-container" id="scroll-node">
-        
-        <header>
-            <div class="logo">GENIUS<span>.</span></div>
-            <div class="header-actions">
-                <div class="balance-badge" onclick="showTopUp()">
-                    <i class="fa-solid fa-tenge-sign"></i>
-                    <span id="global-balance">0 ₸</span>
-                    <i class="fa-solid fa-plus" style="font-size: 10px; margin-left: 5px; color: var(--text-dim);"></i>
-                </div>
+        <header class="app-header">
+            <div class="brand">GENIUS<span>.</span>MARKET</div>
+            <div class="wallet-widget" onclick="App.showTopUp()">
+                <i class="fa-solid fa-wallet"></i>
+                <span id="header-balance">0 ₸</span>
             </div>
         </header>
 
-        <div id="view-store">
-            <div class="tabs-wrapper">
-                <div class="tabs-scroll">
-                    <button class="tab-btn active" onclick="ui.filter('all', this)">Все товары</button>
-                    <button class="tab-btn" onclick="ui.filter('wa', this)">WhatsApp</button>
-                    <button class="tab-btn" onclick="ui.filter('tg', this)">Telegram</button>
-                    <button class="tab-btn" onclick="ui.filter('nft', this)">Digital NFT</button>
-                    <button class="tab-btn" onclick="ui.filter('other', this)">Прочее</button>
+        <div class="main-wrapper" id="main-scroller">
+            
+            <section id="view-store">
+                <div class="category-bar">
+                    <div class="scroll-x">
+                        <div class="cat-chip active" onclick="App.filter('all', this)">⚡ Все</div>
+                        <div class="cat-chip" onclick="App.filter('wa', this)">WhatsApp</div>
+                        <div class="cat-chip" onclick="App.filter('tg', this)">Telegram</div>
+                        <div class="cat-chip" onclick="App.filter('nft', this)">Digital NFT</div>
+                        <div class="cat-chip" onclick="App.filter('sub', this)">Подписки</div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="grid" id="catalog-grid">
+                <div class="products-container" id="catalog-grid">
+                    </div>
+            </section>
+
+            <section id="view-profile" class="hidden">
+                <div class="profile-view">
+                    <div class="user-card">
+                        <div class="avatar-placeholder" id="user-avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <h2 id="user-full-name">Genius User</h2>
+                        <p id="user-tg-id" style="font-weight: 600; font-size: 13px; opacity: 0.7;">ID: 00000000</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <h3 id="stat-bal">0 ₸</h3>
+                            <p>Баланс</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3 id="stat-orders">0</h3>
+                            <p>Заказы</p>
+                        </div>
+                    </div>
+
+                    <div class="products-container">
+                        <div class="product-card" onclick="tg.showAlert('История пуста')">
+                            <div class="product-left">
+                                <div class="product-image" style="font-size: 18px;"><i class="fa-solid fa-receipt"></i></div>
+                                <div class="product-info"><b>История операций</b><span>Транзакции и чеки</span></div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="color: var(--text-muted);"></i>
+                        </div>
+                        <div class="product-card" onclick="tg.openTelegramLink('https://t.me/support')">
+                            <div class="product-left">
+                                <div class="product-image" style="font-size: 18px;"><i class="fa-solid fa-headset"></i></div>
+                                <div class="product-info"><b>Служба поддержки</b><span>Помощь 24/7</span></div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="color: var(--text-muted);"></i>
+                        </div>
+                    </div>
                 </div>
+            </section>
+
         </div>
 
-        <div id="view-profile" class="hidden">
-            <div class="profile-hero">
-                <div class="user-circle"><i class="fa-solid fa-crown"></i></div>
-                <h2 id="p-full-name" style="font-family: 'Unbounded'; margin: 0;">Genius Guest</h2>
-                <p id="p-tg-id" style="color: var(--text-dim); margin: 5px 0;">ID: 000000000</p>
-            </div>
-
-            <div style="padding: 0 20px;">
-                <div class="profile-stat-grid">
-                    <div class="stat-box">
-                        <b id="stat-balance">0 ₸</b>
-                        <span>Баланс</span>
-                    </div>
-                    <div class="stat-box">
-                        <b id="stat-orders">0</b>
-                        <span>Покупки</span>
-                    </div>
-                </div>
-
-                <div class="grid">
-                    <div class="card-item" onclick="tg.showAlert('История пуста')">
-                        <div class="card-main">
-                            <div class="card-img" style="font-size: 20px;"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                            <div class="card-info"><b>История заказов</b><span>Ваши последние активации</span></div>
-                        </div>
-                        <i class="fa-solid fa-chevron-right" style="color: var(--border);"></i>
-                    </div>
-                    <div class="card-item" onclick="tg.openTelegramLink('https://t.me/support')">
-                        <div class="card-main">
-                            <div class="card-img" style="font-size: 20px;"><i class="fa-solid fa-headset"></i></div>
-                            <div class="card-info"><b>Поддержка</b><span>Связаться с оператором</span></div>
-                        </div>
-                        <i class="fa-solid fa-chevron-right" style="color: var(--border);"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <nav class="bottom-nav">
+            <a href="javascript:void(0)" class="nav-item active" onclick="App.switchTab('store', this)">
+                <i class="fa-solid fa-house"></i>
+                Главная
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="tg.showAlert('У вас нет активных товаров')">
+                <i class="fa-solid fa-box-open"></i>
+                Мои товары
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="App.switchTab('profile', this)">
+                <i class="fa-solid fa-circle-user"></i>
+                Профиль
+            </a>
+        </nav>
     </div>
 
-    <nav class="nav-dock">
-        <a href="javascript:void(0)" class="nav-trigger active" id="nav-home" onclick="ui.switchView('store')">
-            <i class="fa-solid fa-grid-2"></i>Магазин
-        </a>
-        <a href="javascript:void(0)" class="nav-trigger" onclick="tg.showAlert('У вас нет активных заказов')">
-            <i class="fa-solid fa-bolt"></i>Активные
-        </a>
-        <a href="javascript:void(0)" class="nav-trigger" id="nav-profile" onclick="ui.switchView('profile')">
-            <i class="fa-solid fa-user-vneck"></i>Профиль
-        </a>
-    </nav>
-
-    <div class="sheet" id="buy-sheet">
-        <div class="sheet-body">
-            <div style="width: 40px; height: 5px; background: var(--border); margin: -10px auto 25px; border-radius: 10px;"></div>
+    <div class="overlay" id="main-overlay" onclick="App.closeOverlay()">
+        <div class="sheet" onclick="event.stopPropagation()">
+            <div class="sheet-bar"></div>
             
-            <div id="payment-methods-view">
-                <h2 class="sheet-title">Оплата товара</h2>
-                <p class="sheet-desc">Выберите удобный способ оплаты для: <br><b id="checkout-title" class="text-accent">-</b></p>
-                
-                <div class="pay-card" onclick="logic.pay('kaspi')">
-                    <div class="pay-icon" style="background: var(--kaspi);"><i class="fa-solid fa-university"></i></div>
-                    <div class="pay-info"><b>Kaspi Gold</b><span>Перевод (₸)</span></div>
-                    <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--border);"></i>
+            <div id="sheet-pay-methods" class="hidden">
+                <div class="sheet-header">
+                    <h2 class="sheet-title">Оплата товара</h2>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Вы покупаете: <b id="pay-item-name" style="color: var(--accent-color);">...</b></p>
                 </div>
 
-                <div class="pay-card" onclick="logic.pay('stars')">
-                    <div class="pay-icon" style="background: var(--stars);"><i class="fa-solid fa-star"></i></div>
-                    <div class="pay-info"><b>Telegram Stars</b><span>Оплата через Telegram (✨)</span></div>
-                    <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--border);"></i>
-                </div>
-
-                <div class="pay-card" onclick="logic.pay('crypto')">
-                    <div class="pay-icon" style="background: var(--crypto);"><i class="fa-solid fa-bolt"></i></div>
-                    <div class="pay-info"><b>CryptoBot</b><span>Чеки /send (USDT/TON)</span></div>
-                    <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--border);"></i>
+                <div class="payment-list">
+                    <div class="pay-option" onclick="App.handlePay('kaspi')">
+                        <div class="pay-icon-box kaspi-bg"><i class="fa-solid fa-university"></i></div>
+                        <div class="pay-details"><b>Kaspi Gold</b><span>Мгновенный перевод (₸)</span></div>
+                        <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="pay-option" onclick="App.handlePay('stars')">
+                        <div class="pay-icon-box stars-bg"><i class="fa-solid fa-star"></i></div>
+                        <div class="pay-details"><b>Telegram Stars</b><span>Оплата через Telegram (✨)</span></div>
+                        <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="pay-option" onclick="App.handlePay('crypto')">
+                        <div class="pay-icon-box crypto-bg"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="pay-details"><b>CryptoBot</b><span>USDT / TON / BTC</span></div>
+                        <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: var(--text-muted);"></i>
+                    </div>
                 </div>
             </div>
 
-            <div id="kaspi-details" class="hidden">
-                <h2 class="sheet-title">Перевод Kaspi</h2>
-                <div style="background: #000; padding: 25px; border-radius: 20px; border: 1px dashed var(--kaspi); text-align: center; margin: 20px 0;">
-                    <span style="color: var(--text-dim); font-size: 12px; text-transform: uppercase;">Номер карты для копирования</span>
-                    <div id="card-num" style="font-family: 'Unbounded'; font-size: 20px; margin: 10px 0; color: var(--text);" onclick="logic.copyCard()">4400 4302 9988 7766</div>
-                    <small style="color: var(--kaspi);">Нажмите на номер, чтобы скопировать</small>
+            <div id="sheet-kaspi-flow" class="hidden">
+                <div class="sheet-header">
+                    <h2 class="sheet-title" style="color: var(--kaspi-color);">Kaspi Transfer</h2>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Переведите сумму на карту ниже:</p>
                 </div>
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <p style="margin: 0; color: var(--text-dim);">Сумма к оплате:</p>
-                    <b style="font-size: 28px; font-family: 'Unbounded';" id="kaspi-price-final">0 ₸</b>
+                <div class="copy-box" onclick="App.copyCard()">4400 4302 1122 3344</div>
+                <div class="text-center mt-20">
+                    <p style="font-size: 13px; color: var(--text-secondary);">К оплате: <b style="font-size: 24px; color: var(--text-main);" id="kaspi-total">0 ₸</b></p>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">Получатель: Genius Market Admin</p>
                 </div>
-                <button class="btn-confirm" style="background: var(--kaspi); color: #fff;" onclick="logic.finalize('Kaspi')">Я ОПЛАТИЛ</button>
+                <button class="btn-action mt-20" onclick="App.confirmOrder('Kaspi')">Я ОПЛАТИЛ</button>
             </div>
 
-            <button onclick="ui.closeSheets()" style="width: 100%; background: none; border: none; color: var(--text-dim); margin-top: 20px; font-weight: 700;">ЗАКРЫТЬ</button>
-        </div>
-    </div>
-
-    <div class="sheet" id="topup-sheet">
-        <div class="sheet-body">
-            <div style="width: 40px; height: 5px; background: var(--border); margin: -10px auto 25px; border-radius: 10px;"></div>
-            <h2 class="sheet-title">Пополнение</h2>
-            <p class="sheet-desc">Введите сумму в тенге, которую хотите зачислить на баланс.</p>
-            
-            <div class="topup-input-wrap">
-                <input type="number" id="topup-amount" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                <span style="font-family: 'Unbounded'; font-weight: 700;">₸</span>
+            <div id="sheet-topup" class="hidden">
+                <div class="sheet-header">
+                    <h2 class="sheet-title">Пополнение</h2>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Введите сумму для пополнения баланса</p>
+                </div>
+                <div style="background: #000; border-radius: 18px; padding: 20px; border: 1px solid var(--border-light); display: flex; align-items: center; gap: 15px;">
+                    <input type="number" id="topup-input" placeholder="0" style="background: none; border: none; color: white; font-family: 'Unbounded'; font-size: 24px; width: 100%; outline: none;">
+                    <span style="font-family: 'Unbounded'; font-weight: 700;">₸</span>
+                </div>
+                <button class="btn-action mt-20" onclick="App.processTopUp()">ПОДТВЕРДИТЬ</button>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 25px;">
-                <button class="tab-btn" style="padding: 10px;" onclick="document.getElementById('topup-amount').value = 1000">1,000</button>
-                <button class="tab-btn" style="padding: 10px;" onclick="document.getElementById('topup-amount').value = 5000">5,000</button>
-                <button class="tab-btn" style="padding: 10px;" onclick="document.getElementById('topup-amount').value = 10000">10,000</button>
-            </div>
-
-            <button class="btn-confirm" onclick="logic.startTopUp()">ПРОДОЛЖИТЬ</button>
+            <button onclick="App.closeOverlay()" style="width: 100%; background: none; border: none; color: var(--text-muted); margin-top: 25px; font-weight: 700; font-size: 13px;">ОТМЕНИТЬ</button>
         </div>
     </div>
 
     <script>
         /**
-         * GENIUS MARKET ENGINE v2.0
-         * Core Logic & Data Management
+         * КОРНЕВОЙ ОБЪЕКТ ПРИЛОЖЕНИЯ
+         * Инкапсулирует всё: данные, рендеринг и бизнес-логику
          */
+        const tg = window.Telegram.WebApp;
 
-        const STATE = {
-            user: { balance: 0, orders: 0, id: 0, name: "Guest" },
-            catalog: [
-                { id: 1, cat: 'wa', name: 'Казахстан (+7)', price: 1250, img: '🇰🇿', stock: '1,420' },
-                { id: 2, cat: 'wa', name: 'США (Физ. номер)', price: 850, img: '🇺🇸', stock: '540' },
-                { id: 3, cat: 'wa', name: 'Россия (Вирт)', price: 680, img: '🇷🇺', stock: '12k+' },
-                { id: 4, cat: 'wa', name: 'Индонезия', price: 320, img: '🇮🇩', stock: '3.1k' },
-                { id: 5, cat: 'wa', name: 'Великобритания', price: 1100, img: '🇬🇧', stock: '210' },
-                
-                { id: 10, cat: 'tg', name: 'Premium (1 месяц)', price: 1400, img: '⭐', stock: '∞' },
-                { id: 11, cat: 'tg', name: 'Premium (1 год)', price: 9990, img: '💎', stock: '∞' },
-                { id: 12, cat: 'tg', name: 'Stars (100 шт)', price: 850, img: '✨', stock: '∞' },
-                { id: 13, cat: 'tg', name: 'Stars (500 шт)', price: 4100, img: '🌌', stock: '∞' },
-                { id: 14, cat: 'tg', name: 'Fragment Номер', price: 7800, img: '📱', stock: '12' },
+        const App = {
+            // Состояние данных (State)
+            state: {
+                balance: 0,
+                ordersCount: 0,
+                activeTab: 'all',
+                currentSelection: null,
+                user: {
+                    id: 0,
+                    firstName: 'Guest',
+                    lastName: '',
+                    username: ''
+                },
+                // КАТАЛОГ ТОВАРОВ (Актуальные цены)
+                catalog: [
+                    { id: 1, type: 'wa', name: 'Казахстан (+7)', price: 1250, icon: '🇰🇿', stock: '1,420' },
+                    { id: 2, type: 'wa', name: 'США (Физ. номер)', price: 850, icon: '🇺🇸', stock: '98' },
+                    { id: 3, type: 'wa', name: 'Россия (Вирт)', price: 680, icon: '🇷🇺', stock: '12k+' },
+                    { id: 4, type: 'wa', name: 'Индонезия', price: 450, icon: '🇮🇩', stock: '2,100' },
+                    { id: 5, type: 'wa', name: 'Великобритания', price: 1100, icon: '🇬🇧', stock: '43' },
+                    
+                    { id: 10, type: 'tg', name: 'Premium (1 месяц)', price: 1400, icon: '⭐', stock: '∞' },
+                    { id: 11, type: 'tg', name: 'Premium (1 год)', price: 9990, icon: '💎', stock: '∞' },
+                    { id: 12, type: 'tg', name: 'Stars (100 шт)', price: 850, icon: '✨', stock: '∞' },
+                    { id: 13, type: 'tg', name: 'Stars (500 шт)', price: 4100, icon: '🌌', stock: '∞' },
+                    { id: 14, type: 'tg', name: 'Fragment Номер', price: 8200, icon: '📱', stock: '15' },
 
-                { id: 20, cat: 'nft', name: 'Dog House NFT', price: 15000, img: 'https://cdn.joincommunity.xyz/ton/doghouse.png', isImg: true, stock: '1' },
-                { id: 21, cat: 'nft', name: 'Resistance Dog', price: 45000, img: 'https://redot.com/blog/content/images/2020/12/ton-1.png', isImg: true, stock: '1' },
-                { id: 22, cat: 'nft', name: 'Whale Fin NFT', price: 22000, img: 'https://nftcalendar.io/storage/uploads/events/2022/1/1643198031_whale_fin.gif', isImg: true, stock: '2' },
+                    { id: 20, type: 'nft', name: 'Resistance Dog NFT', price: 45000, icon: 'https://redot.com/blog/content/images/2020/12/ton-1.png', isImg: true, stock: '1' },
+                    { id: 21, type: 'nft', name: 'Whale Fin NFT', price: 18000, icon: 'https://cdn-icons-png.flaticon.com/512/3063/3063067.png', isImg: true, stock: '4' },
+                    { id: 22, type: 'nft', name: 'Pavel Durov Gift', price: 25000, icon: '🎁', stock: '2' },
 
-                { id: 30, cat: 'other', name: 'ChatGPT Plus', price: 9500, img: '🤖', stock: '10' },
-                { id: 31, cat: 'other', name: 'Discord Nitro', price: 1800, img: '👾', stock: '50' }
-            ],
-            currentSelection: null
-        };
-
-        const ui = {
-            init() {
-                // Имитация загрузки данных "бэкендом"
-                setTimeout(() => {
-                    document.getElementById('loading-screen').style.opacity = '0';
-                    setTimeout(() => document.getElementById('loading-screen').classList.add('hidden'), 500);
-                }, 1800);
-
-                // Заполнение данных пользователя
-                if(tg.initDataUnsafe.user) {
-                    const u = tg.initDataUnsafe.user;
-                    STATE.user.id = u.id;
-                    STATE.user.name = u.first_name;
-                    document.getElementById('p-full-name').innerText = u.first_name + (u.last_name ? ' ' + u.last_name : '');
-                    document.getElementById('p-tg-id').innerText = "ID: " + u.id;
-                }
-
-                this.renderCatalog('all');
-                this.updateBalances();
+                    { id: 30, type: 'sub', name: 'ChatGPT Plus', price: 9200, icon: '🤖', stock: '10' },
+                    { id: 31, type: 'sub', name: 'Discord Nitro', price: 1900, icon: '👾', stock: '100+' },
+                    { id: 32, type: 'sub', name: 'YouTube Premium', price: 1500, icon: '📺', stock: '50' }
+                ]
             },
 
+            // Инициализация приложения
+            init() {
+                tg.expand();
+                tg.headerColor = '#000000';
+                tg.backgroundColor = '#000000';
+
+                // Загрузка данных пользователя
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    const u = tg.initDataUnsafe.user;
+                    this.state.user = {
+                        id: u.id,
+                        firstName: u.first_name,
+                        lastName: u.last_name || '',
+                        username: u.username || ''
+                    };
+                    document.getElementById('user-full-name').innerText = u.first_name + (u.last_name ? ' ' + u.last_name : '');
+                    document.getElementById('user-tg-id').innerText = 'ID: ' + u.id;
+                }
+
+                // Симуляция процесса загрузки
+                let progress = 0;
+                const bar = document.getElementById('loading-bar');
+                const interval = setInterval(() => {
+                    progress += Math.random() * 30;
+                    bar.style.width = Math.min(progress, 100) + '%';
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        document.getElementById('preloader').style.display = 'none';
+                    }
+                }, 150);
+
+                this.renderCatalog('all');
+                this.updateUI();
+            },
+
+            // Отрисовка товаров
             renderCatalog(category) {
                 const grid = document.getElementById('catalog-grid');
                 grid.innerHTML = '';
 
-                const items = category === 'all' ? STATE.catalog : STATE.catalog.filter(i => i.cat === category);
+                const filtered = category === 'all' 
+                    ? this.state.catalog 
+                    : this.state.catalog.filter(i => i.type === category);
 
-                items.forEach(item => {
-                    const el = document.createElement('div');
-                    el.className = 'card-item';
-                    el.innerHTML = `
-                        <div class="card-main">
-                            <div class="card-img">
-                                ${item.isImg ? `<img src="${item.img}" style="width:100%; height:100%; border-radius:18px; object-fit:cover;">` : item.img}
+                filtered.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <div class="product-left">
+                            <div class="product-image">
+                                ${item.isImg ? `<img src="${item.icon}" style="width:100%;height:100%;border-radius:14px;object-fit:cover;">` : item.icon}
                             </div>
-                            <div class="card-info">
+                            <div class="product-info">
                                 <b>${item.name}</b>
-                                <span>Склад: ${item.stock}</span>
+                                <span><i class="fa-solid fa-layer-group"></i> Склад: ${item.stock}</span>
                             </div>
                         </div>
-                        <div class="card-price-block">
-                            <div class="price-txt">${item.price.toLocaleString()} ₸</div>
-                            <div class="buy-label">Купить</div>
+                        <div class="product-right">
+                            <div class="product-price">${item.price.toLocaleString()} ₸</div>
+                            <div class="buy-button">Выбрать</div>
                         </div>
                     `;
-                    el.onclick = () => logic.openBuy(item);
-                    grid.appendChild(el);
+                    card.onclick = () => this.openPurchase(item);
+                    grid.appendChild(card);
                 });
             },
 
-            filter(cat, btn) {
-                document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-                btn.classList.add('active');
-                tg.HapticFeedback.impactOccurred('medium');
+            // Переключение вкладок фильтра
+            filter(cat, el) {
+                document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+                el.classList.add('active');
+                this.state.activeTab = cat;
+                tg.HapticFeedback.impactOccurred('light');
                 this.renderCatalog(cat);
             },
 
-            switchView(view) {
-                const views = ['view-store', 'view-profile'];
-                const navs = ['nav-home', 'nav-profile'];
+            // Переключение экранов (Store / Profile)
+            switchTab(view, el) {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
 
-                views.forEach(v => document.getElementById(v).classList.add('hidden'));
-                navs.forEach(n => document.getElementById(n).classList.remove('active'));
+                const store = document.getElementById('view-store');
+                const profile = document.getElementById('view-profile');
 
-                document.getElementById('view-' + view).classList.remove('hidden');
-                document.getElementById('nav-' + (view === 'store' ? 'home' : 'profile')).classList.add('active');
-                
-                tg.HapticFeedback.impactOccurred('light');
+                if (view === 'profile') {
+                    store.classList.add('hidden');
+                    profile.classList.remove('hidden');
+                } else {
+                    store.classList.remove('hidden');
+                    profile.classList.add('hidden');
+                }
+                tg.HapticFeedback.impactOccurred('medium');
                 window.scrollTo(0,0);
             },
 
-            updateBalances() {
-                const b = STATE.user.balance.toLocaleString() + " ₸";
-                document.getElementById('global-balance').innerText = b;
-                document.getElementById('stat-balance').innerText = b;
-                document.getElementById('stat-orders').innerText = STATE.user.orders;
-            },
-
-            closeSheets() {
-                document.querySelectorAll('.sheet').forEach(s => s.classList.remove('open'));
-            }
-        };
-
-        const logic = {
-            openBuy(item) {
-                STATE.currentSelection = item;
-                document.getElementById('checkout-title').innerText = item.name;
-                document.getElementById('kaspi-price-final').innerText = item.price.toLocaleString() + " ₸";
+            // Логика покупки
+            openPurchase(item) {
+                this.state.currentSelection = item;
+                document.getElementById('pay-item-name').innerText = item.name;
+                document.getElementById('kaspi-total').innerText = item.price.toLocaleString() + ' ₸';
                 
-                // Reset views
-                document.getElementById('payment-methods-view').classList.remove('hidden');
-                document.getElementById('kaspi-details').classList.add('hidden');
-
-                document.getElementById('buy-sheet').classList.add('open');
+                // Сброс модального окна на первый шаг
+                this.hideAllSheetSections();
+                document.getElementById('sheet-pay-methods').classList.remove('hidden');
+                
+                const overlay = document.getElementById('main-overlay');
+                overlay.classList.add('visible');
                 tg.HapticFeedback.impactOccurred('medium');
             },
 
-            pay(method) {
+            handlePay(method) {
                 tg.HapticFeedback.impactOccurred('light');
-                if(method === 'kaspi') {
-                    document.getElementById('payment-methods-view').classList.add('hidden');
-                    document.getElementById('kaspi-details').classList.remove('hidden');
-                } else if(method === 'stars') {
-                    const stars = Math.ceil(STATE.currentSelection.price / 8.5); // Курс ~8.5 тенге за звезду
-                    tg.showConfirm(`Оплатить ${stars} ✨ за ${STATE.currentSelection.name}?`, (ok) => {
-                        if(ok) this.finalize('Stars');
+                this.hideAllSheetSections();
+
+                if (method === 'kaspi') {
+                    document.getElementById('sheet-kaspi-flow').classList.remove('hidden');
+                } else if (method === 'stars') {
+                    const starsNeeded = Math.ceil(this.state.currentSelection.price / 8.5);
+                    tg.showConfirm(`Оплатить ${starsNeeded} ✨ за товар ${this.state.currentSelection.name}?`, (ok) => {
+                        if (ok) this.confirmOrder('Telegram Stars');
                     });
                 } else {
-                    tg.showAlert("Метод CryptoBot временно недоступен. Используйте Kaspi.");
+                    tg.showAlert("Метод временно на техническом обслуживании. Используйте Kaspi.");
+                    document.getElementById('sheet-pay-methods').classList.remove('hidden');
                 }
             },
 
             copyCard() {
-                const num = "4400430299887766";
-                // Нативный метод WebApp для копирования (если поддерживается) или браузерный
-                const tempInput = document.createElement("input");
-                tempInput.value = num;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                document.execCommand("copy");
-                document.body.removeChild(tempInput);
+                const card = "4400430211223344";
+                const el = document.createElement('textarea');
+                el.value = card;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
                 
                 tg.HapticFeedback.notificationOccurred('success');
-                tg.showAlert("Номер карты скопирован в буфер обмена!");
+                tg.showAlert('Номер карты скопирован!');
             },
 
-            finalize(method) {
+            confirmOrder(method) {
                 tg.HapticFeedback.notificationOccurred('success');
                 tg.showPopup({
-                    title: 'Заказ в обработке',
-                    message: `Ваш платеж через ${method} получен. Менеджер отправит данные в чат бота в течение 5-15 минут.`,
+                    title: 'Заказ принят!',
+                    message: `Ваш платеж (${method}) обрабатывается. Бот отправит данные товара в личные сообщения в течение 5 минут.`,
                     buttons: [{type: 'ok'}]
                 });
-                STATE.user.orders++;
-                ui.updateBalances();
-                ui.closeSheets();
+                this.state.ordersCount++;
+                this.updateUI();
+                this.closeOverlay();
             },
 
-            startTopUp() {
-                const amt = parseInt(document.getElementById('topup-amount').value);
-                if(!amt || amt < 500) {
-                    tg.showAlert("Минимальная сумма пополнения — 500 ₸");
+            // Пополнение баланса
+            showTopUp() {
+                this.hideAllSheetSections();
+                document.getElementById('sheet-topup').classList.remove('hidden');
+                document.getElementById('main-overlay').classList.add('visible');
+                tg.HapticFeedback.impactOccurred('medium');
+            },
+
+            processTopUp() {
+                const amount = document.getElementById('topup-input').value;
+                if (!amount || amount < 500) {
+                    tg.showAlert('Минимальная сумма пополнения — 500 ₸');
                     return;
                 }
-                
-                tg.showConfirm(`Создать счет на пополнение ${amt.toLocaleString()} ₸?`, (ok) => {
-                    if(ok) {
-                        tg.showAlert("Реквизиты для пополнения отправлены вам в ЛС.");
-                        ui.closeSheets();
+                tg.showConfirm(`Создать запрос на пополнение баланса на сумму ${amount} ₸?`, (ok) => {
+                    if (ok) {
+                        tg.showAlert('Запрос отправлен! Ожидайте подтверждения от администратора.');
+                        this.closeOverlay();
                     }
                 });
+            },
+
+            // Служебные функции UI
+            updateUI() {
+                const bal = this.state.balance.toLocaleString() + ' ₸';
+                document.getElementById('header-balance').innerText = bal;
+                document.getElementById('stat-bal').innerText = bal;
+                document.getElementById('stat-orders').innerText = this.state.ordersCount;
+            },
+
+            closeOverlay() {
+                document.getElementById('main-overlay').classList.remove('visible');
+            },
+
+            hideAllSheetSections() {
+                document.getElementById('sheet-pay-methods').classList.add('hidden');
+                document.getElementById('sheet-kaspi-flow').classList.add('hidden');
+                document.getElementById('sheet-topup').classList.add('hidden');
             }
         };
 
-        function showTopUp() {
-            document.getElementById('topup-sheet').classList.add('open');
-            tg.HapticFeedback.impactOccurred('medium');
-        }
+        // Запуск приложения
+        window.onload = () => App.init();
 
-        // Запуск
-        ui.init();
-        tg.ready();
     </script>
 </body>
 </html>
