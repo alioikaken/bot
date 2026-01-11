@@ -51,16 +51,15 @@
         .cat-box i { font-size: 22px; margin-bottom: 8px; display: block; }
         .cat-box span { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); }
 
-        /* ITEM LISTING (SCREENSTYLE) */
+        /* ITEM LISTING */
         .item-card {
             background: var(--bg-card); border-radius: 18px; padding: 16px; margin-bottom: 12px;
             border: 1px solid rgba(255,255,255,0.05); position: relative;
         }
         .item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .item-info-top { display: flex; align-items: center; gap: 10px; }
-        .item-icon { width: 20px; height: 20px; }
-        .item-title { font-size: 13px; font-weight: 700; color: var(--text-white); }
-        .item-price { color: var(--success); font-weight: 900; font-size: 15px; }
+        .item-info-top { display: flex; align-items: center; gap: 10px; max-width: 75%; }
+        .item-title { font-size: 13px; font-weight: 700; color: var(--text-white); line-height: 1.3; }
+        .item-price { color: var(--success); font-weight: 900; font-size: 15px; white-space: nowrap; }
         
         .badge-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
         .badge { font-size: 10px; padding: 4px 8px; border-radius: 6px; font-weight: 700; background: rgba(255,255,255,0.05); color: var(--text-dim); }
@@ -69,24 +68,21 @@
         .item-desc { font-size: 11px; color: var(--text-dim); line-height: 1.4; margin-bottom: 15px; }
         .buy-btn {
             width: 100%; background: var(--accent); color: white; border: none; padding: 12px;
-            border-radius: 12px; font-weight: 800; font-size: 13px;
+            border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer;
         }
 
-        /* WALLET DESIGN */
+        /* WALLET & PROFILE */
         .wallet-card {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             padding: 25px; border-radius: 24px; margin-bottom: 25px; position: relative; overflow: hidden;
             box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
         }
-        .wallet-card::before { content: ''; position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; }
         .wallet-label { font-size: 11px; font-weight: 600; opacity: 0.8; letter-spacing: 1px; }
         .wallet-balance { font-family: 'Unbounded'; font-size: 32px; margin: 10px 0; }
         
         .transaction-list { background: var(--bg-card); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
         .tr-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .tr-item:last-child { border: none; }
 
-        /* PROFILE DESIGN */
         .profile-header {
             background: var(--bg-card); border-radius: 24px; padding: 30px; text-align: center;
             border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;
@@ -105,6 +101,11 @@
         .nav-link.active { color: var(--accent); }
         .nav-link i { font-size: 20px; margin-bottom: 4px; }
         .nav-link span { font-size: 9px; font-weight: 700; }
+        
+        /* INFO STYLE */
+        .info-section { margin-bottom: 20px; }
+        .info-section h4 { font-family: 'Unbounded'; font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+        .info-section p { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -144,21 +145,47 @@
         <h1 class="wallet-balance">5,450.00 ₸</h1>
         <p style="font-size: 10px; opacity: 0.7;">Личный счет ID: 7770001</p>
     </div>
-
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;">
-        <button onclick="tg.showAlert('Пополнение через Kaspi/Card...')" style="background:var(--accent); color:white; border:none; padding:16px; border-radius:16px; font-weight:800;">ПОПОЛНИТЬ</button>
-        <button onclick="tg.showAlert('Минимум для вывода: 5,000 ₸')" style="background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); padding:16px; border-radius:16px; font-weight:800;">ВЫВОД</button>
+        <button onclick="tg.showAlert('Выберите метод оплаты в боте')" style="background:var(--accent); color:white; border:none; padding:16px; border-radius:16px; font-weight:800;">ПОПОЛНИТЬ</button>
+        <button onclick="tg.showAlert('Вывод временно недоступен')" style="background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); padding:16px; border-radius:16px; font-weight:800;">ВЫВОД</button>
     </div>
-
     <h3 style="font-family:'Unbounded'; font-size: 10px; color: var(--text-dim); margin-bottom: 15px;">ИСТОРИЯ ОПЕРАЦИЙ</h3>
     <div class="transaction-list">
         <div class="tr-item">
             <div><p style="font-size:13px; font-weight:700;">Пополнение баланса</p><p style="font-size:10px; color:var(--text-dim);">12.01.2026</p></div>
             <p style="color:var(--success); font-weight:800;">+5,000 ₸</p>
         </div>
-        <div class="tr-item">
-            <div><p style="font-size:13px; font-weight:700;">Покупка TG Account</p><p style="font-size:10px; color:var(--text-dim);">11.01.2026</p></div>
-            <p style="color:#ff4757; font-weight:800;">-1,500 ₸</p>
+    </div>
+</div>
+
+<div id="about-screen" class="screen">
+    <div style="background:var(--bg-card); padding:25px; border-radius:24px; line-height:1.6; border:1px solid rgba(255,255,255,0.05);">
+        <h2 style="font-family:'Unbounded'; font-size: 18px; margin-bottom: 20px; color: var(--accent);">О МАРКЕТПЛЕЙСЕ</h2>
+        
+        <div class="info-section">
+            <h4>Кто мы такие?</h4>
+            <p><b>Genius Market</b> — это современная экосистема для приобретения цифровых товаров. Мы работаем напрямую с крупнейшими поставщиками СНГ, Европы и Азии, что позволяет нам держать самые низкие цены на рынке.</p>
+        </div>
+
+        <div class="info-section">
+            <h4>Наши гарантии</h4>
+            <p>Каждый аккаунт перед добавлением в магазин проходит автоматическую проверку. Мы гарантируем валидность товара на момент покупки. В случае возникновения проблем, наша система тикетов поможет решить вопрос в кратчайшие сроки.</p>
+        </div>
+
+        <div class="info-section">
+            <h4>Автоматизация</h4>
+            <p>Весь цикл — от пополнения баланса до получения данных аккаунта — полностью автоматизирован. Вам не нужно ждать ответа оператора, товар выдается мгновенно в личном кабинете или через бота.</p>
+        </div>
+
+        <div class="info-section">
+            <h4>Безопасность</h4>
+            <p>Мы используем защищенные шлюзы для оплаты и шифрование данных. Ваши личные данные и история покупок конфиденциальны. Наша цель — создать безопасную среду для долгосрочного сотрудничества.</p>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; border-left: 3px solid var(--accent);">
+            <p style="font-size:11px; margin-bottom:5px;"><i class="fa-solid fa-check" style="color:var(--success)"></i> Работаем 24/7 без выходных</p>
+            <p style="font-size:11px; margin-bottom:5px;"><i class="fa-solid fa-check" style="color:var(--success)"></i> Мгновенная выдача товара</p>
+            <p style="font-size:11px;"><i class="fa-solid fa-check" style="color:var(--success)"></i> Низкие комиссии на пополнение</p>
         </div>
     </div>
 </div>
@@ -168,43 +195,18 @@
         <div class="avatar"><i class="fa-solid fa-user-shield"></i></div>
         <h2 id="p-name" style="font-family:'Unbounded'; font-size: 18px;">@user</h2>
         <p id="p-id" style="color:var(--text-dim); font-size: 11px; margin-top:5px;">ID: 7770001</p>
-        
         <div class="stat-grid">
             <div class="stat-box"><p style="font-weight:900;">24</p><p style="font-size:9px; color:var(--text-dim);">КУПЛЕНО</p></div>
             <div class="stat-box"><p style="font-weight:900; color:var(--accent);">Elite</p><p style="font-size:9px; color:var(--text-dim);">СТАТУС</p></div>
         </div>
     </div>
-    
-    <div style="background:var(--bg-card); border-radius:20px; padding:10px;">
-        <div style="padding:15px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05);">
-            <span style="font-size:13px;"><i class="fa-solid fa-headset" style="margin-right:10px; color:var(--accent);"></i> Тех. поддержка</span>
-            <i class="fa-solid fa-chevron-right" style="font-size:12px; color:var(--text-dim);"></i>
-        </div>
-        <div style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:13px;"><i class="fa-solid fa-gear" style="margin-right:10px; color:var(--accent);"></i> Настройки</span>
-            <i class="fa-solid fa-chevron-right" style="font-size:12px; color:var(--text-dim);"></i>
-        </div>
-    </div>
-</div>
-
-<div id="about-screen" class="screen">
-    <div style="background:var(--bg-card); padding:25px; border-radius:24px; line-height:1.6; border:1px solid rgba(255,255,255,0.05);">
-        <h2 style="font-family:'Unbounded'; font-size: 16px; margin-bottom: 15px; color: var(--accent);">GENIUS MARKET</h2>
-        <p style="font-size: 13px; color: var(--text-white); margin-bottom: 15px;"><b>Мы — лидеры в области автоматизированной поставки цифровых активов.</b></p>
-        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 20px;">Наш сервис объединяет сотни поставщиков со всего мира, обеспечивая мгновенную доставку и 100% гарантию на каждый товар. Мы специализируемся на активациях, которые работают стабильно.</p>
-        <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:15px;">
-            <p style="font-size:11px; margin-bottom:8px;"><i class="fa-solid fa-bolt" style="color:var(--accent)"></i> Мгновенная выдача данных</p>
-            <p style="font-size:11px; margin-bottom:8px;"><i class="fa-solid fa-shield-virus" style="color:var(--accent)"></i> Проверка на спамблок перед продажей</p>
-            <p style="font-size:11px;"><i class="fa-solid fa-globe" style="color:var(--accent)"></i> 30+ стран в наличии</p>
-        </div>
-    </div>
 </div>
 
 <nav>
-    <a href="#" class="nav-link active" onclick="showScreen('market-screen', this)"><i class="fa-solid fa-house"></i><span>Маркет</span></a>
-    <a href="#" class="nav-link" onclick="showScreen('wallet-screen', this)"><i class="fa-solid fa-wallet"></i><span>Кошелек</span></a>
-    <a href="#" class="nav-link" onclick="showScreen('about-screen', this)"><i class="fa-solid fa-circle-info"></i><span>Инфо</span></a>
-    <a href="#" class="nav-link" onclick="showScreen('profile-screen', this)"><i class="fa-solid fa-user"></i><span>Профиль</span></a>
+    <a href="javascript:void(0)" class="nav-link active" onclick="showScreen('market-screen', this)"><i class="fa-solid fa-house"></i><span>Маркет</span></a>
+    <a href="javascript:void(0)" class="nav-link" onclick="showScreen('wallet-screen', this)"><i class="fa-solid fa-wallet"></i><span>Кошелек</span></a>
+    <a href="javascript:void(0)" class="nav-link" onclick="showScreen('about-screen', this)"><i class="fa-solid fa-circle-info"></i><span>Инфо</span></a>
+    <a href="javascript:void(0)" class="nav-link" onclick="showScreen('profile-screen', this)"><i class="fa-solid fa-user"></i><span>Профиль</span></a>
 </nav>
 
 <script>
@@ -213,40 +215,43 @@
 
     const db = {
         'Telegram': [
-            { name: 'Физический номер Казахстана (Tdata)', desc: 'Отлежка: 180 дней • Формат: Tdata • Рег: Физические сим', price: '1,500 ₸', country: 'Казахстан', tags: ['Tdata', 'Физика'], pop: true },
-            { name: 'США (+1) | Отлежка 7+ дней', desc: 'Формат: Session + Json • Чистый IP • Рег: Авторег', price: '581 ₸', country: 'США', tags: ['Авторег', 'Без спамблока'], pop: true },
-            { name: 'Россия (+7) | Новый аккаунт', desc: 'Любой способ входа • Без спамблока • Рег: Физика', price: '850 ₸', country: 'Россия', tags: ['Новый', 'Чистый'] },
-            { name: 'Индонезия (+62) | Tdata', desc: 'Отлежка 30 дней • Актив аккаунт • Для спама/рассылок', price: '450 ₸', country: 'Индонезия', tags: ['Tdata', 'Дешево'] },
-            { name: 'Великобритания (+44) | Tdata', desc: 'Физические сим • Премиум качество • 100% Валид', price: '2,200 ₸', country: 'UK', tags: ['Tdata', 'Premium'] }
+            { name: 'Казахстан (+7)| Отлежка 180 + дней | Авторег | Чистый', desc: 'Отлежка: 180 дней • Формат: Tdata • Рег: Физические сим-карты', price: '1,500 ₸', icon: 'fa-telegram', color: '#229ED9', tags: ['Tdata', 'Физическая сим'], pop: true, spamCheck: true },
+            { name: 'США (+1) | Отлежка 7+ дней', desc: 'Формат: Session + Json • Чистый IP • Рег: Авторег', price: '581 ₸', icon: 'fa-telegram', color: '#229ED9', tags: ['Авторег'], pop: true, spamCheck: true },
+            { name: 'Россия (+7) | Новый аккаунт', desc: 'Любой способ входа • Рег: Физика • Чистый IP', price: '850 ₸', icon: 'fa-telegram', color: '#229ED9', tags: ['Новый'], spamCheck: true },
+            { name: 'Индонезия (+62) | Tdata', desc: 'Отлежка 30 дней • Актив аккаунт', price: '450 ₸', icon: 'fa-telegram', color: '#229ED9', tags: ['Tdata'], spamCheck: true }
         ],
         'Spotify': [
-            { name: 'Spotify Premium 12 мес (Индия)', desc: 'Активация на ваш аккаунт • Гарантия весь срок', price: '8,500 ₸', country: 'Индия', tags: ['Premium', '1 Год'], pop: true },
-            { name: 'Spotify Premium 1 мес (Индивид)', desc: 'Мгновенная ссылка • Работает везде', price: '1,200 ₸', country: 'Global', tags: ['Premium'] }
+            { name: 'Spotify Premium 12 мес (Индия)', desc: 'Активация на ваш аккаунт • Гарантия весь срок', price: '8,500 ₸', icon: 'fa-spotify', color: '#1DB954', tags: ['Premium'], pop: true }
         ],
         'Steam': [
-            { name: 'Steam Account Turkey (Full Access)', desc: 'Регион Турция • Без лимитов • Почта в комплекте', price: '1,500 ₸', country: 'Турция', tags: ['Full Access'], pop: true }
+            { name: 'Steam Turkey (Full Access)', desc: 'Регион Турция • Почта в комплекте', price: '1,500 ₸', icon: 'fa-steam', color: '#ffffff', tags: ['Region TR'], pop: true }
         ],
         'Discord': [
-            { name: 'Nitro Full (1 Month Gift)', desc: 'Активация ссылкой • Без входа в аккаунт', price: '3,200 ₸', country: 'Global', tags: ['Gift'] }
+            { name: 'Nitro Full (1 Month Gift)', desc: 'Активация ссылкой • Без входа', price: '3,200 ₸', icon: 'fa-discord', color: '#5865F2', tags: ['Gift'] }
         ],
-        'WhatsApp': [
-            { name: 'WA Казахстан (+77) Физика', desc: 'Для рассылок и звонков • Полная перепривязка', price: '2,800 ₸', country: 'Казахстан', tags: ['Физика'] }
-        ],
-        'VPN': [
-            { name: 'AdGuard VPN Premium (2 года)', desc: 'Личный аккаунт • Поддержка 10 устройств', price: '4,500 ₸', country: 'Global', tags: ['VPN'] }
-        ]
+        'TikTok': [{ name: 'TikTok Account (Ads)', desc: 'Для рекламы • Подтвержден', price: '1,100 ₸', icon: 'fa-tiktok', color: '#ffffff', tags: ['Ads'] }],
+        'Instagram': [{ name: 'Insta 2015-2018г', desc: 'Старые аккаунты • С отлежкой', price: '900 ₸', icon: 'fa-instagram', color: '#E1306C', tags: ['Old'] }],
+        'WhatsApp': [{ name: 'WA Казахстан (+77) Физические Номера', desc: 'Полная перепривязка', price: '2,800 ₸', icon: 'fa-whatsapp', color: '#25D366', tags: ['Физика'] }],
+        'VPN': [{ name: 'Genius VPN Premium', desc: 'Сверхскоростные сервера • 2 года подписки • Все страны', price: '4,500 ₸', icon: 'fa-shield-halved', color: '#007AFF', tags: ['Premium'] }]
     };
 
     function renderItems(data, targetId) {
         const container = document.getElementById(targetId);
         container.innerHTML = '';
         data.forEach(item => {
-            const tagsHtml = item.tags.map(t => `<span class="badge ${t === 'Без спамблока' ? 'green' : ''}">${t}</span>`).join('');
+            const allTags = [...item.tags];
+            // Добавляем тег ТОЛЬКО если у товара стоит флаг spamCheck (только для ТГ)
+            if (item.spamCheck) {
+                allTags.push('Без спамблока');
+            }
+            
+            const tagsHtml = allTags.map(t => `<span class="badge ${t === 'Без спамблока' ? 'green' : ''}">${t}</span>`).join('');
+            
             container.innerHTML += `
                 <div class="item-card">
                     <div class="item-header">
                         <div class="item-info-top">
-                            <i class="fa-brands fa-telegram" style="color:#229ED9"></i>
+                            <i class="fa-brands ${item.icon}" style="color:${item.color}"></i>
                             <span class="item-title">${item.name}</span>
                         </div>
                         <span class="item-price">${item.price}</span>
@@ -273,12 +278,13 @@
         showScreen('category-screen');
     }
 
-    function showScreen(id, nav) {
+    function showScreen(id, navBtn) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        if(nav) {
+        
+        if(navBtn) {
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            nav.classList.add('active');
+            navBtn.classList.add('active');
         }
         tg.HapticFeedback.impactOccurred('light');
         window.scrollTo(0,0);
@@ -288,7 +294,6 @@
         tg.showConfirm(`Вы подтверждаете покупку: ${name}?`);
     }
 
-    // SNOW
     const canvas = document.getElementById('snow');
     const ctx = canvas.getContext('2d');
     let flakes = [];
