@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Genius Market | Winter Premium</title>
+    <title>Genius Market | Premium Digital Assets</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,81 +11,100 @@
 
     <style>
         :root {
-            --bg-grad: linear-gradient(180deg, #a5c7f0 0%, #dbe9f9 100%);
-            --card-bg: rgba(255, 255, 255, 0.85);
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
             --accent: #007AFF;
-            --yellow: #FFD700;
-            --text: #1E293B;
-            --dim: #64748B;
+            --text-white: #ffffff;
+            --text-dim: #94a3b8;
+            --success: #2ecc71;
+            --warning: #f1c40f;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg-grad); color: var(--text); min-height: 100vh; overflow-x: hidden; padding-bottom: 100px; }
-        canvas#snow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        body { background: var(--bg-main); color: var(--text-white); min-height: 100vh; padding-bottom: 110px; overflow-x: hidden; }
+        canvas#snow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0.3; }
 
         /* HEADER */
         header {
-            position: sticky; top: 0; z-index: 100;
-            background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(15px);
-            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.3);
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px);
+            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .logo { font-family: 'Unbounded'; font-size: 16px; color: var(--accent); }
-        .balance-chip {
-            background: var(--yellow); padding: 8px 15px; border-radius: 12px;
-            font-weight: 900; font-size: 13px; box-shadow: 0 4px 15px rgba(255,215,0,0.3);
+        .logo-text { font-family: 'Unbounded'; font-size: 14px; color: var(--accent); letter-spacing: 1px; }
+        .balance-box {
+            background: var(--bg-card); padding: 8px 14px; border-radius: 12px;
+            font-weight: 800; font-size: 14px; border: 1px solid rgba(255,255,255,0.1);
         }
 
         /* SCREENS */
         .screen { display: none; padding: 20px; position: relative; z-index: 10; animation: fadeIn 0.3s ease; }
         .screen.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* CATEGORIES */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
-        .cat-card {
-            background: var(--card-bg); border-radius: 20px; padding: 15px;
-            display: flex; flex-direction: column; align-items: center;
-            border: 1px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.03);
-            cursor: pointer;
+        /* GRID CATEGORIES */
+        .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+        .cat-box {
+            background: var(--bg-card); border-radius: 16px; padding: 15px 5px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.05); cursor: pointer;
         }
-        .cat-card i { font-size: 26px; margin-bottom: 8px; }
-        .cat-card span { font-size: 11px; font-weight: 800; }
+        .cat-box i { font-size: 22px; margin-bottom: 8px; display: block; }
+        .cat-box span { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-dim); }
 
-        /* ITEMS */
-        .item-row {
-            background: var(--card-bg); padding: 14px; border-radius: 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px; border: 1px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        /* ITEM LISTING (SCREENSTYLE) */
+        .item-card {
+            background: var(--bg-card); border-radius: 18px; padding: 16px; margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.05); position: relative;
         }
-        .item-info { display: flex; align-items: center; gap: 12px; }
-        .flag { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
-        .item-meta h4 { font-size: 14px; font-weight: 800; }
-        .item-meta p { font-size: 10px; color: var(--dim); }
-        .price-tag {
-            background: var(--accent); color: white; padding: 7px 12px;
-            border-radius: 10px; font-weight: 800; font-size: 12px;
-        }
-
-        /* POPULAR SECTION SPECIAL STYLE */
-        .popular-badge {
-            background: #FF3B30; color: white; font-size: 8px; font-weight: 900;
-            padding: 2px 6px; border-radius: 5px; margin-left: 5px; vertical-align: middle;
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .item-info-top { display: flex; align-items: center; gap: 10px; }
+        .item-icon { width: 20px; height: 20px; }
+        .item-title { font-size: 13px; font-weight: 700; color: var(--text-white); }
+        .item-price { color: var(--success); font-weight: 900; font-size: 15px; }
+        
+        .badge-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+        .badge { font-size: 10px; padding: 4px 8px; border-radius: 6px; font-weight: 700; background: rgba(255,255,255,0.05); color: var(--text-dim); }
+        .badge.green { background: rgba(46, 204, 113, 0.15); color: var(--success); }
+        
+        .item-desc { font-size: 11px; color: var(--text-dim); line-height: 1.4; margin-bottom: 15px; }
+        .buy-btn {
+            width: 100%; background: var(--accent); color: white; border: none; padding: 12px;
+            border-radius: 12px; font-weight: 800; font-size: 13px;
         }
 
-        /* NAV BAR */
+        /* WALLET DESIGN */
+        .wallet-card {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            padding: 25px; border-radius: 24px; margin-bottom: 25px; position: relative; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        }
+        .wallet-card::before { content: ''; position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        .wallet-label { font-size: 11px; font-weight: 600; opacity: 0.8; letter-spacing: 1px; }
+        .wallet-balance { font-family: 'Unbounded'; font-size: 32px; margin: 10px 0; }
+        
+        .transaction-list { background: var(--bg-card); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .tr-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .tr-item:last-child { border: none; }
+
+        /* PROFILE DESIGN */
+        .profile-header {
+            background: var(--bg-card); border-radius: 24px; padding: 30px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;
+        }
+        .avatar { width: 80px; height: 80px; background: var(--accent); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .stat-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; }
+
+        /* NAV */
         nav {
             position: fixed; bottom: 20px; left: 15px; right: 15px;
-            background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
-            height: 70px; border-radius: 25px; display: flex; z-index: 1000;
-            border: 1px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
+            height: 70px; border-radius: 20px; display: flex; z-index: 1000; border: 1px solid rgba(255,255,255,0.05);
         }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--dim); text-decoration: none; }
-        .nav-item.active { color: var(--accent); }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
-        .nav-item span { font-size: 9px; font-weight: 800; text-transform: uppercase; }
-
-        .back-btn { margin-bottom: 15px; color: var(--accent); font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .nav-link { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-dim); text-decoration: none; }
+        .nav-link.active { color: var(--accent); }
+        .nav-link i { font-size: 20px; margin-bottom: 4px; }
+        .nav-link span { font-size: 9px; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -93,58 +112,99 @@
 <canvas id="snow"></canvas>
 
 <header>
-    <div class="logo">GENIUS MARKET</div>
-    <div class="balance-chip">5,450 ₸</div>
+    <div class="logo-text">GENIUS MARKET</div>
+    <div class="balance-box"><span id="header-bal">5,450</span> ₸</div>
 </header>
 
 <div id="market-screen" class="screen active">
-    <h2 style="font-family:'Unbounded'; font-size: 13px; margin-bottom: 15px; color: var(--accent);">КАТЕГОРИИ</h2>
-    <div class="grid">
-        <div class="cat-card" onclick="showCategory('Telegram')"><i class="fa-brands fa-telegram" style="color:#229ED9"></i><span>Telegram</span></div>
-        <div class="cat-card" onclick="showCategory('WhatsApp')"><i class="fa-brands fa-whatsapp" style="color:#25D366"></i><span>WhatsApp</span></div>
-        <div class="cat-card" onclick="showCategory('TikTok')"><i class="fa-brands fa-tiktok" style="color:#000"></i><span>TikTok</span></div>
-        <div class="cat-card" onclick="showCategory('Instagram')"><i class="fa-brands fa-instagram" style="color:#E1306C"></i><span>Instagram</span></div>
-        <div class="cat-card" onclick="showCategory('NFT')"><i class="fa-solid fa-gem" style="color:var(--yellow)"></i><span>NFT</span></div>
-        <div class="cat-card" onclick="showCategory('VPN')"><i class="fa-solid fa-shield-halved" style="color:var(--accent)"></i><span>VPN</span></div>
+    <div class="cat-grid">
+        <div class="cat-box" onclick="showCategory('Telegram')"><i class="fa-brands fa-telegram" style="color:#229ED9"></i><span>Telegram</span></div>
+        <div class="cat-box" onclick="showCategory('Steam')"><i class="fa-brands fa-steam" style="color:#ffffff"></i><span>Steam</span></div>
+        <div class="cat-box" onclick="showCategory('Spotify')"><i class="fa-brands fa-spotify" style="color:#1DB954"></i><span>Spotify</span></div>
+        <div class="cat-box" onclick="showCategory('Discord')"><i class="fa-brands fa-discord" style="color:#5865F2"></i><span>Discord</span></div>
+        <div class="cat-box" onclick="showCategory('TikTok')"><i class="fa-brands fa-tiktok" style="color:#ffffff"></i><span>TikTok</span></div>
+        <div class="cat-box" onclick="showCategory('Instagram')"><i class="fa-brands fa-instagram" style="color:#E1306C"></i><span>Instagram</span></div>
+        <div class="cat-box" onclick="showCategory('WhatsApp')"><i class="fa-brands fa-whatsapp" style="color:#25D366"></i><span>WhatsApp</span></div>
+        <div class="cat-box" onclick="showCategory('VPN')"><i class="fa-solid fa-shield-halved" style="color:#007AFF"></i><span>VPN</span></div>
     </div>
     
-    <h2 style="font-family:'Unbounded'; font-size: 13px; margin-bottom: 15px; color: var(--accent);">ПОПУЛЯРНОЕ 🔥</h2>
-    <div id="popular-list">
-        </div>
+    <h3 style="font-family:'Unbounded'; font-size: 11px; margin-bottom: 15px; color: var(--text-dim);">НЕДАВНИЕ ПОСТУПЛЕНИЯ</h3>
+    <div id="recent-list"></div>
 </div>
 
 <div id="category-screen" class="screen">
-    <div class="back-btn" onclick="showScreen('market-screen')"><i class="fa-solid fa-chevron-left"></i> Назад</div>
+    <div onclick="showScreen('market-screen')" style="color:var(--accent); font-weight:800; margin-bottom:15px; cursor:pointer;"><i class="fa-solid fa-chevron-left"></i> НАЗАД</div>
     <h2 id="cat-title" style="font-family:'Unbounded'; font-size: 18px; margin-bottom: 20px;"></h2>
     <div id="items-list"></div>
 </div>
 
-<div id="purchases-screen" class="screen">
-    <h2 style="font-family:'Unbounded'; margin-bottom: 20px;">МОИ ПОКУПКИ</h2>
-    <p style="text-align: center; color: var(--dim); margin-top: 50px;">Список пуст ❄️</p>
-</div>
-
 <div id="wallet-screen" class="screen">
-    <div style="background:var(--card-bg); padding: 30px; border-radius: 25px; text-align: center; border: 1px solid white;">
-        <p style="color:var(--dim); font-weight: 700;">Баланс</p>
-        <h1 style="font-family:'Unbounded'; font-size: 32px; margin: 10px 0;">5,450 ₸</h1>
-        <button style="width:100%; padding:15px; border-radius:15px; border:none; background:var(--accent); color:white; font-weight:800; margin-top:10px;" onclick="tg.showAlert('Переход к оплате...')">ПОПОЛНИТЬ</button>
+    <div class="wallet-card">
+        <p class="wallet-label">ВАШ БАЛАНС</p>
+        <h1 class="wallet-balance">5,450.00 ₸</h1>
+        <p style="font-size: 10px; opacity: 0.7;">Личный счет ID: 7770001</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;">
+        <button onclick="tg.showAlert('Пополнение через Kaspi/Card...')" style="background:var(--accent); color:white; border:none; padding:16px; border-radius:16px; font-weight:800;">ПОПОЛНИТЬ</button>
+        <button onclick="tg.showAlert('Минимум для вывода: 5,000 ₸')" style="background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); padding:16px; border-radius:16px; font-weight:800;">ВЫВОД</button>
+    </div>
+
+    <h3 style="font-family:'Unbounded'; font-size: 10px; color: var(--text-dim); margin-bottom: 15px;">ИСТОРИЯ ОПЕРАЦИЙ</h3>
+    <div class="transaction-list">
+        <div class="tr-item">
+            <div><p style="font-size:13px; font-weight:700;">Пополнение баланса</p><p style="font-size:10px; color:var(--text-dim);">12.01.2026</p></div>
+            <p style="color:var(--success); font-weight:800;">+5,000 ₸</p>
+        </div>
+        <div class="tr-item">
+            <div><p style="font-size:13px; font-weight:700;">Покупка TG Account</p><p style="font-size:10px; color:var(--text-dim);">11.01.2026</p></div>
+            <p style="color:#ff4757; font-weight:800;">-1,500 ₸</p>
+        </div>
     </div>
 </div>
 
 <div id="profile-screen" class="screen">
-    <div style="background:var(--card-bg); padding: 25px; border-radius: 25px; text-align: center; border: 1px solid white;">
-        <div style="width:60px; height:60px; background:#eee; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:24px; color:var(--accent);"><i class="fa-solid fa-user"></i></div>
-        <h3 style="font-family:'Unbounded'; font-size: 16px;">User_777</h3>
-        <p style="font-size:12px; color:var(--dim);">ID: 9021442</p>
+    <div class="profile-header">
+        <div class="avatar"><i class="fa-solid fa-user-shield"></i></div>
+        <h2 id="p-name" style="font-family:'Unbounded'; font-size: 18px;">@user</h2>
+        <p id="p-id" style="color:var(--text-dim); font-size: 11px; margin-top:5px;">ID: 7770001</p>
+        
+        <div class="stat-grid">
+            <div class="stat-box"><p style="font-weight:900;">24</p><p style="font-size:9px; color:var(--text-dim);">КУПЛЕНО</p></div>
+            <div class="stat-box"><p style="font-weight:900; color:var(--accent);">Elite</p><p style="font-size:9px; color:var(--text-dim);">СТАТУС</p></div>
+        </div>
+    </div>
+    
+    <div style="background:var(--bg-card); border-radius:20px; padding:10px;">
+        <div style="padding:15px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <span style="font-size:13px;"><i class="fa-solid fa-headset" style="margin-right:10px; color:var(--accent);"></i> Тех. поддержка</span>
+            <i class="fa-solid fa-chevron-right" style="font-size:12px; color:var(--text-dim);"></i>
+        </div>
+        <div style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:13px;"><i class="fa-solid fa-gear" style="margin-right:10px; color:var(--accent);"></i> Настройки</span>
+            <i class="fa-solid fa-chevron-right" style="font-size:12px; color:var(--text-dim);"></i>
+        </div>
+    </div>
+</div>
+
+<div id="about-screen" class="screen">
+    <div style="background:var(--bg-card); padding:25px; border-radius:24px; line-height:1.6; border:1px solid rgba(255,255,255,0.05);">
+        <h2 style="font-family:'Unbounded'; font-size: 16px; margin-bottom: 15px; color: var(--accent);">GENIUS MARKET</h2>
+        <p style="font-size: 13px; color: var(--text-white); margin-bottom: 15px;"><b>Мы — лидеры в области автоматизированной поставки цифровых активов.</b></p>
+        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 20px;">Наш сервис объединяет сотни поставщиков со всего мира, обеспечивая мгновенную доставку и 100% гарантию на каждый товар. Мы специализируемся на активациях, которые работают стабильно.</p>
+        <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:15px;">
+            <p style="font-size:11px; margin-bottom:8px;"><i class="fa-solid fa-bolt" style="color:var(--accent)"></i> Мгновенная выдача данных</p>
+            <p style="font-size:11px; margin-bottom:8px;"><i class="fa-solid fa-shield-virus" style="color:var(--accent)"></i> Проверка на спамблок перед продажей</p>
+            <p style="font-size:11px;"><i class="fa-solid fa-globe" style="color:var(--accent)"></i> 30+ стран в наличии</p>
+        </div>
     </div>
 </div>
 
 <nav>
-    <div class="nav-item active" onclick="showScreen('market-screen', this)"><i class="fa-solid fa-store"></i><span>Маркет</span></div>
-    <div class="nav-item" onclick="showScreen('purchases-screen', this)"><i class="fa-solid fa-bag-shopping"></i><span>Покупки</span></div>
-    <div class="nav-item" onclick="showScreen('wallet-screen', this)"><i class="fa-solid fa-wallet"></i><span>Кошелек</span></div>
-    <div class="nav-item" onclick="showScreen('profile-screen', this)"><i class="fa-solid fa-user-gear"></i><span>Профиль</span></div>
+    <a href="#" class="nav-link active" onclick="showScreen('market-screen', this)"><i class="fa-solid fa-house"></i><span>Маркет</span></a>
+    <a href="#" class="nav-link" onclick="showScreen('wallet-screen', this)"><i class="fa-solid fa-wallet"></i><span>Кошелек</span></a>
+    <a href="#" class="nav-link" onclick="showScreen('about-screen', this)"><i class="fa-solid fa-circle-info"></i><span>Инфо</span></a>
+    <a href="#" class="nav-link" onclick="showScreen('profile-screen', this)"><i class="fa-solid fa-user"></i><span>Профиль</span></a>
 </nav>
 
 <script>
@@ -153,72 +213,63 @@
 
     const db = {
         'Telegram': [
-            { name: 'Premium 1 Год', desc: 'Gift ссылка', price: '12,000 ₸', flag: 'un', pop: true },
-            { name: 'Аккаунт RU', desc: 'Отлежка 30 дней', price: '450 ₸', flag: 'ru', pop: true },
-            { name: 'Аккаунт KZ', desc: 'Авторег + почта', price: '800 ₸', flag: 'kz' },
-            { name: 'Аккаунт US', desc: 'Чистый номер', price: '600 ₸', flag: 'us' }
+            { name: 'Физический номер Казахстана (Tdata)', desc: 'Отлежка: 180 дней • Формат: Tdata • Рег: Физические сим', price: '1,500 ₸', country: 'Казахстан', tags: ['Tdata', 'Физика'], pop: true },
+            { name: 'США (+1) | Отлежка 7+ дней', desc: 'Формат: Session + Json • Чистый IP • Рег: Авторег', price: '581 ₸', country: 'США', tags: ['Авторег', 'Без спамблока'], pop: true },
+            { name: 'Россия (+7) | Новый аккаунт', desc: 'Любой способ входа • Без спамблока • Рег: Физика', price: '850 ₸', country: 'Россия', tags: ['Новый', 'Чистый'] },
+            { name: 'Индонезия (+62) | Tdata', desc: 'Отлежка 30 дней • Актив аккаунт • Для спама/рассылок', price: '450 ₸', country: 'Индонезия', tags: ['Tdata', 'Дешево'] },
+            { name: 'Великобритания (+44) | Tdata', desc: 'Физические сим • Премиум качество • 100% Валид', price: '2,200 ₸', country: 'UK', tags: ['Tdata', 'Premium'] }
+        ],
+        'Spotify': [
+            { name: 'Spotify Premium 12 мес (Индия)', desc: 'Активация на ваш аккаунт • Гарантия весь срок', price: '8,500 ₸', country: 'Индия', tags: ['Premium', '1 Год'], pop: true },
+            { name: 'Spotify Premium 1 мес (Индивид)', desc: 'Мгновенная ссылка • Работает везде', price: '1,200 ₸', country: 'Global', tags: ['Premium'] }
+        ],
+        'Steam': [
+            { name: 'Steam Account Turkey (Full Access)', desc: 'Регион Турция • Без лимитов • Почта в комплекте', price: '1,500 ₸', country: 'Турция', tags: ['Full Access'], pop: true }
+        ],
+        'Discord': [
+            { name: 'Nitro Full (1 Month Gift)', desc: 'Активация ссылкой • Без входа в аккаунт', price: '3,200 ₸', country: 'Global', tags: ['Gift'] }
         ],
         'WhatsApp': [
-            { name: 'Номер KZ', desc: 'Для рассылок', price: '1,500 ₸', flag: 'kz', pop: true },
-            { name: 'Номер RU', desc: 'Мгновенный код', price: '1,100 ₸', flag: 'ru' }
+            { name: 'WA Казахстан (+77) Физика', desc: 'Для рассылок и звонков • Полная перепривязка', price: '2,800 ₸', country: 'Казахстан', tags: ['Физика'] }
         ],
         'VPN': [
-            { name: 'Genius VPN Pro', desc: '1 Месяц / 5 устройств', price: '1,800 ₸', flag: 'un', pop: true }
-        ],
-        'TikTok': [
-            { name: 'Аккаунт USA', desc: 'Creator Rewards', price: '2,500 ₸', flag: 'us', pop: true }
-        ],
-        'Instagram': [
-            { name: 'Old Acc 2016', desc: 'Турция, чистый', price: '4,000 ₸', flag: 'tr' }
-        ],
-        'NFT': [
-            { name: 'Genius Snow #01', desc: 'Collection 2026', price: '25,000 ₸', flag: 'un' }
+            { name: 'AdGuard VPN Premium (2 года)', desc: 'Личный аккаунт • Поддержка 10 устройств', price: '4,500 ₸', country: 'Global', tags: ['VPN'] }
         ]
     };
 
-    function renderPopular() {
-        const popList = document.getElementById('popular-list');
-        popList.innerHTML = '';
-        Object.keys(db).forEach(cat => {
-            db[cat].forEach(item => {
-                if(item.pop) {
-                    const flagUrl = item.flag === 'un' ? 'https://cdn-icons-png.flaticon.com/512/624/624410.png' : `https://flagcdn.com/w160/${item.flag}.png`;
-                    popList.innerHTML += `
-                        <div class="item-row" onclick="buy('${item.name}')">
-                            <div class="item-info">
-                                <img src="${flagUrl}" class="flag">
-                                <div class="item-meta">
-                                    <h4>${item.name} <span class="popular-badge">HOT</span></h4>
-                                    <p>${item.desc}</p>
-                                </div>
-                            </div>
-                            <div class="price-tag">${item.price}</div>
+    function renderItems(data, targetId) {
+        const container = document.getElementById(targetId);
+        container.innerHTML = '';
+        data.forEach(item => {
+            const tagsHtml = item.tags.map(t => `<span class="badge ${t === 'Без спамблока' ? 'green' : ''}">${t}</span>`).join('');
+            container.innerHTML += `
+                <div class="item-card">
+                    <div class="item-header">
+                        <div class="item-info-top">
+                            <i class="fa-brands fa-telegram" style="color:#229ED9"></i>
+                            <span class="item-title">${item.name}</span>
                         </div>
-                    `;
-                }
-            });
-        });
-    }
-
-    function showCategory(cat) {
-        document.getElementById('cat-title').innerText = cat.toUpperCase();
-        const list = document.getElementById('items-list');
-        list.innerHTML = '';
-        db[cat].forEach(item => {
-            const flagUrl = item.flag === 'un' ? 'https://cdn-icons-png.flaticon.com/512/624/624410.png' : `https://flagcdn.com/w160/${item.flag}.png`;
-            list.innerHTML += `
-                <div class="item-row" onclick="buy('${item.name}')">
-                    <div class="item-info">
-                        <img src="${flagUrl}" class="flag">
-                        <div class="item-meta">
-                            <h4>${item.name}</h4>
-                            <p>${item.desc}</p>
-                        </div>
+                        <span class="item-price">${item.price}</span>
                     </div>
-                    <div class="price-tag">${item.price}</div>
+                    <div class="badge-row">${tagsHtml}</div>
+                    <p class="item-desc">${item.desc}</p>
+                    <button class="buy-btn" onclick="buy('${item.name}')">Купить</button>
                 </div>
             `;
         });
+    }
+
+    function renderPopular() {
+        const popular = [];
+        Object.keys(db).forEach(cat => {
+            db[cat].forEach(item => { if(item.pop) popular.push(item); });
+        });
+        renderItems(popular, 'recent-list');
+    }
+
+    function showCategory(cat) {
+        document.getElementById('cat-title').innerText = cat;
+        renderItems(db[cat], 'items-list');
         showScreen('category-screen');
     }
 
@@ -226,32 +277,39 @@
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         if(nav) {
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             nav.classList.add('active');
         }
         tg.HapticFeedback.impactOccurred('light');
+        window.scrollTo(0,0);
     }
 
     function buy(name) {
-        tg.HapticFeedback.notificationOccurred('warning');
-        tg.showConfirm(`Купить ${name}?`);
+        tg.showConfirm(`Вы подтверждаете покупку: ${name}?`);
     }
 
-    // СНЕГ
+    // SNOW
     const canvas = document.getElementById('snow');
     const ctx = canvas.getContext('2d');
     let flakes = [];
     function initSnow() {
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        for(let i=0; i<60; i++) flakes.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*3+1, s: Math.random()*0.8+0.3});
+        flakes = [];
+        for(let i=0; i<40; i++) flakes.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*2+1, s:Math.random()*0.5+0.1});
     }
     function drawSnow() {
-        ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "white"; ctx.beginPath();
-        flakes.forEach(f => { ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); f.y += f.s; if(f.y > canvas.height) f.y = -5; });
+        ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle="white"; ctx.beginPath();
+        flakes.forEach(f => { ctx.moveTo(f.x,f.y); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); f.y+=f.s; if(f.y>canvas.height) f.y=-5; });
         ctx.fill(); requestAnimationFrame(drawSnow);
     }
-    initSnow(); drawSnow();
-    renderPopular();
+
+    initSnow(); drawSnow(); renderPopular();
+
+    if(tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        const u = tg.initDataUnsafe.user;
+        document.getElementById('p-name').innerText = u.username ? '@' + u.username : u.first_name;
+        document.getElementById('p-id').innerText = "ID: " + u.id;
+    }
 </script>
 </body>
 </html>
