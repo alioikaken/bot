@@ -11,222 +11,247 @@
 
     <style>
         :root {
-            --bg: #E0E8F0;
-            --card-bg: rgba(255, 255, 255, 0.92);
-            --accent-blue: #007AFF;
-            --genius-yellow: #FFD700;
-            --text-main: #1E293B;
-            --text-dim: #64748B;
-            --border-color: rgba(0, 122, 255, 0.1);
+            --bg-grad: linear-gradient(180deg, #a5c7f0 0%, #dbe9f9 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --accent: #007AFF;
+            --yellow: #FFD700;
+            --text: #1E293B;
+            --dim: #64748B;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            background: linear-gradient(180deg, #b8d0eb 0%, #e2eefb 100%);
-            color: var(--text-main); 
-            padding-bottom: 100px;
-            min-height: 100vh;
-        }
-
-        /* КАНВАС ДЛЯ СНЕГА */
-        #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        body { background: var(--bg-grad); color: var(--text); min-height: 100vh; overflow-x: hidden; padding-bottom: 100px; }
+        canvas#snow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
 
         /* HEADER */
-        .header {
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center;
+        header {
             position: sticky; top: 0; z-index: 100;
+            background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(15px);
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
         }
-        .logo { font-family: 'Unbounded'; font-size: 16px; color: var(--accent-blue); }
-        .balance {
-            background: var(--genius-yellow);
-            padding: 8px 16px; border-radius: 14px;
-            font-weight: 900; font-size: 13px; color: #000;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        .logo { font-family: 'Unbounded'; font-size: 16px; color: var(--accent); }
+        .balance-chip {
+            background: var(--yellow); padding: 8px 15px; border-radius: 12px;
+            font-weight: 900; font-size: 13px; box-shadow: 0 4px 15px rgba(255,215,0,0.3);
         }
 
-        .container { padding: 20px; position: relative; z-index: 1; }
-        .section-title { font-family: 'Unbounded'; font-size: 12px; color: var(--accent-blue); text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; font-weight: 900; }
+        /* SCREENS */
+        .screen { display: none; padding: 20px; position: relative; z-index: 10; animation: fadeIn 0.3s ease; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* GRID */
-        .market-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px;
-        }
-        .service-card {
-            background: var(--card-bg); border-radius: 22px; padding: 18px 10px;
+        /* CATEGORIES */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
+        .cat-card {
+            background: var(--card-bg); border-radius: 20px; padding: 15px;
             display: flex; flex-direction: column; align-items: center;
-            border: 1px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border: 1px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            cursor: pointer;
         }
-        .service-card i { font-size: 24px; margin-bottom: 10px; }
-        .service-card span { font-size: 11px; font-weight: 800; }
+        .cat-card i { font-size: 26px; margin-bottom: 8px; }
+        .cat-card span { font-size: 11px; font-weight: 800; }
 
-        /* ITEMS WITH FLAGS */
-        .recent-list { display: flex; flex-direction: column; gap: 12px; }
+        /* ITEMS */
         .item-row {
-            background: var(--card-bg); padding: 16px; border-radius: 24px;
+            background: var(--card-bg); padding: 14px; border-radius: 20px;
             display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.04);
+            margin-bottom: 10px; border: 1px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
         }
-        .item-left { display: flex; align-items: center; gap: 14px; }
-        
-        /* КРУГЛЫЙ ФЛАГ (IMAGE BASED) */
-        .flag-img {
-            width: 42px; height: 42px; border-radius: 50%;
-            object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .item-text h4 { font-size: 15px; font-weight: 800; margin-bottom: 2px; }
-        .item-text p { font-size: 11px; color: var(--text-dim); font-weight: 600; }
-        
-        .item-price {
-            background: var(--accent-blue); color: #fff;
-            padding: 8px 12px; border-radius: 14px;
-            font-weight: 800; font-size: 13px;
+        .item-info { display: flex; align-items: center; gap: 12px; }
+        .flag { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
+        .item-meta h4 { font-size: 14px; font-weight: 800; }
+        .item-meta p { font-size: 10px; color: var(--dim); }
+        .price-tag {
+            background: var(--accent); color: white; padding: 7px 12px;
+            border-radius: 10px; font-weight: 800; font-size: 12px;
         }
 
-        /* NAV */
-        .bottom-nav {
+        /* POPULAR SECTION SPECIAL STYLE */
+        .popular-badge {
+            background: #FF3B30; color: white; font-size: 8px; font-weight: 900;
+            padding: 2px 6px; border-radius: 5px; margin-left: 5px; vertical-align: middle;
+        }
+
+        /* NAV BAR */
+        nav {
             position: fixed; bottom: 20px; left: 15px; right: 15px;
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
-            height: 75px; border-radius: 28px;
-            display: flex; justify-content: space-around; align-items: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid white;
+            background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+            height: 70px; border-radius: 25px; display: flex; z-index: 1000;
+            border: 1px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        .nav-link { color: var(--text-dim); text-decoration: none; text-align: center; flex: 1; display: flex; flex-direction: column; gap: 4px; }
-        .nav-link.active { color: var(--accent-blue); }
-        .nav-link i { font-size: 22px; }
-        .nav-link span { font-size: 10px; font-weight: 800; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--dim); text-decoration: none; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item span { font-size: 9px; font-weight: 800; text-transform: uppercase; }
 
+        .back-btn { margin-bottom: 15px; color: var(--accent); font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; }
     </style>
 </head>
 <body>
 
-    <canvas id="snow-canvas"></canvas>
+<canvas id="snow"></canvas>
 
-    <header class="header">
-        <div class="logo">GENIUS MARKET</div>
-        <div class="balance">5,450 ₸</div>
-    </header>
+<header>
+    <div class="logo">GENIUS MARKET</div>
+    <div class="balance-chip">5,450 ₸</div>
+</header>
 
-    <div class="container">
-        <h2 class="section-title">Категории</h2>
-        <div class="market-grid">
-            <div class="service-card"><i class="fa-brands fa-telegram" style="color: #26A5E4;"></i><span>Telegram</span></div>
-            <div class="service-card"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i><span>WhatsApp</span></div>
-            <div class="service-card"><i class="fa-brands fa-tiktok" style="color: #000;"></i><span>TikTok</span></div>
-            <div class="service-card"><i class="fa-brands fa-instagram" style="color: #E1306C;"></i><span>Instagram</span></div>
-            <div class="service-card"><i class="fa-solid fa-gem" style="color: #FFD700;"></i><span>NFT</span></div>
-            <div class="service-card"><i class="fa-solid fa-shield-halved" style="color: #007AFF;"></i><span>VPN</span></div>
-        </div>
-
-        <h2 class="section-title">Горячие товары ❄️</h2>
-        <div class="recent-list">
-            
-            <div class="item-row" onclick="buy()">
-                <div class="item-left">
-                    <img src="https://flagcdn.com/w160/ru.png" class="flag-img" alt="RU">
-                    <div class="item-text"><h4>Telegram RU</h4><p>Отлежка: 6 месяцев</p></div>
-                </div>
-                <div class="item-price">450 ₸</div>
-            </div>
-
-            <div class="item-row" onclick="buy()">
-                <div class="item-left">
-                    <img src="https://flagcdn.com/w160/kz.png" class="flag-img" alt="KZ">
-                    <div class="item-text"><h4>WhatsApp KZ</h4><p>Физические SIM</p></div>
-                </div>
-                <div class="item-price">1,500 ₸</div>
-            </div>
-
-            <div class="item-row" onclick="buy()">
-                <div class="item-left">
-                    <img src="https://flagcdn.com/w160/us.png" class="flag-img" alt="US">
-                    <div class="item-text"><h4>TikTok USA</h4><p>Target: Америка</p></div>
-                </div>
-                <div class="item-price">2,200 ₸</div>
-            </div>
-
-            <div class="item-row" onclick="buy()">
-                <div class="item-left">
-                    <img src="https://flagcdn.com/w160/id.png" class="flag-img" alt="ID">
-                    <div class="item-text"><h4>Telegram ID</h4><p>Для массовых рассылок</p></div>
-                </div>
-                <div class="item-price">120 ₸</div>
-            </div>
-
-            <div class="item-row" onclick="buy()">
-                <div class="item-left">
-                    <img src="https://flagcdn.com/w160/tr.png" class="flag-img" alt="TR">
-                    <div class="item-text"><h4>Instagram TR</h4><p>Старый аккаунт (2018)</p></div>
-                </div>
-                <div class="item-price">3,400 ₸</div>
-            </div>
-
-        </div>
+<div id="market-screen" class="screen active">
+    <h2 style="font-family:'Unbounded'; font-size: 13px; margin-bottom: 15px; color: var(--accent);">КАТЕГОРИИ</h2>
+    <div class="grid">
+        <div class="cat-card" onclick="showCategory('Telegram')"><i class="fa-brands fa-telegram" style="color:#229ED9"></i><span>Telegram</span></div>
+        <div class="cat-card" onclick="showCategory('WhatsApp')"><i class="fa-brands fa-whatsapp" style="color:#25D366"></i><span>WhatsApp</span></div>
+        <div class="cat-card" onclick="showCategory('TikTok')"><i class="fa-brands fa-tiktok" style="color:#000"></i><span>TikTok</span></div>
+        <div class="cat-card" onclick="showCategory('Instagram')"><i class="fa-brands fa-instagram" style="color:#E1306C"></i><span>Instagram</span></div>
+        <div class="cat-card" onclick="showCategory('NFT')"><i class="fa-solid fa-gem" style="color:var(--yellow)"></i><span>NFT</span></div>
+        <div class="cat-card" onclick="showCategory('VPN')"><i class="fa-solid fa-shield-halved" style="color:var(--accent)"></i><span>VPN</span></div>
     </div>
+    
+    <h2 style="font-family:'Unbounded'; font-size: 13px; margin-bottom: 15px; color: var(--accent);">ПОПУЛЯРНОЕ 🔥</h2>
+    <div id="popular-list">
+        </div>
+</div>
 
-    <nav class="bottom-nav">
-        <a href="#" class="nav-link active"><i class="fa-solid fa-house-snowflakes"></i><span>Маркет</span></a>
-        <a href="#" class="nav-link"><i class="fa-solid fa-cart-flatbed-suitcase"></i><span>Покупки</span></a>
-        <a href="#" class="nav-link"><i class="fa-solid fa-wallet"></i><span>Кошелек</span></a>
-        <a href="#" class="nav-link"><i class="fa-solid fa-user-astronaut"></i><span>Профиль</span></a>
-    </nav>
+<div id="category-screen" class="screen">
+    <div class="back-btn" onclick="showScreen('market-screen')"><i class="fa-solid fa-chevron-left"></i> Назад</div>
+    <h2 id="cat-title" style="font-family:'Unbounded'; font-size: 18px; margin-bottom: 20px;"></h2>
+    <div id="items-list"></div>
+</div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+<div id="purchases-screen" class="screen">
+    <h2 style="font-family:'Unbounded'; margin-bottom: 20px;">МОИ ПОКУПКИ</h2>
+    <p style="text-align: center; color: var(--dim); margin-top: 50px;">Список пуст ❄️</p>
+</div>
 
-        // СНЕГ (ОПТИМИЗИРОВАННЫЙ)
-        const canvas = document.getElementById('snow-canvas');
-        const ctx = canvas.getContext('2d');
-        let flakes = [];
+<div id="wallet-screen" class="screen">
+    <div style="background:var(--card-bg); padding: 30px; border-radius: 25px; text-align: center; border: 1px solid white;">
+        <p style="color:var(--dim); font-weight: 700;">Баланс</p>
+        <h1 style="font-family:'Unbounded'; font-size: 32px; margin: 10px 0;">5,450 ₸</h1>
+        <button style="width:100%; padding:15px; border-radius:15px; border:none; background:var(--accent); color:white; font-weight:800; margin-top:10px;" onclick="tg.showAlert('Переход к оплате...')">ПОПОЛНИТЬ</button>
+    </div>
+</div>
 
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+<div id="profile-screen" class="screen">
+    <div style="background:var(--card-bg); padding: 25px; border-radius: 25px; text-align: center; border: 1px solid white;">
+        <div style="width:60px; height:60px; background:#eee; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:24px; color:var(--accent);"><i class="fa-solid fa-user"></i></div>
+        <h3 style="font-family:'Unbounded'; font-size: 16px;">User_777</h3>
+        <p style="font-size:12px; color:var(--dim);">ID: 9021442</p>
+    </div>
+</div>
+
+<nav>
+    <div class="nav-item active" onclick="showScreen('market-screen', this)"><i class="fa-solid fa-store"></i><span>Маркет</span></div>
+    <div class="nav-item" onclick="showScreen('purchases-screen', this)"><i class="fa-solid fa-bag-shopping"></i><span>Покупки</span></div>
+    <div class="nav-item" onclick="showScreen('wallet-screen', this)"><i class="fa-solid fa-wallet"></i><span>Кошелек</span></div>
+    <div class="nav-item" onclick="showScreen('profile-screen', this)"><i class="fa-solid fa-user-gear"></i><span>Профиль</span></div>
+</nav>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const db = {
+        'Telegram': [
+            { name: 'Premium 1 Год', desc: 'Gift ссылка', price: '12,000 ₸', flag: 'un', pop: true },
+            { name: 'Аккаунт RU', desc: 'Отлежка 30 дней', price: '450 ₸', flag: 'ru', pop: true },
+            { name: 'Аккаунт KZ', desc: 'Авторег + почта', price: '800 ₸', flag: 'kz' },
+            { name: 'Аккаунт US', desc: 'Чистый номер', price: '600 ₸', flag: 'us' }
+        ],
+        'WhatsApp': [
+            { name: 'Номер KZ', desc: 'Для рассылок', price: '1,500 ₸', flag: 'kz', pop: true },
+            { name: 'Номер RU', desc: 'Мгновенный код', price: '1,100 ₸', flag: 'ru' }
+        ],
+        'VPN': [
+            { name: 'Genius VPN Pro', desc: '1 Месяц / 5 устройств', price: '1,800 ₸', flag: 'un', pop: true }
+        ],
+        'TikTok': [
+            { name: 'Аккаунт USA', desc: 'Creator Rewards', price: '2,500 ₸', flag: 'us', pop: true }
+        ],
+        'Instagram': [
+            { name: 'Old Acc 2016', desc: 'Турция, чистый', price: '4,000 ₸', flag: 'tr' }
+        ],
+        'NFT': [
+            { name: 'Genius Snow #01', desc: 'Collection 2026', price: '25,000 ₸', flag: 'un' }
+        ]
+    };
+
+    function renderPopular() {
+        const popList = document.getElementById('popular-list');
+        popList.innerHTML = '';
+        Object.keys(db).forEach(cat => {
+            db[cat].forEach(item => {
+                if(item.pop) {
+                    const flagUrl = item.flag === 'un' ? 'https://cdn-icons-png.flaticon.com/512/624/624410.png' : `https://flagcdn.com/w160/${item.flag}.png`;
+                    popList.innerHTML += `
+                        <div class="item-row" onclick="buy('${item.name}')">
+                            <div class="item-info">
+                                <img src="${flagUrl}" class="flag">
+                                <div class="item-meta">
+                                    <h4>${item.name} <span class="popular-badge">HOT</span></h4>
+                                    <p>${item.desc}</p>
+                                </div>
+                            </div>
+                            <div class="price-tag">${item.price}</div>
+                        </div>
+                    `;
+                }
+            });
+        });
+    }
+
+    function showCategory(cat) {
+        document.getElementById('cat-title').innerText = cat.toUpperCase();
+        const list = document.getElementById('items-list');
+        list.innerHTML = '';
+        db[cat].forEach(item => {
+            const flagUrl = item.flag === 'un' ? 'https://cdn-icons-png.flaticon.com/512/624/624410.png' : `https://flagcdn.com/w160/${item.flag}.png`;
+            list.innerHTML += `
+                <div class="item-row" onclick="buy('${item.name}')">
+                    <div class="item-info">
+                        <img src="${flagUrl}" class="flag">
+                        <div class="item-meta">
+                            <h4>${item.name}</h4>
+                            <p>${item.desc}</p>
+                        </div>
+                    </div>
+                    <div class="price-tag">${item.price}</div>
+                </div>
+            `;
+        });
+        showScreen('category-screen');
+    }
+
+    function showScreen(id, nav) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(nav) {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            nav.classList.add('active');
         }
-        window.addEventListener('resize', resize);
-        resize();
+        tg.HapticFeedback.impactOccurred('light');
+    }
 
-        class Flake {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height - canvas.height;
-                this.size = Math.random() * 3 + 1;
-                this.speed = Math.random() * 1 + 0.5;
-                this.velX = Math.random() * 0.5 - 0.25;
-            }
-            update() {
-                this.y += this.speed;
-                this.x += this.velX;
-                if (this.y > canvas.height) this.reset();
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-                ctx.fill();
-            }
-        }
+    function buy(name) {
+        tg.HapticFeedback.notificationOccurred('warning');
+        tg.showConfirm(`Купить ${name}?`);
+    }
 
-        for(let i=0; i<80; i++) flakes.push(new Flake());
-
-        function loop() {
-            ctx.clearRect(0,0, canvas.width, canvas.height);
-            flakes.forEach(f => { f.update(); f.draw(); });
-            requestAnimationFrame(loop);
-        }
-        loop();
-
-        function buy() {
-            tg.HapticFeedback.impactOccurred('medium');
-            tg.showConfirm("Подтвердить покупку?");
-        }
-    </script>
+    // СНЕГ
+    const canvas = document.getElementById('snow');
+    const ctx = canvas.getContext('2d');
+    let flakes = [];
+    function initSnow() {
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        for(let i=0; i<60; i++) flakes.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*3+1, s: Math.random()*0.8+0.3});
+    }
+    function drawSnow() {
+        ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "white"; ctx.beginPath();
+        flakes.forEach(f => { ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); f.y += f.s; if(f.y > canvas.height) f.y = -5; });
+        ctx.fill(); requestAnimationFrame(drawSnow);
+    }
+    initSnow(); drawSnow();
+    renderPopular();
+</script>
 </body>
 </html>
