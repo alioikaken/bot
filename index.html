@@ -177,7 +177,7 @@
 <div id="profile-screen" class="screen">
     <div class="profile-header">
         <div class="avatar"><i class="fa-solid fa-user"></i></div>
-        <h2 style="font-family:'Unbounded'; font-size: 18px;">User Пользователя</h2>
+        <h2 id="p-name" style="font-family:'Unbounded'; font-size: 18px;">Загрузка...</h2>
         <p id="p-id" style="color:var(--text-dim); font-size: 11px; margin-top:5px;">ID: ---</p>
         <div class="stat-grid">
             <div class="stat-box"><p style="font-weight:900;">0</p><p style="font-size:9px; color:var(--text-dim);">КУПЛЕНО</p></div>
@@ -283,9 +283,16 @@
 
     initSnow(); drawSnow(); renderPopular();
 
+    // LIVE DATA INJECTION
     if(tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        document.getElementById('p-id').innerText = "ID: " + tg.initDataUnsafe.user.id;
-        document.getElementById('wallet-id').innerText = "Личный счет ID: " + tg.initDataUnsafe.user.id;
+        const user = tg.initDataUnsafe.user;
+        const fullName = (user.first_name + (user.last_name ? ' ' + user.last_name : '')).trim();
+        
+        document.getElementById('p-name').innerText = fullName || "Пользователь";
+        document.getElementById('p-id').innerText = "ID: " + user.id;
+        document.getElementById('wallet-id').innerText = "Личный счет ID: " + user.id;
+    } else {
+        document.getElementById('p-name').innerText = "Пользователь";
     }
 </script>
 </body>
