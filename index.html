@@ -485,21 +485,30 @@ const App = {
     },
 
     createInvoice() {
-        const val = document.getElementById('pay-input').value;
-        if(!val || val < 600) return tg.showAlert("Минимальная сумма — 600 ₸");
-        tg.showConfirm(`Создать счет на ${val} ₸ через @send?\nПосле подтверждения бот пришлет вам ссылку на оплату.`, (ok) => {
-            if(ok) {
-                tg.sendData(JSON.stringify({ 
-    type: "deposit",
-    method: "crypto_pay",
-    amount: val,
-    currency: this.currentCurrency  // <-- передаем текущую валюту
-}));
+    const val = document.getElementById('pay-input').value;
+    if(!val) return;
 
-                this.toggleModal(false);
-            }
-        });
-    },
+    // Минимальные суммы для каждой валюты
+    const minAmounts = { 'KZT': 600, 'RUB': 100, 'USD': 2 };
+    const curr = this.currentCurrency;
+    const minVal = minAmounts[curr] || 600;
+    const sym = this.symbols[curr];
+
+    if(val < minVal) return tg.showAlert(`Минимальная сумма — ${minVal} ${sym}`);
+
+    tg.showConfirm(`Создать счет на ${val} ${sym} через @send?\nПосле подтверждения бот пришлет вам ссылку на оплату.`, (ok) => {
+        if(ok) {
+            tg.sendData(JSON.stringify({ 
+                type: "deposit",
+                method: "crypto_pay",
+                amount: val,
+                currency: curr
+            }));
+            this.toggleModal(false);
+        }
+    });
+},
+
 
     initSnow() {
         const canvas = document.getElementById('snow');
