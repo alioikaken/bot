@@ -395,20 +395,13 @@ const App = {
     },
 
     syncUser() {
-        // Проверяем, что мы внутри Telegram
-        if(window.Telegram.WebApp.initDataUnsafe?.user) {
-            const u = window.Telegram.WebApp.initDataUnsafe.user;
+        if(tg.initDataUnsafe?.user) {
+            const u = tg.initDataUnsafe.user;
+            // Проверяем: если есть username, пишем его. Если нет — имя.
+            const displayName = u.username ? `@${u.username}` : u.first_name;
             
-            // Логика: если есть ник (@login), берем его. 
-            // Если ника нет, берем Имя. 
-            // Если и имени нет (бывает редко), оставляем "Пользователь".
-            const userDisplay = u.username ? `@${u.username}` : (u.first_name || "Пользователь");
-            
-            // Находим тот самый заголовок h2 и меняем в нем текст
-            document.getElementById('u-name').innerText = userDisplay;
+            document.getElementById('u-name').innerText = displayName;
             document.getElementById('user-id').innerText = `USER ID: ${u.id}`;
-        }
-    },
         }
     },
 
