@@ -395,15 +395,19 @@ const App = {
     },
 
     syncUser() {
-        if(tg.initDataUnsafe?.user) {
-            const u = tg.initDataUnsafe.user;
-            
-            // Проверяем: если у юзера есть username, пишем его через @. 
-            // Если нет (бывает, если не настроен), пишем Имя.
-            const displayName = u.username ? `@${u.username}` : u.first_name;
-            
-            document.getElementById('u-name').innerText = displayName;
-            document.getElementById('user-id').innerText = `USER ID: ${u.id}`;
+        if(tg.initDataUnsafe?.user) {
+            const u = tg.initDataUnsafe.user;
+            
+            // Получаем имя: если есть юзернейм — берем его, если нет — имя
+            const displayName = u.username ? `@${u.username}` : u.first_name;
+            
+            // Обновляем текст в профиле
+            const nameElement = document.getElementById('u-name');
+            if (nameElement) nameElement.innerText = displayName;
+            
+            // Обновляем ID пользователя
+            const idElement = document.getElementById('user-id');
+            if (idElement) idElement.innerText = `USER ID: ${u.id}`;
         }
     },
 
