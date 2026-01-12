@@ -108,19 +108,19 @@
         .info-section h4 { font-family: 'Unbounded'; font-size: 13px; color: var(--accent); margin-bottom: 10px; }
         .info-section p { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
 
-        /* МОДАЛЬНОЕ ОКНО ПОПОЛНЕНИЯ */
-        #deposit-modal {
+        /* ДОПОЛНИТЕЛЬНЫЙ СТИЛЬ ДЛЯ МОДАЛКИ (ЛОГИКА ОПЛАТЫ) */
+        #payment-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px);
-            z-index: 3000; align-items: center; justify-content: center; padding: 20px;
+            z-index: 2000; align-items: center; justify-content: center; padding: 20px;
         }
-        .modal-content {
-            background: var(--bg-card); width: 100%; max-width: 400px; border-radius: 28px;
-            padding: 25px; border: 1px solid rgba(56, 189, 248, 0.2);
+        .modal-body {
+            background: var(--bg-card); width: 100%; max-width: 350px; border-radius: 24px;
+            padding: 25px; border: 1px solid var(--accent); text-align: center;
         }
-        .dep-input {
-            width: 100%; background: var(--bg-main); border: 1px solid rgba(56, 189, 248, 0.2);
-            padding: 15px; border-radius: 15px; color: white; font-size: 20px; font-weight: 800;
+        .pay-input {
+            width: 100%; background: var(--bg-main); border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px; border-radius: 15px; color: white; font-size: 18px; font-weight: 800;
             margin: 15px 0; outline: none; text-align: center;
         }
     </style>
@@ -159,11 +159,11 @@
 <div id="wallet-screen" class="screen">
     <div class="wallet-card">
         <p class="wallet-label">ВАШ БАЛАНС</p>
-        <h1 class="wallet-balance"><span id="w-val">0.00</span> ₸</h1>
+        <h1 class="wallet-balance" id="wallet-val">0.00 ₸</h1>
         <p id="wallet-id" style="font-size: 10px; opacity: 0.7;">Личный счет ID: ---</p>
     </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;">
-        <button onclick="openDep()" style="background:var(--accent); color:#000; border:none; padding:16px; border-radius:16px; font-weight:800;">ПОПОЛНИТЬ</button>
+        <button onclick="openPayment()" style="background:var(--accent); color:#000; border:none; padding:16px; border-radius:16px; font-weight:800;">ПОПОЛНИТЬ</button>
         <button onclick="tg.showAlert('Недостаточно средств')" style="background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); padding:16px; border-radius:16px; font-weight:800;">ВЫВОД</button>
     </div>
     <h3 style="font-family:'Unbounded'; font-size: 10px; color: var(--text-dim); margin-bottom: 15px;">ИСТОРИЯ ОПЕРАЦИЙ</h3>
@@ -172,21 +172,12 @@
     </div>
 </div>
 
-<div id="deposit-modal">
-    <div class="modal-content">
-        <h3 style="font-family:'Unbounded'; font-size:14px; margin-bottom:10px;">ПОПОЛНЕНИЕ</h3>
-        <p style="font-size:11px; color:var(--text-dim);">Введите сумму в тенге:</p>
-        <input type="number" id="dep-sum" class="dep-input" placeholder="0">
-        
-        <button onclick="paySend()" style="width:100%; background:#38bdf8; color:black; border:none; padding:15px; border-radius:12px; font-weight:800; margin-bottom:10px; display:flex; justify-content:space-between;">
-            <span>Crypto Pay (@send)</span> <i class="fa-solid fa-paper-plane"></i>
-        </button>
-        
-        <button onclick="payKaspi()" style="width:100%; background:#ff3b30; color:white; border:none; padding:15px; border-radius:12px; font-weight:800; margin-bottom:15px; display:flex; justify-content:space-between;">
-            <span>Kaspi Gold</span> <i class="fa-solid fa-credit-card"></i>
-        </button>
-        
-        <button onclick="closeDep()" style="width:100%; background:transparent; color:var(--text-dim); border:none; font-size:12px;">ОТМЕНА</button>
+<div id="payment-modal">
+    <div class="modal-body">
+        <h3 style="font-family:'Unbounded'; font-size: 14px; color: var(--accent);">ПОПОЛНЕНИЕ</h3>
+        <input type="number" id="pay-amount" class="pay-input" placeholder="Введите сумму (₸)">
+        <button onclick="processDeposit()" style="width: 100%; background: var(--accent); color: black; border: none; padding: 15px; border-radius: 12px; font-weight: 800; margin-bottom: 10px;">ОПЛАТИТЬ @send</button>
+        <button onclick="closePayment()" style="background: transparent; border: none; color: var(--text-dim); font-size: 12px;">ОТМЕНА</button>
     </div>
 </div>
 
@@ -230,9 +221,6 @@
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
-
-    const ADMIN_USER = 'k3vinmaccalister';
-    const RATE = 485;
 
     const db = {
         'Telegram': [
@@ -304,27 +292,21 @@
         tg.showConfirm(`Подтверждаете покупку: ${name}? (Баланс: 0 ₸)`);
     }
 
-    function openDep() { document.getElementById('deposit-modal').style.display = 'flex'; }
-    function closeDep() { document.getElementById('deposit-modal').style.display = 'none'; }
-
-    function paySend() {
-        const val = document.getElementById('dep-sum').value;
-        if(!val || val < 100) return tg.showAlert("Минимум 100 ₸");
+    /* ЛОГИКА ОПЛАТЫ */
+    function openPayment() { document.getElementById('payment-modal').style.display = 'flex'; }
+    function closePayment() { document.getElementById('payment-modal').style.display = 'none'; }
+    
+    function processDeposit() {
+        const amount = document.getElementById('pay-amount').value;
+        if (!amount || amount < 100) {
+            tg.showAlert('Минимальная сумма пополнения — 100 ₸');
+            return;
+        }
         tg.sendData(JSON.stringify({
-            action: "deposit_crypto",
-            amount: val
+            action: 'deposit',
+            amount: amount
         }));
-    }
-
-    function payKaspi() {
-        const val = document.getElementById('dep-sum').value;
-        tg.showPopup({
-            title: 'Kaspi Gold',
-            message: `Пополнить на ${val || 0} ₸ через менеджера?`,
-            buttons: [{id: 'm', type: 'default', text: 'Написать'}, {type: 'cancel'}]
-        }, (id) => {
-            if(id === 'm') tg.openTelegramLink(`https://t.me/${ADMIN_USER}`);
-        });
+        closePayment();
     }
 
     const canvas = document.getElementById('snow');
@@ -343,9 +325,11 @@
 
     initSnow(); drawSnow(); renderPopular();
 
+    // LIVE DATA INJECTION
     if(tg.initDataUnsafe && tg.initDataUnsafe.user) {
         const user = tg.initDataUnsafe.user;
         const fullName = (user.first_name + (user.last_name ? ' ' + user.last_name : '')).trim();
+        
         document.getElementById('p-name').innerText = fullName || "Пользователь";
         document.getElementById('p-id').innerText = "ID: " + user.id;
         document.getElementById('wallet-id').innerText = "Личный счет ID: " + user.id;
