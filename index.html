@@ -412,15 +412,18 @@ const App = {
     },
 
     nav(id, el) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(el) {
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
-        }
-        tg.HapticFeedback.impactOccurred('medium');
-        window.scrollTo(0,0);
-    },
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+
+    if (id === 'profile-screen') this.syncUser(); // ← ВОТ ЭТО
+
+    if(el) {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+    }
+    tg.HapticFeedback.impactOccurred('medium');
+    window.scrollTo(0,0);
+},
 
     openCat(name) {
         document.getElementById('cat-title').innerText = name.toUpperCase();
