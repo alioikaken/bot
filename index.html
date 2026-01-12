@@ -298,17 +298,17 @@
     <a href="javascript:void(0)" class="nav-item" onclick="App.nav('profile-screen', this)"><i class="fa-solid fa-user-ninja"></i><span>Профиль</span></a>
 </nav>
 
-<script>
+<<script>
 const DB = {
     'Telegram': [
         { name: 'Казахстан (+7) | Tdata | Физическая Сим-Карта', price: 1500, tags: ['С отлегой', 'Авто-рег'], desc: 'Отлежка от 6 месяцев. Номера Казахстана. Чистые прокси.' },
         { name: 'Россия (+7) | Session | 2FA', price: 750, tags: ['Fast', 'Soft'], desc: 'Идеально для рассылок и инвайта. Без спамблока.' },
         { name: 'USA (+1) | Реальные Сим-Карты', price: 1100, tags: ['Stable', 'USA'], desc: 'Личные аккаунты, регистрация на Физический Сим-Карты Америки.' },
-		{ name: 'Великобритания (+44) | Реальные Сим-Карты', price: 1400, tags: ['Stable', 'UK'], desc: 'Не Валид , Любой способ входа , Проверенный.' },
-		{ name: 'Бангладеш (+880) | TG-регистрация ', price: 470, tags: ['Telegram', 'Asia'], desc: 'Эксклюзив для Telegram • Не подходят для других сервисов • Мгновенная выдача.' },
-		{ name: 'Кыргызстан (+996) | Telegram номера ', price: 280, tags: ['Fast', 'KG'], desc: 'Надёжные SIM, Подходят для Telegram, Лёгкий вход.' },
-		{ name: 'Сомали (+252)  | Telegram номера ', price: 280, tags: ['Fast', 'SO'], desc: 'Надёжные SIM, Подходят для Telegram, Не использую.' },
-		{ name: 'Египет (+20)  | Telegram номера ', price: 600, tags: ['Fast', 'EG'], desc: 'Подходят для Telegram, Лёгкий вход, Отлега 6 год.' }
+        { name: 'Великобритания (+44) | Реальные Сим-Карты', price: 1400, tags: ['Stable', 'UK'], desc: 'Не Валид , Любой способ входа , Проверенный.' },
+        { name: 'Бангладеш (+880) | TG-регистрация ', price: 470, tags: ['Telegram', 'Asia'], desc: 'Эксклюзив для Telegram • Не подходят для других сервисов • Мгновенная выдача.' },
+        { name: 'Кыргызстан (+996) | Telegram номера ', price: 280, tags: ['Fast', 'KG'], desc: 'Надёжные SIM, Подходят для Telegram, Лёгкий вход.' },
+        { name: 'Сомали (+252)  | Telegram номера ', price: 280, tags: ['Fast', 'SO'], desc: 'Надёжные SIM, Подходят для Telegram, Не использую.' },
+        { name: 'Египет (+20)  | Telegram номера ', price: 600, tags: ['Fast', 'EG'], desc: 'Подходят для Telegram, Лёгкий вход, Отлега 6 год.' }
     ],
     'WhatsApp': [
         { name: 'WA Business | Индонезия (+62)', price: 2200, tags: ['Business', 'API'], desc: 'Аккаунты для массовых рассылок. Высокий лимит.' },
@@ -343,9 +343,8 @@ const DB = {
 const tg = window.Telegram.WebApp;
 
 const App = {
-    // ЛОГИКА ВАЛЮТ
     currentCurrency: 'KZT',
-    rates: { 'KZT': 1, 'RUB': 0.19, 'USD': 0.0021 }, // Примерные курсы
+    rates: { 'KZT': 1, 'RUB': 0.19, 'USD': 0.0021 },
     symbols: { 'KZT': '₸', 'RUB': '₽', 'USD': '$' },
 
     init() {
@@ -354,7 +353,24 @@ const App = {
         this.initSnow();
         this.syncUser();
         this.updateCurrencyUI();
+        this.liveUser(); // ← live обновление username
         setTimeout(() => tg.ready(), 500);
+    },
+
+    // === LIVE USERNAME ===
+    liveUser() {
+        const nameEl = document.getElementById('u-name');
+        const idEl = document.getElementById('user-id');
+
+        setInterval(() => {
+            if(tg.initDataUnsafe?.user) {
+                const u = tg.initDataUnsafe.user;
+                const displayName = u.username ? `@${u.username}` : u.first_name;
+
+                if (nameEl && nameEl.innerText !== displayName) nameEl.innerText = displayName;
+                if (idEl && idEl.innerText !== `USER ID: ${u.id}`) idEl.innerText = `USER ID: ${u.id}`;
+            }
+        }, 1000); // проверка каждую секунду
     },
 
     toggleCurrency() {
@@ -364,16 +380,12 @@ const App = {
         
         document.getElementById('currency-btn').innerText = this.currentCurrency;
         this.updateCurrencyUI();
-        
-        // Перерисовываем текущий экран для обновления цен
         this.renderPopular();
         const catTitle = document.getElementById('cat-title').innerText;
         if (catTitle && catTitle !== 'КАТЕГОРИЯ') {
-            // Находим ключ категории по тексту заголовка
             const catKey = Object.keys(DB).find(k => k.toUpperCase() === catTitle);
             if (catKey) this.renderItems(DB[catKey], 'cat-render');
         }
-
         tg.HapticFeedback.impactOccurred('light');
     },
 
@@ -388,42 +400,32 @@ const App = {
         const rate = this.rates[this.currentCurrency];
         const sym = this.symbols[this.currentCurrency];
         const final = (priceKzt * rate);
-        
-        // Для USD показываем сотые, для остальных целые
         const formatted = this.currentCurrency === 'USD' ? final.toFixed(2) : Math.ceil(final).toLocaleString();
         return `${formatted} ${sym}`;
     },
 
     syncUser() {
-        if(tg.initDataUnsafe?.user) {
-            const u = tg.initDataUnsafe.user;
-            
-            // Получаем имя: если есть юзернейм — берем его, если нет — имя
-            const displayName = u.username ? `@${u.username}` : u.first_name;
-            
-            // Обновляем текст в профиле
-            const nameElement = document.getElementById('u-name');
-            if (nameElement) nameElement.innerText = displayName;
-            
-            // Обновляем ID пользователя
-            const idElement = document.getElementById('user-id');
-            if (idElement) idElement.innerText = `USER ID: ${u.id}`;
+        if(tg.initDataUnsafe?.user) {
+            const u = tg.initDataUnsafe.user;
+            const displayName = u.username ? `@${u.username}` : u.first_name;
+            const nameElement = document.getElementById('u-name');
+            if (nameElement) nameElement.innerText = displayName;
+            const idElement = document.getElementById('user-id');
+            if (idElement) idElement.innerText = `USER ID: ${u.id}`;
         }
     },
 
     nav(id, el) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-
-    if (id === 'profile-screen') this.syncUser(); // ← ВОТ ЭТО
-
-    if(el) {
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        el.classList.add('active');
-    }
-    tg.HapticFeedback.impactOccurred('medium');
-    window.scrollTo(0,0);
-},
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if (id === 'profile-screen') this.syncUser();
+        if(el) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+        tg.HapticFeedback.impactOccurred('medium');
+        window.scrollTo(0,0);
+    },
 
     openCat(name) {
         document.getElementById('cat-title').innerText = name.toUpperCase();
@@ -485,7 +487,6 @@ const App = {
     createInvoice() {
         const val = document.getElementById('pay-input').value;
         if(!val || val < 600) return tg.showAlert("Минимальная сумма — 600 ₸");
-
         tg.showConfirm(`Создать счет на ${val} ₸ через @send?\nПосле подтверждения бот пришлет вам ссылку на оплату.`, (ok) => {
             if(ok) {
                 tg.sendData(JSON.stringify({ type: "deposit", method: "crypto_pay", amount: val }));
@@ -518,5 +519,6 @@ const App = {
 
 App.init();
 </script>
+
 </body>
 </html>
