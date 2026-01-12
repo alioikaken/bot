@@ -458,7 +458,20 @@ const App = {
     buy(name, priceKzt) {
         const displayPrice = this.getConvertedPrice(priceKzt);
         tg.showConfirm(`Подтвердить покупку ${name} за ${displayPrice}?`, (ok) => {
-            if(ok) tg.showAlert("Недостаточно средств на балансе. Перейдите в кошелек.");
+            if(ok) {
+                tg.showPopup({
+                    title: "Баланс пуст",
+                    message: "Для покупки пополните баланс или напишите поддержке.",
+                    buttons: [
+                        {id: "pay", type: "default", text: "Пополнить"},
+                        {id: "support", type: "default", text: "Поддержка"},
+                        {type: "cancel", text: "Отмена"}
+                    ]
+                }, (buttonId) => {
+                    if (buttonId === "pay") this.nav('wallet-screen', document.querySelectorAll('.nav-item')[1]);
+                    if (buttonId === "support") tg.openTelegramLink("https://t.me/k3vinmaccalister");
+                });
+            }
         });
     },
 
