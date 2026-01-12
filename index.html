@@ -397,7 +397,10 @@ const App = {
     syncUser() {
         if(tg.initDataUnsafe?.user) {
             const u = tg.initDataUnsafe.user;
-            document.getElementById('u-name').innerText = u.first_name;
+            // Проверяем: если есть username, пишем его. Если нет — имя.
+            const displayName = u.username ? `@${u.username}` : u.first_name;
+            
+            document.getElementById('u-name').innerText = displayName;
             document.getElementById('user-id').innerText = `USER ID: ${u.id}`;
         }
     },
