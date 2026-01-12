@@ -396,7 +396,7 @@ const App = {
 
     createInvoice() {
         const val = document.getElementById('pay-input').value;
-        if(!val || val < 100) return tg.showAlert("Минимальная сумма — 100 ₸");
+        if(!val || val < 600) return tg.showAlert("Минимальная сумма — 600 ₸");
 
         tg.showConfirm(`Создать счет на ${val} ₸ через @send?\nПосле подтверждения бот пришлет вам ссылку на оплату.`, (ok) => {
             if(ok) {
