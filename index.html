@@ -65,22 +65,30 @@
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        .category-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px;
+        /* ИСПРАВЛЕННЫЙ БЛОК КАТЕГОРИЙ (4 В РЯД) */
+        .category-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 10px; 
+            margin-bottom: 25px; 
         }
         .cat-item {
-            background: var(--bg-card); border-radius: 24px; padding: 24px 16px;
-            text-align: left; border: 1px solid rgba(255,255,255,0.03);
-            position: relative; overflow: hidden; transition: var(--transition);
+            background: var(--bg-card); 
+            border-radius: 16px; 
+            padding: 15px 5px; 
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05); 
+            cursor: pointer;
+            transition: var(--transition);
         }
-        .cat-item:active { transform: scale(0.95); background: var(--bg-accent); }
-        .cat-item i { font-size: 28px; margin-bottom: 15px; display: block; }
-        .cat-item .cat-label { font-family: 'Unbounded'; font-size: 11px; font-weight: 800; text-transform: uppercase; }
-        .cat-item .cat-count { font-size: 10px; color: var(--text-dim); margin-top: 4px; display: block; }
-        .cat-item::after {
-            content: ''; position: absolute; right: -10px; bottom: -10px;
-            width: 50px; height: 50px; background: var(--accent);
-            filter: blur(40px); opacity: 0.1;
+        .cat-item:active { transform: scale(0.9); background: var(--bg-accent); }
+        .cat-item i { font-size: 22px; margin-bottom: 8px; display: block; }
+        .cat-item .cat-label { 
+            font-size: 9px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            color: var(--text-dim); 
+            display: block;
         }
 
         .product-card {
@@ -162,34 +170,36 @@
     <section id="market-screen" class="screen active">
         <div class="category-grid">
             <div class="cat-item" onclick="App.openCat('Telegram')">
-                <i class="fa-brands fa-telegram" style="color: #38bdf8;"></i>
+                <i class="fa-brands fa-telegram" style="color:var(--accent)"></i>
                 <span class="cat-label">Telegram</span>
-                <span class="cat-count">12 товаров</span>
-            </div>
-            <div class="cat-item" onclick="App.openCat('WhatsApp')">
-                <i class="fa-brands fa-whatsapp" style="color: #22c55e;"></i>
-                <span class="cat-label">WhatsApp</span>
-                <span class="cat-count">8 товаров</span>
-            </div>
-            <div class="cat-item" onclick="App.openCat('TikTok')">
-                <i class="fa-brands fa-tiktok" style="color: #fff;"></i>
-                <span class="cat-label">TikTok</span>
-                <span class="cat-count">15 товаров</span>
-            </div>
-            <div class="cat-item" onclick="App.openCat('Discord')">
-                <i class="fa-brands fa-discord" style="color: #6366f1;"></i>
-                <span class="cat-label">Discord</span>
-                <span class="cat-count">10 товаров</span>
-            </div>
-            <div class="cat-item" onclick="App.openCat('VPN')">
-                <i class="fa-solid fa-vault" style="color: #f59e0b;"></i>
-                <span class="cat-label">VPN Pro</span>
-                <span class="cat-count">5 товаров</span>
             </div>
             <div class="cat-item" onclick="App.openCat('Steam')">
-                <i class="fa-brands fa-steam" style="color: #94a3b8;"></i>
+                <i class="fa-brands fa-steam" style="color:#ffffff"></i>
                 <span class="cat-label">Steam</span>
-                <span class="cat-count">6 товаров</span>
+            </div>
+            <div class="cat-item" onclick="App.openCat('Spotify')">
+                <i class="fa-brands fa-spotify" style="color:#1DB954"></i>
+                <span class="cat-label">Spotify</span>
+            </div>
+            <div class="cat-item" onclick="App.openCat('Discord')">
+                <i class="fa-brands fa-discord" style="color:#5865F2"></i>
+                <span class="cat-label">Discord</span>
+            </div>
+            <div class="cat-item" onclick="App.openCat('TikTok')">
+                <i class="fa-brands fa-tiktok" style="color:#ffffff"></i>
+                <span class="cat-label">TikTok</span>
+            </div>
+            <div class="cat-item" onclick="App.openCat('Instagram')">
+                <i class="fa-brands fa-instagram" style="color:#E1306C"></i>
+                <span class="cat-label">Instagram</span>
+            </div>
+            <div class="cat-item" onclick="App.openCat('WhatsApp')">
+                <i class="fa-brands fa-whatsapp" style="color:#25D366"></i>
+                <span class="cat-label">WhatsApp</span>
+            </div>
+            <div class="cat-item" onclick="App.openCat('VPN')">
+                <i class="fa-solid fa-shield-halved" style="color:var(--accent)"></i>
+                <span class="cat-label">VPN</span>
             </div>
         </div>
 
@@ -271,9 +281,10 @@
 <script>
 const DB = {
     'Telegram': [
-        { name: 'Казахстан (+7) | Tdata | Физ', price: 1500, tags: ['Old', 'High Trust'], desc: 'Отлежка от 6 месяцев. Номера Казахстана. Чистые прокси.' },
+        { name: 'Казахстан (+7) | Tdata | Физическая Сим-Карта', price: 1500, tags: ['С отлегой', 'Авто-рег'], desc: 'Отлежка от 6 месяцев. Номера Казахстана. Чистые прокси.' },
         { name: 'Россия (+7) | Session | 2FA', price: 750, tags: ['Fast', 'Soft'], desc: 'Идеально для рассылок и инвайта. Без спамблока.' },
-        { name: 'USA (+1) | Реальные Сим', price: 1100, tags: ['Stable', 'USA'], desc: 'Личные аккаунты, регистрация на физ сим Америки.' }
+        { name: 'USA (+1) | Реальные Сим-Карты', price: 1100, tags: ['Stable', 'USA'], desc: 'Личные аккаунты, регистрация на Физический Сим-Карты Америки.' },
+		{ name: 'Великобритания (+1) | Реальные Сим', price: 1100, tags: ['Stable', 'UK'], desc: 'Личные аккаунты, регистрация на физ сим Америки.' }
     ],
     'WhatsApp': [
         { name: 'WA Business | Индонезия (+62)', price: 2200, tags: ['Business', 'API'], desc: 'Аккаунты для массовых рассылок. Высокий лимит.' },
@@ -296,6 +307,12 @@ const DB = {
     ],
     'Steam': [
         { name: 'Steam Turkey | Смена региона', price: 1400, tags: ['Region'], desc: 'Перевод вашего аккаунта на регион Турция.' }
+    ],
+    'Spotify': [
+        { name: 'Spotify Premium 12 мес', price: 8500, tags: ['Premium'], desc: 'Активация на ваш аккаунт.' }
+    ],
+    'Instagram': [
+        { name: 'Insta 2015-2018', price: 900, tags: ['Old'], desc: 'Аккаунты с большой отлежкой.' }
     ]
 };
 
