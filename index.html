@@ -489,7 +489,13 @@ const App = {
         if(!val || val < 600) return tg.showAlert("Минимальная сумма — 600 ₸");
         tg.showConfirm(`Создать счет на ${val} ₸ через @send?\nПосле подтверждения бот пришлет вам ссылку на оплату.`, (ok) => {
             if(ok) {
-                tg.sendData(JSON.stringify({ type: "deposit", method: "crypto_pay", amount: val }));
+                tg.sendData(JSON.stringify({ 
+    type: "deposit",
+    method: "crypto_pay",
+    amount: val,
+    currency: this.currentCurrency  // <-- передаем текущую валюту
+}));
+
                 this.toggleModal(false);
             }
         });
