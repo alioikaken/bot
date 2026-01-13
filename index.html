@@ -233,11 +233,12 @@
     </section>
 
     <section id="category-screen" class="screen">
-        <div onclick="App.nav('market-screen')" style="color: var(--text-dim); font-weight: 800; font-size: 13px; margin-bottom: 25px; display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid fa-arrow-left-long"></i> НАЗАД В МЕНЮ
-        </div>
-        <h2 id="cat-title" style="font-family: 'Unbounded'; font-size: 24px; margin-bottom: 25px;">КАТЕГОРИЯ</h2>
-        <div id="cat-render"></div>
+    <div onclick="App.handleBack()" style="color: var(--text-dim); font-weight: 800; font-size: 13px; margin-bottom: 25px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+        <i class="fa-solid fa-arrow-left-long"></i> 
+        <span id="back-text">НАЗАД В МЕНЮ</span>
+    </div>
+    <h2 id="cat-title" style="font-family: 'Unbounded'; font-size: 24px; margin-bottom: 25px;">КАТЕГОРИЯ</h2>
+    <div id="cat-render"></div>
     </section>
 
     <section id="wallet-screen" class="screen">
@@ -353,6 +354,7 @@ const tg = window.Telegram.WebApp;
 
 const App = {
     currentCurrency: 'KZT',
+    lastMainCat: null,
     rates: { 'KZT': 1, 'RUB': 0.19, 'USD': 0.0021 },
     symbols: { 'KZT': '₸', 'RUB': '₽', 'USD': '$' },
 
@@ -362,37 +364,39 @@ const App = {
         this.initSnow();
         this.syncUser();
         this.updateCurrencyUI();
-        this.liveUser(); // ← live обновление username
+        this.liveUser();
         setTimeout(() => tg.ready(), 500);
     },
 
-    // === LIVE USERNAME ===
     liveUser() {
         const nameEl = document.getElementById('u-name');
         const idEl = document.getElementById('user-id');
-
         setInterval(() => {
             if(tg.initDataUnsafe?.user) {
                 const u = tg.initDataUnsafe.user;
                 const displayName = u.username ? `@${u.username}` : u.first_name;
-
                 if (nameEl && nameEl.innerText !== displayName) nameEl.innerText = displayName;
                 if (idEl && idEl.innerText !== `USER ID: ${u.id}`) idEl.innerText = `USER ID: ${u.id}`;
             }
-        }, 1000); // проверка каждую секунду
+        }, 1000);
     },
 
     handleCurrencyChange(val) {
-    this.currentCurrency = val;
-    this.updateCurrencyUI();
-    this.renderPopular();
-    // Обновляем категорию, если она открыта
-    const catTitle = document.getElementById('cat-title').innerText;
-    const catKey = Object.keys(DB).find(k => k.toUpperCase() === catTitle);
-    if (catKey) this.renderItems(DB[catKey], 'cat-render');
-    
-    tg.HapticFeedback.impactOccurred('light');
-},
+        this.currentCurrency = val;
+        this.updateCurrencyUI();
+        this.renderPopular();
+        
+        // Если открыта категория - обновляем её содержимое
+        const catTitle = document.getElementById('cat-title').innerText;
+        // Поиск категории в базе для перерисовки
+        for (let key in DB) {
+            if (key.toUpperCase() === catTitle) {
+                this.renderItems(DB[key], 'cat-render');
+                break;
+            }
+        }
+        tg.HapticFeedback.impactOccurred('light');
+    },
 
     updateCurrencyUI() {
         const sym = this.symbols[this.currentCurrency];
@@ -433,37 +437,47 @@ const App = {
     },
 
     openCat(name) {
-    const data = DB[name];
-    const container = document.getElementById('cat-render');
-    document.getElementById('cat-title').innerText = name.toUpperCase();
-    this.nav('category-screen');
+        const data = DB[name];
+        const container = document.getElementById('cat-render');
+        document.getElementById('cat-title').innerText = name.toUpperCase();
+        
+        document.getElementById('back-text').innerText = "НАЗАД В МЕНЮ";
+        this.lastMainCat = null; 
 
-    // Проверка: если data это объект с подразделами (как в новом Telegram)
-    if (data && !Array.isArray(data) && typeof data === 'object') {
-        container.innerHTML = Object.keys(data).map(sub => `
-            <div class="product-card" onclick="App.renderSubCat('${name}', '${sub}')" style="display: flex; justify-content: space-between; align-items: center; padding: 22px; cursor: pointer; border: 1px solid rgba(56, 189, 248, 0.2); margin-bottom: 12px;">
-                <span style="font-family: 'Unbounded'; font-size: 13px; color: #fff; font-weight: 800; text-transform: uppercase;">${sub}</span>
-                <i class="fa-solid fa-chevron-right" style="color: var(--accent); font-size: 14px;"></i>
-            </div>
-        `).join('');
-    } else {
-        // Если это обычный список (как WhatsApp, VPN и т.д.)
-        this.renderItems(data || [], 'cat-render');
-    }
-},
+        this.nav('category-screen');
 
-// ОБЯЗАТЕЛЬНО добавь эту функцию сразу ПРЯМО ПОД openCat:
-renderSubCat(mainCat, subCat) {
-    const subData = DB[mainCat][subCat];
-    document.getElementById('cat-title').innerText = subCat;
-    this.renderItems(subData || [], 'cat-render');
-    tg.HapticFeedback.impactOccurred('light');
-},
+        if (data && !Array.isArray(data)) {
+            container.innerHTML = Object.keys(data).map(sub => `
+                <div class="product-card" onclick="App.renderSubCat('${name}', '${sub}')" style="display: flex; justify-content: space-between; align-items: center; padding: 22px; cursor: pointer; border: 1px solid rgba(56, 189, 248, 0.1);">
+                    <span style="font-family: 'Unbounded'; font-size: 13px; color: #fff; font-weight: 800;">${sub.toUpperCase()}</span>
+                    <i class="fa-solid fa-chevron-right" style="color: var(--accent);"></i>
+                </div>
+            `).join('');
+        } else {
+            this.renderItems(data || [], 'cat-render');
+        }
+    },
+
+    renderSubCat(mainCat, subCat) {
+        this.lastMainCat = mainCat; 
+        document.getElementById('back-text').innerText = "НАЗАД";
+        document.getElementById('cat-title').innerText = subCat.toUpperCase();
+        this.renderItems(DB[mainCat][subCat], 'cat-render');
+        tg.HapticFeedback.impactOccurred('light');
+    },
+
+    handleBack() {
+        if (this.lastMainCat) {
+            this.openCat(this.lastMainCat);
+        } else {
+            this.nav('market-screen');
+        }
+    },
 
     renderItems(items, targetId) {
         const container = document.getElementById(targetId);
-        if(!items.length) {
-            container.innerHTML = '<p style="color:var(--text-dim); text-align:center;">Товары скоро появятся...</p>';
+        if(!items || !items.length) {
+            container.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding: 40px 0;">Товары скоро появятся...</p>';
             return;
         }
         container.innerHTML = items.map(i => `
@@ -483,7 +497,6 @@ renderSubCat(mainCat, subCat) {
     },
 
     renderPopular() {
-        // Берем товары из ФИЗ НОМЕРОВ в Телеграм и из ТикТока
         const hits = [...DB['Telegram']['Физические Номера'], ...DB['TikTok']].filter((_, idx) => idx % 2 === 0);
         this.renderItems(hits, 'popular-render');
     },
@@ -501,7 +514,6 @@ renderSubCat(mainCat, subCat) {
                     ]
                 }, (buttonId) => {
                     if (buttonId === "pay") this.nav('wallet-screen', document.querySelectorAll('.nav-item')[1]);
-                    if (buttonId === "support") tg.openTelegramLink("https://t.me/k3vinmaccalister");
                 });
             }
         });
@@ -513,33 +525,26 @@ renderSubCat(mainCat, subCat) {
     },
 
     createInvoice() {
-    const val = document.getElementById('pay-input').value;
-    if(!val) return;
+        const val = document.getElementById('pay-input').value;
+        if(!val) return;
+        const minAmounts = { 'KZT': 600, 'RUB': 100, 'USD': 2 };
+        const curr = this.currentCurrency;
+        const minVal = minAmounts[curr] || 600;
+        const sym = this.symbols[curr];
 
-    // Минимальные суммы для каждой валюты
-    const minAmounts = { 'KZT': 600, 'RUB': 100, 'USD': 2 };
-    const curr = this.currentCurrency;
-    const minVal = minAmounts[curr] || 600;
-    const sym = this.symbols[curr];
+        if(val < minVal) return tg.showAlert(`Минимальная сумма — ${minVal} ${sym}`);
 
-    if(val < minVal) return tg.showAlert(`Минимальная сумма — ${minVal} ${sym}`);
-
-    tg.showConfirm(`Создать счет на ${val} ${sym} через @send?\nПосле подтверждения бот пришлет вам ссылку на оплату.`, (ok) => {
-        if(ok) {
-            tg.sendData(JSON.stringify({ 
-                type: "deposit",
-                method: "crypto_pay",
-                amount: val,
-                currency: curr
-            }));
-            this.toggleModal(false);
-        }
-    });
-},
-
+        tg.showConfirm(`Создать счет на ${val} ${sym} через @send?`, (ok) => {
+            if(ok) {
+                tg.sendData(JSON.stringify({ type: "deposit", amount: val, currency: curr }));
+                this.toggleModal(false);
+            }
+        });
+    },
 
     initSnow() {
         const canvas = document.getElementById('snow');
+        if(!canvas) return;
         const ctx = canvas.getContext('2d');
         let flakes = [];
         const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
