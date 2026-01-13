@@ -305,16 +305,20 @@
 
 <script>
 const DB = {
-    'Telegram': [
-        { name: 'Казахстан (+7) | Tdata | Физическая Сим-Карта', price: 1500, tags: ['С отлегой', 'Авто-рег'], desc: 'Отлежка от 6 месяцев. Номера Казахстана. Чистые прокси.' },
-        { name: 'Россия (+7) | Session | 2FA', price: 750, tags: ['Fast', 'Soft'], desc: 'Идеально для рассылок и инвайта. Без спамблока.' },
-        { name: 'USA (+1) | Реальные Сим-Карты', price: 1100, tags: ['Stable', 'USA'], desc: 'Личные аккаунты, регистрация на Физический Сим-Карты Америки.' },
-        { name: 'Великобритания (+44) | Реальные Сим-Карты', price: 1400, tags: ['Stable', 'UK'], desc: 'Не Валид , Любой способ входа , Проверенный.' },
-        { name: 'Бангладеш (+880) | TG-регистрация ', price: 470, tags: ['Telegram', 'Asia'], desc: 'Эксклюзив для Telegram • Не подходят для других сервисов • Мгновенная выдача.' },
-        { name: 'Кыргызстан (+996) | Telegram номера ', price: 280, tags: ['Fast', 'KG'], desc: 'Надёжные SIM, Подходят для Telegram, Лёгкий вход.' },
-        { name: 'Сомали (+252)  | Telegram номера ', price: 280, tags: ['Fast', 'SO'], desc: 'Надёжные SIM, Подходят для Telegram, Не использую.' },
-        { name: 'Египет (+20)  | Telegram номера ', price: 600, tags: ['Fast', 'EG'], desc: 'Подходят для Telegram, Лёгкий вход, Отлега 6 год.' }
-    ],
+    'Telegram': {
+        'Физические Номера': [
+            { name: 'Казахстан (+7) | Tdata | Физическая Сим-Карта', price: 1500, tags: ['С отлегой', 'Авто-рег'], desc: 'Отлежка от 6 месяцев. Номера Казахстана. Чистые прокси.' },
+            { name: 'Россия (+7) | Session | 2FA', price: 750, tags: ['Fast', 'Soft'], desc: 'Идеально для рассылок и инвайта. Без спамблока.' },
+            { name: 'USA (+1) | Реальные Сим-Карты', price: 1100, tags: ['Stable', 'USA'], desc: 'Личные аккаунты, регистрация на Физический Сим-Карты Америки.' },
+            { name: 'Великобритания (+44) | Реальные Сим-Карты', price: 1400, tags: ['Stable', 'UK'], desc: 'Не Валид , Любой способ входа , Проверенный.' },
+            { name: 'Бангладеш (+880) | TG-регистрация ', price: 470, tags: ['Telegram', 'Asia'], desc: 'Эксклюзив для Telegram • Не подходят для других сервисов • Мгновенная выдача.' },
+            { name: 'Кыргызстан (+996) | Telegram номера ', price: 280, tags: ['Fast', 'KG'], desc: 'Надёжные SIM, Подходят для Telegram, Лёгкий вход.' },
+            { name: 'Сомали (+252)  | Telegram номера ', price: 280, tags: ['Fast', 'SO'], desc: 'Надёжные SIM, Подходят для Telegram, Не использую.' },
+            { name: 'Египет (+20)  | Telegram номера ', price: 600, tags: ['Fast', 'EG'], desc: 'Подходят для Telegram, Лёгкий вход, Отлега 6 год.' }
+        ],
+        'NFT': [],
+        'Звезды': []
+    },
     'WhatsApp': [
         { name: 'WA Business | Индонезия (+62)', price: 2200, tags: ['Business', 'API'], desc: 'Аккаунты для массовых рассылок. Высокий лимит.' },
         { name: 'WA Личный | Казахстан (+7)', price: 3500, tags: ['Real', 'KZ'], desc: 'Физ. сим Казахстан. Ручная регистрация.' },
@@ -429,10 +433,32 @@ const App = {
     },
 
     openCat(name) {
-        document.getElementById('cat-title').innerText = name.toUpperCase();
-        this.renderItems(DB[name] || [], 'cat-render');
-        this.nav('category-screen');
-    },
+    const data = DB[name];
+    const container = document.getElementById('cat-render');
+    document.getElementById('cat-title').innerText = name.toUpperCase();
+    this.nav('category-screen');
+
+    // Проверка: если data это объект с подразделами (как в новом Telegram)
+    if (data && !Array.isArray(data) && typeof data === 'object') {
+        container.innerHTML = Object.keys(data).map(sub => `
+            <div class="product-card" onclick="App.renderSubCat('${name}', '${sub}')" style="display: flex; justify-content: space-between; align-items: center; padding: 22px; cursor: pointer; border: 1px solid rgba(56, 189, 248, 0.2); margin-bottom: 12px;">
+                <span style="font-family: 'Unbounded'; font-size: 13px; color: #fff; font-weight: 800; text-transform: uppercase;">${sub}</span>
+                <i class="fa-solid fa-chevron-right" style="color: var(--accent); font-size: 14px;"></i>
+            </div>
+        `).join('');
+    } else {
+        // Если это обычный список (как WhatsApp, VPN и т.д.)
+        this.renderItems(data || [], 'cat-render');
+    }
+},
+
+// ОБЯЗАТЕЛЬНО добавь эту функцию сразу ПРЯМО ПОД openCat:
+renderSubCat(mainCat, subCat) {
+    const subData = DB[mainCat][subCat];
+    document.getElementById('cat-title').innerText = subCat;
+    this.renderItems(subData || [], 'cat-render');
+    tg.HapticFeedback.impactOccurred('light');
+},
 
     renderItems(items, targetId) {
         const container = document.getElementById(targetId);
@@ -457,7 +483,8 @@ const App = {
     },
 
     renderPopular() {
-        const hits = [...DB['Telegram'], ...DB['TikTok']].filter((_, idx) => idx % 2 === 0);
+        // Берем товары из ФИЗ НОМЕРОВ в Телеграм и из ТикТока
+        const hits = [...DB['Telegram']['Физические Номера'], ...DB['TikTok']].filter((_, idx) => idx % 2 === 0);
         this.renderItems(hits, 'popular-render');
     },
 
