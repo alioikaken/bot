@@ -361,7 +361,6 @@ const App = {
     currentMethod: 'crypto', 
     currentCurrency: 'KZT',
     lastMainCat: null,
-    // Добавлен курс XTR (Stars). Пример: 1000 KZT = 100 Stars (курс 0.1)
     rates: { 'KZT': 1, 'RUB': 0.19, 'USD': 0.0021, 'XTR': 0.1 }, 
     symbols: { 'KZT': '₸', 'RUB': '₽', 'USD': '$', 'XTR': '⭐' },
 
@@ -375,65 +374,61 @@ const App = {
         setTimeout(() => tg.ready(), 500);
     },
 
-    // ОБНОВЛЕННЫЙ МЕТОД: При смене валюты в селекторе
+    // ЕДИНАЯ ФУНКЦИЯ СМЕНЫ ВАЛЮТЫ (БЕЗ ДУБЛИКАТОВ)
     handleCurrencyChange(val) {
         this.currentCurrency = val;
         
-        // Если пользователь выбрал валюту Stars, 
-        // мы автоматически переключаем способ оплаты на Stars
-        if (val === 'XTR') {
-            this.setPayMethod('stars');
-        } else {
-            this.setPayMethod('crypto');
-        }
+        // Авто-выбор метода оплаты
+        this.setPayMethod(val === 'XTR' ? 'stars' : 'crypto');
 
         this.updateCurrencyUI();
-        this.renderPopular();
-        
-        // Обновляем текущую открытую категорию, если она есть
+        this.renderPopular(); // Обновить главную
+
+        // Глубокое обновление текущей открытой категории
         const catTitleEl = document.getElementById('cat-title');
-        if (catTitleEl && catTitleEl.innerText !== 'КАТЕГОРИЯ') {
-            const currentCatName = catTitleEl.innerText;
-            // Ищем ключ в базе данных, который совпадает с заголовком
-            for (let key in DB) {
-                if (key.toUpperCase() === currentCatName) {
-                    this.renderItems(DB[key], 'cat-render');
-                    break;
+        const currentTitle = catTitleEl ? catTitleEl.innerText.trim() : "";
+
+        if (currentTitle && currentTitle !== "КАТЕГОРИЯ") {
+            // Если мы в подкатегории (есть родитель)
+            if (this.lastMainCat && DB[this.lastMainCat] && DB[this.lastMainCat][currentTitle]) {
+                this.renderItems(DB[this.lastMainCat][currentTitle], 'cat-render');
+            } 
+            // Если мы в основной категории
+            else if (DB[currentTitle]) {
+                const data = DB[currentTitle];
+                if (Array.isArray(data)) {
+                    this.renderItems(data, 'cat-render');
                 }
             }
         }
-        tg.HapticFeedback.impactOccurred('light');
+        
+        tg.HapticFeedback.impactOccurred('medium');
     },
 
-    // ОБНОВЛЕННЫЙ МЕТОД: Конвертация цен теперь понимает Stars
-    getConvertedPrice(priceKzt) {
-        const rate = this.rates[this.currentCurrency];
-        const sym = this.symbols[this.currentCurrency];
-        const final = (priceKzt * rate);
-        
-        let formatted;
-        if (this.currentCurrency === 'USD') {
-            formatted = final.toFixed(2);
-        } else if (this.currentCurrency === 'XTR') {
-            formatted = Math.ceil(final); // Звезды всегда целые (округляем вверх)
-        } else {
-            formatted = Math.ceil(final).toLocaleString();
-        }
-        
-        return `${formatted} ${sym}`;
-    },
-
-    // Метод для обновления всех значков валют на экране
     updateCurrencyUI() {
         const sym = this.symbols[this.currentCurrency];
-        if(document.getElementById('top-symbol')) document.getElementById('top-symbol').innerText = sym;
+        document.getElementById('top-symbol').innerText = sym;
         document.querySelectorAll('.curr-sym').forEach(el => el.innerText = sym);
-        if(document.getElementById('profile-total')) document.getElementById('profile-total').innerText = `0 ${sym}`;
-        
+        document.getElementById('profile-total').innerText = `0 ${sym}`;
         const wVal = document.getElementById('w-val');
         if (wVal && wVal.nextElementSibling) {
             wVal.nextElementSibling.innerText = sym;
         }
+    },
+
+    getConvertedPrice(priceKzt) {
+        const rate = this.rates[this.currentCurrency];
+        const sym = this.symbols[this.currentCurrency];
+        const final = (priceKzt * rate);
+        let formatted;
+        if (this.currentCurrency === 'USD') {
+            formatted = final.toFixed(2);
+        } else if (this.currentCurrency === 'XTR') {
+            formatted = Math.ceil(final);
+        } else {
+            formatted = Math.ceil(final).toLocaleString();
+        }
+        return `${formatted} ${sym}`;
     },
 
     setPayMethod(method) {
@@ -442,102 +437,28 @@ const App = {
         document.getElementById('btn-crypto').style.color = method === 'crypto' ? '#000' : '#fff';
         document.getElementById('btn-stars').style.background = method === 'stars' ? 'var(--gold)' : 'var(--bg-accent)';
         document.getElementById('btn-stars').style.color = method === 'stars' ? '#000' : '#fff';
-        tg.HapticFeedback.impactOccurred('light');
     },
 
     createInvoice() {
-    const val = document.getElementById('pay-input').value;
-    if(!val) return;
-    
-    const curr = this.currentCurrency;
-    const method = this.currentMethod;
-
-    tg.showConfirm(`Создать счет на ${val} через ${method.toUpperCase()}?`, (ok) => {
-        if(ok) {
-            // Формируем JSON строку
-            const data = JSON.stringify({ 
-                type: "deposit", 
-                method: method,
-                amount: Number(val), 
-                currency: curr 
-            });
-
-            // Отправляем данные боту
-            tg.sendData(data);
-            
-            // Важно: закрываем окно, чтобы пользователь увидел счет в чате
-            tg.close();
-        }
-    });
-},
-
-    liveUser() {
-        const nameEl = document.getElementById('u-name');
-        const idEl = document.getElementById('user-id');
-        setInterval(() => {
-            if(tg.initDataUnsafe?.user) {
-                const u = tg.initDataUnsafe.user;
-                const displayName = u.username ? `@${u.username}` : u.first_name;
-                if (nameEl) nameEl.innerText = displayName;
-                if (idEl) idEl.innerText = `USER ID: ${u.id}`;
+        const val = document.getElementById('pay-input').value;
+        if(!val) return;
+        tg.showConfirm(`Создать счет на ${val} ${this.symbols[this.currentCurrency]} через ${this.currentMethod.toUpperCase()}?`, (ok) => {
+            if(ok) {
+                tg.sendData(JSON.stringify({ 
+                    type: "deposit", 
+                    method: this.currentMethod,
+                    amount: Number(val), 
+                    currency: this.currentCurrency 
+                }));
+                tg.close();
             }
-        }, 1000);
-    },
-
-    handleCurrencyChange(val) {
-        this.currentCurrency = val;
-        this.updateCurrencyUI();
-        this.renderPopular();
-        const catTitle = document.getElementById('cat-title').innerText;
-        for (let key in DB) {
-            if (key.toUpperCase() === catTitle) {
-                this.renderItems(DB[key], 'cat-render');
-                break;
-            }
-        }
-        tg.HapticFeedback.impactOccurred('light');
-    },
-
-    updateCurrencyUI() {
-        const sym = this.symbols[this.currentCurrency];
-        document.getElementById('top-symbol').innerText = sym;
-        document.querySelectorAll('.curr-sym').forEach(el => el.innerText = sym);
-        document.getElementById('profile-total').innerText = `0 ${sym}`;
-        document.getElementById('w-val').nextElementSibling.innerText = sym;
-    },
-
-    getConvertedPrice(priceKzt) {
-        const rate = this.rates[this.currentCurrency];
-        const sym = this.symbols[this.currentCurrency];
-        const final = (priceKzt * rate);
-        const formatted = this.currentCurrency === 'USD' ? final.toFixed(2) : Math.ceil(final).toLocaleString();
-        return `${formatted} ${sym}`;
-    },
-
-    syncUser() {
-        if(tg.initDataUnsafe?.user) {
-            const u = tg.initDataUnsafe.user;
-            const displayName = u.username ? `@${u.username}` : u.first_name;
-            document.getElementById('u-name').innerText = displayName;
-            document.getElementById('user-id').innerText = `USER ID: ${u.id}`;
-        }
-    },
-
-    nav(id, el) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(el) {
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
-        }
-        tg.HapticFeedback.impactOccurred('medium');
-        window.scrollTo(0,0);
+        });
     },
 
     openCat(name) {
         const data = DB[name];
         const container = document.getElementById('cat-render');
-        document.getElementById('cat-title').innerText = name.toUpperCase();
+        document.getElementById('cat-title').innerText = name;
         document.getElementById('back-text').innerText = "НАЗАД В МЕНЮ";
         this.lastMainCat = null; 
         this.nav('category-screen');
@@ -557,7 +478,7 @@ const App = {
     renderSubCat(mainCat, subCat) {
         this.lastMainCat = mainCat; 
         document.getElementById('back-text').innerText = "НАЗАД";
-        document.getElementById('cat-title').innerText = subCat.toUpperCase();
+        document.getElementById('cat-title').innerText = subCat;
         this.renderItems(DB[mainCat][subCat], 'cat-render');
         tg.HapticFeedback.impactOccurred('light');
     },
@@ -593,7 +514,8 @@ const App = {
     },
 
     renderPopular() {
-        const hits = [...DB['Telegram']['Физические Номера'], ...DB['TikTok']].filter((_, idx) => idx % 2 === 0);
+        // Берем товары из Telegram -> Физические Номера и TikTok для главной
+        const hits = [...DB['Telegram']['Физические Номера'].slice(0,2), ...DB['TikTok'].slice(0,2)];
         this.renderItems(hits, 'popular-render');
     },
 
@@ -604,15 +526,33 @@ const App = {
                 tg.showPopup({
                     title: "Баланс пуст",
                     message: "Для покупки пополните баланс.",
-                    buttons: [
-                        {id: "pay", type: "default", text: "Пополнить"},
-                        {type: "cancel", text: "Отмена"}
-                    ]
-                }, (buttonId) => {
-                    if (buttonId === "pay") this.nav('wallet-screen', document.querySelectorAll('.nav-item')[1]);
-                });
+                    buttons: [{id: "pay", type: "default", text: "Пополнить"}, {type: "cancel", text: "Отмена"}]
+                }, (btn) => { if(btn === "pay") this.nav('wallet-screen', document.querySelectorAll('.nav-item')[1]); });
             }
         });
+    },
+
+    syncUser() {
+        if(tg.initDataUnsafe?.user) {
+            const u = tg.initDataUnsafe.user;
+            document.getElementById('u-name').innerText = u.username ? `@${u.username}` : u.first_name;
+            document.getElementById('user-id').innerText = `USER ID: ${u.id}`;
+        }
+    },
+
+    liveUser() {
+        setInterval(() => this.syncUser(), 5000);
+    },
+
+    nav(id, el) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(el) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+        tg.HapticFeedback.impactOccurred('medium');
+        window.scrollTo(0,0);
     },
 
     toggleModal(show) {
@@ -625,17 +565,14 @@ const App = {
 
     initSnow() {
         const canvas = document.getElementById('snow');
-        if(!canvas) return;
         const ctx = canvas.getContext('2d');
         let flakes = [];
         const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-        window.addEventListener('resize', resize);
-        resize();
+        window.addEventListener('resize', resize); resize();
         for(let i=0; i<50; i++) flakes.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+0.5, f: Math.random()*0.5+0.2 });
         const loop = () => {
             ctx.clearRect(0,0,canvas.width, canvas.height);
-            ctx.fillStyle = "white";
-            ctx.beginPath();
+            ctx.fillStyle = "white"; ctx.beginPath();
             flakes.forEach(fl => {
                 ctx.moveTo(fl.x, fl.y); ctx.arc(fl.x, fl.y, fl.r, 0, Math.PI*2);
                 fl.y += fl.f; if(fl.y > canvas.height) fl.y = -5;
