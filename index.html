@@ -288,9 +288,13 @@
 
 <div class="modal-overlay" id="modal-pay">
     <div class="modal-card">
-        <h3 style="font-family: 'Unbounded'; font-size: 16px;">ПОПОЛНЕНИЕ</h3>
-        <p style="font-size: 12px; color: var(--text-dim); margin-top: 8px;">Через систему <b>Crypto Pay (@send)</b></p>
+        <h3 style="font-family: 'Unbounded'; font-size: 16px;">ВЫБЕРИТЕ СПОСОБ</h3>
         
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
+            <button onclick="App.setPayMethod('crypto')" id="btn-crypto" style="background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 12px; font-weight: 800; font-size: 10px;">CRYPTO</button>
+            <button onclick="App.setPayMethod('stars')" id="btn-stars" style="background: var(--bg-accent); color: #fff; border: none; padding: 10px; border-radius: 12px; font-weight: 800; font-size: 10px;">STARS ⭐</button>
+        </div>
+
         <input type="number" id="pay-input" class="modal-input" placeholder="0" autofocus>
         
         <button class="action-btn" onclick="App.createInvoice()" style="padding: 20px; font-size: 14px;">СОЗДАТЬ СЧЕТ</button>
@@ -353,6 +357,7 @@ const DB = {
 const tg = window.Telegram.WebApp;
 
 const App = {
+    currentMethod: 'crypto', 
     currentCurrency: 'KZT',
     lastMainCat: null,
     rates: { 'KZT': 1, 'RUB': 0.19, 'USD': 0.0021 },
@@ -368,6 +373,39 @@ const App = {
         setTimeout(() => tg.ready(), 500);
     },
 
+    setPayMethod(method) {
+        this.currentMethod = method;
+        document.getElementById('btn-crypto').style.background = method === 'crypto' ? 'var(--accent)' : 'var(--bg-accent)';
+        document.getElementById('btn-crypto').style.color = method === 'crypto' ? '#000' : '#fff';
+        document.getElementById('btn-stars').style.background = method === 'stars' ? 'var(--gold)' : 'var(--bg-accent)';
+        document.getElementById('btn-stars').style.color = method === 'stars' ? '#000' : '#fff';
+        tg.HapticFeedback.impactOccurred('light');
+    },
+
+    createInvoice() {
+        const val = document.getElementById('pay-input').value;
+        if(!val) return;
+        
+        const minAmounts = { 'KZT': 600, 'RUB': 100, 'USD': 2 };
+        const curr = this.currentCurrency;
+        const minVal = this.currentMethod === 'stars' ? 1 : (minAmounts[curr] || 600);
+        const sym = this.currentMethod === 'stars' ? '⭐' : this.symbols[curr];
+
+        if(val < minVal) return tg.showAlert(`Минимальная сумма — ${minVal} ${sym}`);
+
+        tg.showConfirm(`Создать счет на ${val} ${sym} через ${this.currentMethod.toUpperCase()}?`, (ok) => {
+            if(ok) {
+                tg.sendData(JSON.stringify({ 
+                    type: "deposit", 
+                    method: this.currentMethod,
+                    amount: val, 
+                    currency: curr 
+                }));
+                this.toggleModal(false);
+            }
+        });
+    },
+
     liveUser() {
         const nameEl = document.getElementById('u-name');
         const idEl = document.getElementById('user-id');
@@ -375,8 +413,8 @@ const App = {
             if(tg.initDataUnsafe?.user) {
                 const u = tg.initDataUnsafe.user;
                 const displayName = u.username ? `@${u.username}` : u.first_name;
-                if (nameEl && nameEl.innerText !== displayName) nameEl.innerText = displayName;
-                if (idEl && idEl.innerText !== `USER ID: ${u.id}`) idEl.innerText = `USER ID: ${u.id}`;
+                if (nameEl) nameEl.innerText = displayName;
+                if (idEl) idEl.innerText = `USER ID: ${u.id}`;
             }
         }, 1000);
     },
@@ -385,10 +423,7 @@ const App = {
         this.currentCurrency = val;
         this.updateCurrencyUI();
         this.renderPopular();
-        
-        // Если открыта категория - обновляем её содержимое
         const catTitle = document.getElementById('cat-title').innerText;
-        // Поиск категории в базе для перерисовки
         for (let key in DB) {
             if (key.toUpperCase() === catTitle) {
                 this.renderItems(DB[key], 'cat-render');
@@ -403,6 +438,7 @@ const App = {
         document.getElementById('top-symbol').innerText = sym;
         document.querySelectorAll('.curr-sym').forEach(el => el.innerText = sym);
         document.getElementById('profile-total').innerText = `0 ${sym}`;
+        document.getElementById('w-val').nextElementSibling.innerText = sym;
     },
 
     getConvertedPrice(priceKzt) {
@@ -417,17 +453,14 @@ const App = {
         if(tg.initDataUnsafe?.user) {
             const u = tg.initDataUnsafe.user;
             const displayName = u.username ? `@${u.username}` : u.first_name;
-            const nameElement = document.getElementById('u-name');
-            if (nameElement) nameElement.innerText = displayName;
-            const idElement = document.getElementById('user-id');
-            if (idElement) idElement.innerText = `USER ID: ${u.id}`;
+            document.getElementById('u-name').innerText = displayName;
+            document.getElementById('user-id').innerText = `USER ID: ${u.id}`;
         }
     },
 
     nav(id, el) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        if (id === 'profile-screen') this.syncUser();
         if(el) {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
@@ -440,10 +473,8 @@ const App = {
         const data = DB[name];
         const container = document.getElementById('cat-render');
         document.getElementById('cat-title').innerText = name.toUpperCase();
-        
         document.getElementById('back-text').innerText = "НАЗАД В МЕНЮ";
         this.lastMainCat = null; 
-
         this.nav('category-screen');
 
         if (data && !Array.isArray(data)) {
@@ -488,7 +519,7 @@ const App = {
                 </div>
                 <div class="p-badges">
                     ${i.tags.map(t => `<span class="tag tag-gray">${t}</span>`).join('')}
-                    <span class="tag tag-success">БЕЗ СПАМБЛОКА</span>
+                    <span class="tag tag-success">В наличии</span>
                 </div>
                 <p class="p-desc">${i.desc}</p>
                 <button class="action-btn" onclick="App.buy('${i.name}', ${i.price})">ОФОРМИТЬ ЗАКАЗ</button>
@@ -521,25 +552,10 @@ const App = {
 
     toggleModal(show) {
         document.getElementById('modal-pay').style.display = show ? 'flex' : 'none';
-        if(show) tg.HapticFeedback.impactOccurred('light');
-    },
-
-    createInvoice() {
-        const val = document.getElementById('pay-input').value;
-        if(!val) return;
-        const minAmounts = { 'KZT': 600, 'RUB': 100, 'USD': 2 };
-        const curr = this.currentCurrency;
-        const minVal = minAmounts[curr] || 600;
-        const sym = this.symbols[curr];
-
-        if(val < minVal) return tg.showAlert(`Минимальная сумма — ${minVal} ${sym}`);
-
-        tg.showConfirm(`Создать счет на ${val} ${sym} через @send?`, (ok) => {
-            if(ok) {
-                tg.sendData(JSON.stringify({ type: "deposit", amount: val, currency: curr }));
-                this.toggleModal(false);
-            }
-        });
+        if(show) {
+            document.getElementById('pay-input').value = '';
+            tg.HapticFeedback.impactOccurred('light');
+        }
     },
 
     initSnow() {
@@ -550,14 +566,14 @@ const App = {
         const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
         window.addEventListener('resize', resize);
         resize();
-        for(let i=0; i<50; i++) flakes.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+0.5, s: Math.random()*0.5+0.2 });
+        for(let i=0; i<50; i++) flakes.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+0.5, f: Math.random()*0.5+0.2 });
         const loop = () => {
             ctx.clearRect(0,0,canvas.width, canvas.height);
             ctx.fillStyle = "white";
             ctx.beginPath();
-            flakes.forEach(f => {
-                ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
-                f.y += f.s; if(f.y > canvas.height) f.y = -5;
+            flakes.forEach(fl => {
+                ctx.moveTo(fl.x, fl.y); ctx.arc(fl.x, fl.y, fl.r, 0, Math.PI*2);
+                fl.y += fl.f; if(fl.y > canvas.height) fl.y = -5;
             });
             ctx.fill(); requestAnimationFrame(loop);
         };
