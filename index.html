@@ -178,9 +178,10 @@
     <div class="logo">GENIUS <span>MARKET</span></div>
     <div class="header-right">
         <select class="currency-switch" id="currency-select" onchange="App.handleCurrencyChange(this.value)" style="background: var(--bg-accent); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 8px 5px; border-radius: 12px; font-size: 11px; font-weight: 800; outline: none;">
-            <option value="KZT">KZT ₸</option>
-            <option value="RUB">RUB ₽</option>
-            <option value="USD">USD $</option>
+    <option value="KZT">KZT ₸</option>
+    <option value="RUB">RUB ₽</option>
+    <option value="USD">USD $</option>
+    <option value="XTR">STARS ⭐</option>
         </select>
         
         <div class="balance-chip">
@@ -360,8 +361,9 @@ const App = {
     currentMethod: 'crypto', 
     currentCurrency: 'KZT',
     lastMainCat: null,
-    rates: { 'KZT': 1, 'RUB': 0.19, 'USD': 0.0021 },
-    symbols: { 'KZT': '₸', 'RUB': '₽', 'USD': '$' },
+    // Добавлен курс XTR (Stars). Пример: 1000 KZT = 100 Stars (курс 0.1)
+    rates: { 'KZT': 1, 'RUB': 0.19, 'USD': 0.0021, 'XTR': 0.1 }, 
+    symbols: { 'KZT': '₸', 'RUB': '₽', 'USD': '$', 'XTR': '⭐' },
 
     init() {
         tg.expand();
@@ -371,6 +373,67 @@ const App = {
         this.updateCurrencyUI();
         this.liveUser();
         setTimeout(() => tg.ready(), 500);
+    },
+
+    // ОБНОВЛЕННЫЙ МЕТОД: При смене валюты в селекторе
+    handleCurrencyChange(val) {
+        this.currentCurrency = val;
+        
+        // Если пользователь выбрал валюту Stars, 
+        // мы автоматически переключаем способ оплаты на Stars
+        if (val === 'XTR') {
+            this.setPayMethod('stars');
+        } else {
+            this.setPayMethod('crypto');
+        }
+
+        this.updateCurrencyUI();
+        this.renderPopular();
+        
+        // Обновляем текущую открытую категорию, если она есть
+        const catTitleEl = document.getElementById('cat-title');
+        if (catTitleEl && catTitleEl.innerText !== 'КАТЕГОРИЯ') {
+            const currentCatName = catTitleEl.innerText;
+            // Ищем ключ в базе данных, который совпадает с заголовком
+            for (let key in DB) {
+                if (key.toUpperCase() === currentCatName) {
+                    this.renderItems(DB[key], 'cat-render');
+                    break;
+                }
+            }
+        }
+        tg.HapticFeedback.impactOccurred('light');
+    },
+
+    // ОБНОВЛЕННЫЙ МЕТОД: Конвертация цен теперь понимает Stars
+    getConvertedPrice(priceKzt) {
+        const rate = this.rates[this.currentCurrency];
+        const sym = this.symbols[this.currentCurrency];
+        const final = (priceKzt * rate);
+        
+        let formatted;
+        if (this.currentCurrency === 'USD') {
+            formatted = final.toFixed(2);
+        } else if (this.currentCurrency === 'XTR') {
+            formatted = Math.ceil(final); // Звезды всегда целые (округляем вверх)
+        } else {
+            formatted = Math.ceil(final).toLocaleString();
+        }
+        
+        return `${formatted} ${sym}`;
+    },
+
+    // Метод для обновления всех значков валют на экране
+    updateCurrencyUI() {
+        const sym = this.symbols[this.currentCurrency];
+        if(document.getElementById('top-symbol')) document.getElementById('top-symbol').innerText = sym;
+        document.querySelectorAll('.curr-sym').forEach(el => el.innerText = sym);
+        if(document.getElementById('profile-total')) document.getElementById('profile-total').innerText = `0 ${sym}`;
+        
+        const wVal = document.getElementById('w-val');
+        if (wVal && wVal.nextElementSibling) {
+            wVal.nextElementSibling.innerText = sym;
+        }
     },
 
     setPayMethod(method) {
