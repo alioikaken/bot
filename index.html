@@ -383,28 +383,30 @@ const App = {
     },
 
     createInvoice() {
-        const val = document.getElementById('pay-input').value;
-        if(!val) return;
-        
-        const minAmounts = { 'KZT': 600, 'RUB': 100, 'USD': 2 };
-        const curr = this.currentCurrency;
-        const minVal = this.currentMethod === 'stars' ? 1 : (minAmounts[curr] || 600);
-        const sym = this.currentMethod === 'stars' ? '⭐' : this.symbols[curr];
+    const val = document.getElementById('pay-input').value;
+    if(!val) return;
+    
+    const curr = this.currentCurrency;
+    const method = this.currentMethod;
 
-        if(val < minVal) return tg.showAlert(`Минимальная сумма — ${minVal} ${sym}`);
+    tg.showConfirm(`Создать счет на ${val} через ${method.toUpperCase()}?`, (ok) => {
+        if(ok) {
+            // Формируем JSON строку
+            const data = JSON.stringify({ 
+                type: "deposit", 
+                method: method,
+                amount: Number(val), 
+                currency: curr 
+            });
 
-        tg.showConfirm(`Создать счет на ${val} ${sym} через ${this.currentMethod.toUpperCase()}?`, (ok) => {
-            if(ok) {
-                tg.sendData(JSON.stringify({ 
-                    type: "deposit", 
-                    method: this.currentMethod,
-                    amount: val, 
-                    currency: curr 
-                }));
-                this.toggleModal(false);
-            }
-        });
-    },
+            // Отправляем данные боту
+            tg.sendData(data);
+            
+            // Важно: закрываем окно, чтобы пользователь увидел счет в чате
+            tg.close();
+        }
+    });
+},
 
     liveUser() {
         const nameEl = document.getElementById('u-name');
