@@ -177,7 +177,12 @@
 <header>
     <div class="logo">GENIUS <span>MARKET</span></div>
     <div class="header-right">
-        <div class="currency-switch" id="currency-btn" onclick="App.toggleCurrency()">KZT</div>
+        <select class="currency-switch" id="currency-select" onchange="App.handleCurrencyChange(this.value)" style="background: var(--bg-accent); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 8px 5px; border-radius: 12px; font-size: 11px; font-weight: 800; outline: none;">
+            <option value="KZT">KZT ₸</option>
+            <option value="RUB">RUB ₽</option>
+            <option value="USD">USD $</option>
+        </select>
+        
         <div class="balance-chip">
             <span id="top-balance" style="font-weight: 800;">0</span>
             <span id="top-symbol" style="font-size: 10px; color: var(--accent); font-weight: 900;">₸</span>
@@ -373,21 +378,17 @@ const App = {
         }, 1000); // проверка каждую секунду
     },
 
-    toggleCurrency() {
-        const order = ['KZT', 'RUB', 'USD'];
-        let idx = order.indexOf(this.currentCurrency);
-        this.currentCurrency = order[(idx + 1) % order.length];
-        
-        document.getElementById('currency-btn').innerText = this.currentCurrency;
-        this.updateCurrencyUI();
-        this.renderPopular();
-        const catTitle = document.getElementById('cat-title').innerText;
-        if (catTitle && catTitle !== 'КАТЕГОРИЯ') {
-            const catKey = Object.keys(DB).find(k => k.toUpperCase() === catTitle);
-            if (catKey) this.renderItems(DB[catKey], 'cat-render');
-        }
-        tg.HapticFeedback.impactOccurred('light');
-    },
+    handleCurrencyChange(val) {
+    this.currentCurrency = val;
+    this.updateCurrencyUI();
+    this.renderPopular();
+    // Обновляем категорию, если она открыта
+    const catTitle = document.getElementById('cat-title').innerText;
+    const catKey = Object.keys(DB).find(k => k.toUpperCase() === catTitle);
+    if (catKey) this.renderItems(DB[catKey], 'cat-render');
+    
+    tg.HapticFeedback.impactOccurred('light');
+},
 
     updateCurrencyUI() {
         const sym = this.symbols[this.currentCurrency];
