@@ -230,13 +230,24 @@
     </section>
 
     <section id="category-screen" class="screen">
-    <div onclick="App.handleBack()" style="color: var(--text-dim); font-weight: 800; font-size: 13px; margin-bottom: 25px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+    <div onclick="App.handleBack()" style="color: var(--text-dим); ...">
         <i class="fa-solid fa-arrow-left-long"></i> 
         <span id="back-text">НАЗАД В МЕНЮ</span>
     </div>
     <h2 id="cat-title" style="font-family: 'Unbounded'; font-size: 24px; margin-bottom: 25px;">КАТЕГОРИЯ</h2>
+    
+    <!-- СЮДА ВСТАВЛЯЕМ ПОИСК -->
+    <!-- Вставляем сразу под заголовком категории -->
+<div style="margin-bottom: 15px; display: flex; gap: 8px;">
+    <input type="text" id="search-input" placeholder="Поиск..." 
+           style="flex:1; padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); background:var(--bg-card); color:#fff;">
+    <button id="search-btn" style="padding:10px 15px; border-radius:12px; border:none; background:var(--accent); color:#000;">🔍</button>
+</div>
+
+
     <div id="cat-render"></div>
     </section>
+
 
     <section id="wallet-screen" class="screen">
         <div class="wallet-hero">
@@ -727,6 +738,45 @@ buy(name, priceKzt) {
 };
 
 App.init();
+
+// --- Поиск только для Физические Номера ---
+const setupPhysicalNumberSearch = () => {
+    const input = document.getElementById('search-input'); // поле поиска
+    const btn = document.getElementById('search-btn');     // кнопка поиска
+
+    const filterItems = () => {
+        // Проверяем: мы находимся в Telegram → Физические Номера
+        if(App.lastMainCat !== 'Telegram') return; 
+        const currentTitle = document.getElementById('cat-title').innerText;
+        if(currentTitle !== 'Физические Номера') return;
+
+        // Берём все номера
+        const items = DB.Telegram['Физические Номера'];
+
+        // Получаем текст из поля и делаем маленькими буквами для поиска
+        const query = input.value.trim().toLowerCase();
+
+        // Фильтруем номера
+        const filtered = items.filter(i => i.name.toLowerCase().includes(query));
+
+        // Показываем отфильтрованные номера
+        App.renderItems(filtered, 'cat-render');
+    };
+
+    // Нажатие на кнопку 🔍
+    btn.addEventListener('click', filterItems);
+
+    // Нажатие Enter
+    input.addEventListener('keyup', e => {
+        if(e.key === 'Enter') filterItems();
+    });
+};
+
+// Запускаем поиск после загрузки страницы
+window.addEventListener('DOMContentLoaded', () => {
+    setupPhysicalNumberSearch();
+});
+
 </script>
 
 </body>
