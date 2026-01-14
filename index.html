@@ -556,6 +556,7 @@ const App = {
     }
 
     if (items[0] && items[0].img) {
+        // Рендер NFT (плиткой)
         container.style.display = 'grid';
         container.style.gridTemplateColumns = 'repeat(3, 1fr)'; 
         container.style.gap = '8px'; 
@@ -565,38 +566,50 @@ const App = {
                 ? `<video src="${i.img}" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover;"></video>`
                 : `<img src="${i.img}" style="width:100%; height:100%; object-fit:cover;">`;
 
+            // Исправление кавычек для кнопки
+            const safeName = i.name.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
             return `
                 <div class="product-card" style="padding:8px; margin-bottom:0; display:flex; flex-direction:column; border-radius:14px; background: rgba(15, 23, 42, 0.5);">
-                    
                     <a href="${i.link || '#'}" target="_blank" style="width:100%; aspect-ratio:1/1; border-radius:10px; background:var(--bg-accent); margin-bottom:6px; overflow:hidden; display:flex; text-decoration:none;">
                         ${mediaTag}
                     </a>
-
                     <div style="font-size:10px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${i.name}</div>
-                    <div style="font-size:8px; color:var(--text-dim); margin-bottom:6px;">${i.id}</div>
-                    <button class="action-btn" onclick="App.buy('${i.name}', ${i.price})" style="padding:6px 2px; font-size:9px; height:auto; background:var(--accent); color:#000; box-shadow:none; border-radius:8px;">
+                    <div style="font-size:8px; color:var(--text-dim); margin-bottom:6px;">${i.id || ''}</div>
+                    <button class="action-btn" onclick="App.buy('${safeName}', ${i.price})" style="padding:6px 2px; font-size:9px; height:auto; background:var(--accent); color:#000; box-shadow:none; border-radius:8px;">
                         ${this.getConvertedPrice(i.price).replace(' ', '')}
                     </button>
                 </div>
             `;
         }).join('');
     } else {
-    container.style.display = 'block';
-    container.innerHTML = items.map(i => `
-        <div class="product-card">
-            <div class="p-header">
-                <span class="p-title">${i.name}</span>
-                <span class="p-price">${this.getConvertedPrice(i.price)}</span>
+        // Рендер обычных товаров (Steam, Telegram и т.д.)
+        container.style.display = 'block';
+        container.innerHTML = items.map(i => {
+            // Исправление кавычек для кнопки
+            const safeName = i.name.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
+            return `
+            <div class="product-card">
+                <div class="p-header">
+                    <span class="p-title">${i.name}</span>
+                    <span class="p-price">${this.getConvertedPrice(i.price)}</span>
+                </div>
+
+                ${i.medals ? `
+                    <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
+                        ${i.medals.map(m => `<img src="${m}" style="width: 25px; height: 25px; object-fit: contain; background: rgba(255,255,255,0.05); border-radius: 5px; padding: 2px;">`).join('')}
+                    </div>
+                ` : ''}
+
+                <div class="p-badges">
+                    ${i.tags ? i.tags.map(t => `<span class="tag tag-gray">${t}</span>`).join('') : ''}
+                    <span class="tag tag-success">${i.status || 'В НАЛИЧИИ'}</span>
+                </div>
+                <p class="p-desc">${i.desc || ''}</p>
+                <button class="action-btn" onclick="App.buy('${safeName}', ${i.price})">ОФОРМИТЬ ЗАКАЗ</button>
             </div>
-            <div class="p-badges">
-                ${i.tags ? i.tags.map(t => `<span class="tag tag-gray">${t}</span>`).join('') : ''}
-                
-                <span class="tag tag-success">${i.status || 'Без Спамблока'}</span>
-            </div>
-            <p class="p-desc">${i.desc || ''}</p>
-            <button class="action-btn" onclick="App.buy('${i.name}', ${i.price})">ОФОРМИТЬ ЗАКАЗ</button>
-        </div>
-    `).join('');
+        `}).join('');
     }
 },
 
@@ -605,18 +618,27 @@ const App = {
         this.renderItems(hits, 'popular-render');
     },
 
-    buy(name, priceKzt) {
-        const displayPrice = this.getConvertedPrice(priceKzt);
-        tg.showConfirm(`Подтвердить покупку ${name} за ${displayPrice}?`, (ok) => {
-            if(ok) {
-                tg.showPopup({
-                    title: "Баланс пуст",
-                    message: "Для покупки пополните баланс.",
-                    buttons: [{id: "pay", type: "default", text: "Пополнить"}, {type: "cancel", text: "Отмена"}]
-                }, (btn) => { if(btn === "pay") this.nav('wallet-screen', document.querySelectorAll('.nav-item')[1]); });
-            }
-        });
-    },
+buy(name, priceKzt) {
+    // Получаем цену в текущей валюте для текста в уведомлении
+    const displayPrice = this.getConvertedPrice(priceKzt);
+    
+    tg.showConfirm(`Подтвердить покупку ${name} за ${displayPrice}?`, (ok) => {
+        if(ok) {
+            tg.showPopup({
+                title: "Баланс пуст",
+                message: "Для покупки пополните баланс.",
+                buttons: [
+                    {id: "pay", type: "default", text: "Пополнить"},
+                    {type: "cancel", text: "Отмена"}
+                ]
+            }, (btn) => { 
+                if(btn === "pay") {
+                    this.nav('wallet-screen', document.querySelectorAll('.nav-item')[1]); 
+                }
+            });
+        }
+    });
+},
 
     syncUser() {
         if(tg.initDataUnsafe?.user) {
