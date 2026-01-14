@@ -517,22 +517,34 @@ const App = {
         }).join('');
     } else {
     container.style.display = 'block';
-    container.innerHTML = items.map(i => `
-        <div class="product-card">
-            <div class="p-header">
-                <span class="p-title">${i.name}</span>
-                <span class="p-price">${this.getConvertedPrice(i.price)}</span>
+    container.innerHTML = items.map(i => {
+        // Создаем HTML для медалей, если они есть в базе
+        const medalsHtml = i.medals ? `
+            <div style="display: flex; gap: 4px; align-items: center; margin-left: auto;">
+                ${i.medals.map(m => `<img src="${m}" style="width: 24px; height: 24px; object-fit: contain;" alt="medal">`).join('')}
             </div>
-            <div class="p-badges">
-                ${i.tags ? i.tags.map(t => `<span class="tag tag-gray">${t}</span>`).join('') : ''}
-                
-                <span class="tag tag-success">${i.status || 'Без Спамблока'}</span>
+        ` : '';
+
+        return `
+            <div class="product-card" style="position: relative;">
+                <div class="p-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <span class="p-title">${i.name}</span>
+                        <div class="p-badges" style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px;">
+                            ${i.tags ? i.tags.map(t => `<span class="tag tag-gray">${t}</span>`).join('') : ''}
+                            <span class="tag tag-success">${i.status || 'Без Спамблока'}</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
+                        <span class="p-price" style="margin-bottom: 8px;">${this.getConvertedPrice(i.price)}</span>
+                        ${medalsHtml} </div>
+                </div>
+                <p class="p-desc" style="margin-top: 12px;">${i.desc || ''}</p>
+                <button class="action-btn" onclick="App.buy('${i.name}', ${i.price})" style="margin-top: 12px;">ОФОРМИТЬ ЗАКАЗ</button>
             </div>
-            <p class="p-desc">${i.desc || ''}</p>
-            <button class="action-btn" onclick="App.buy('${i.name}', ${i.price})">ОФОРМИТЬ ЗАКАЗ</button>
-        </div>
-    `).join('');
-    }
+        `;
+    }).join('');
+}
 },
 
     renderPopular() {
