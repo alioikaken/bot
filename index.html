@@ -174,11 +174,10 @@
 <header>
     <div class="logo">GENIUS <span>MARKET</span></div>
     <div class="header-right">
-        <select class="currency-switch" id="currency-select" onchange="App.handleCurrencyChange(this.value)" style="background: var(--bg-accent); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 8px 5px; border-radius: 12px; font-size: 11px; font-weight: 800; outline: none;">
-            <option value="KZT">KZT ₸</option>
-            <option value="RUB">RUB ₽</option>
-            <option value="USD">USD $</option>
-            <option value="XTR">STARS ⭐</option>
+        <select class="currency-switch" id="currency-select" onchange="App.handleCurrencyChange(this.value)">
+    <option value="USD" selected>USD $</option> <option value="KZT">KZT ₸</option>
+    <option value="RUB">RUB ₽</option>
+    <option value="XTR">STARS ⭐</option>
         </select>
         
         <div class="balance-chip">
@@ -377,10 +376,30 @@ const tg = window.Telegram.WebApp;
 
 const App = {
     currentMethod: 'crypto', 
-    currentCurrency: 'KZT',
+    currentCurrency: 'USD', // Доллар по умолчанию
     lastMainCat: null,
-    rates: { 'KZT': 1, 'RUB': 0.19, 'USD': 0.0021, 'XTR': 0.1 }, 
+    // Курсы относительно Тенге (так как цены в базе в тенге)
+    rates: { 
+        'KZT': 1, 
+        'USD': 1 / 510, // 1 доллар = 510 тенге
+        'RUB': 1 / 6.8, // 1 рубль = 6.8 тенге
+        'XTR': 1 / 11 
+    },
     symbols: { 'KZT': '₸', 'RUB': '₽', 'USD': '$', 'XTR': '⭐' },
+
+    init() {
+        tg.expand();
+        // Принудительно ставим символ доллара в баланс при старте
+        document.getElementById('top-symbol').innerText = '$';
+        
+        this.syncUser();
+        this.updateCurrencyUI();
+        this.renderPopular();
+        this.initSnow();
+        this.liveUser();
+        setTimeout(() => tg.ready(), 500);
+    },
+        
 
     init() {
         tg.expand();
@@ -420,12 +439,26 @@ const App = {
     },
 
     getConvertedPrice(priceKzt) {
-        const rate = this.rates[this.currentCurrency];
+        // Базовый курс (тенге к доллару)
+        const usdRate = 510; 
+        const rubRate = 75; // Сколько тенге в одном рубле (700/75 = 9.33 руб) или (1 руб = 6.8 тенге)
+        
+        let final;
         const sym = this.symbols[this.currentCurrency];
-        const final = (priceKzt * rate);
-        let formatted = this.currentCurrency === 'USD' ? final.toFixed(2) : Math.ceil(final).toLocaleString();
+
+        if (this.currentCurrency === 'KZT') {
+            final = priceKzt;
+        } else if (this.currentCurrency === 'USD') {
+            final = priceKzt / 510; // Делим тенге на 510, получаем доллары
+        } else if (this.currentCurrency === 'RUB') {
+            final = priceKzt / 6.8; // Делим тенге на курс рубля
+        } else if (this.currentCurrency === 'XTR') {
+            final = priceKzt / 11; // Примерный курс звезд
+        }
+
+        let formatted = (this.currentCurrency === 'USD') ? final.toFixed(2) : Math.ceil(final).toLocaleString();
         return `${formatted} ${sym}`;
-    },
+    },	
 
     setPayMethod(method) {
         this.currentMethod = method;
@@ -436,46 +469,47 @@ const App = {
     },
 
     createInvoice() {
-    const val = document.getElementById('pay-input').value;
-    const amount = Number(val);
-    
-    if(!val || amount <= 0) return;
+        const val = document.getElementById('pay-input').value;
+        if(!val) return;
+        const amount = Number(val);
+        
+        if(amount <= 0) return;
 
-    // 1. Проверка для Telegram Stars
-    if (this.currentMethod === 'stars') {
-        if (amount < 80) {
-            // Если сумма меньше 80, показываем уведомление и выходим
-            tg.showAlert('Минимальная сумма пополнения через Stars — 80 ⭐️');
+        const method = this.currentMethod;
+        const currency = this.currentCurrency;
+
+        // 1. Лимит для Stars
+        if (method === 'stars' && amount < 80) {
+            tg.showAlert('Минимальная сумма — 80 ⭐️');
             return;
-        }
-    } 
-    
-    // 2. Проверка для Crypto (от 1$)
-    else if (this.currentMethod === 'crypto') {
-        // Рассчитываем курс: сколько в твоей валюте стоит 1$. 
-        // Если в App.rates нет usd, берем среднее: 450 для Тенге или 90 для Рубля
-        const rate = (this.rates && this.rates.usd) ? this.rates.usd : 450; 
-        const minCryptoAmount = 1 * rate;
+        } 
+        
+        // 2. Лимит для Crypto (Всегда 1$ в эквиваленте)
+        if (method === 'crypto') {
+            // Если выбраны доллары — минимум 1
+            // Если тенге — минимум 510
+            // Если рубли — минимум 75
+            const limits = { 'USD': 1, 'KZT': 510, 'RUB': 75 };
+            const minNeeded = limits[currency] || 1;
 
-        if (amount < minCryptoAmount) {
-            tg.showAlert(`Минимальная сумма для Крипты — ${minCryptoAmount} ${this.symbols[this.currentCurrency]} ($1)`);
-            return;
+            if (amount < minNeeded) {
+                const sym = (this.symbols && this.symbols[currency]) ? this.symbols[currency] : currency;
+                tg.showAlert(`Минимальная сумма: ${minNeeded} ${sym} ($1)`);
+            }
         }
-    }
 
-    // Если проверки пройдены, показываем подтверждение
-    tg.showConfirm(`Создать счет на ${val} ${this.symbols[this.currentCurrency]} через ${this.currentMethod.toUpperCase()}?`, (ok) => {
-        if(ok) {
-            tg.sendData(JSON.stringify({ 
-                type: "deposit", 
-                method: this.currentMethod, 
-                amount: amount, 
-                currency: this.currentCurrency 
-            }));
-            tg.close();
-        }
-    });
-},
+        tg.showConfirm(`Создать счет на ${amount} ${this.symbols[currency]}?`, (ok) => {
+            if(ok) {
+                tg.sendData(JSON.stringify({ 
+                    type: "deposit", 
+                    method: method, 
+                    amount: amount, 
+                    currency: currency 
+                }));
+                tg.close();
+            }
+        });
+    },
 
     openCat(name) {
         const data = DB[name];
