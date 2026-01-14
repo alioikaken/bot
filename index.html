@@ -356,7 +356,14 @@ const DB = {
         { name: 'Genius VPN | 2026 Premium', price: 5000, tags: ['Fast', 'No Logs'], desc: 'Наш собственный сервис. 100+ стран, без ограничений.' }
     ],
     'Steam': [
-        { name: 'Steam Turkey | Смена региона', price: 1400, tags: ['Region'], desc: 'Перевод вашего аккаунта на регион Турция.' }
+        { 
+    name: 'Steam CS2 Prime "824 ч." Авто - Рег', 
+    price: 3500, 
+    tags: ['SDA', '1 Месяц Гарантии'], 
+    status: 'В НАЛИЧИИ', 
+    medals:['m1.png', 'm2.png', 'm3.png', 'm4.png', 'm5.png'], // Список твоих файлов медалей
+    desc: 'На аккаунте включен Steam Guard через Steam Desktop Authenticator.' 
+        }
     ],
     'Spotify': [
         { name: 'Spotify Premium 12 мес', price: 8500, tags: ['Premium'], desc: 'Активация на ваш аккаунт.' }
@@ -509,21 +516,22 @@ const App = {
             `;
         }).join('');
     } else {
-        container.style.display = 'block';
-        container.innerHTML = items.map(i => `
-            <div class="product-card">
-                <div class="p-header">
-                    <span class="p-title">${i.name}</span>
-                    <span class="p-price">${this.getConvertedPrice(i.price)}</span>
-                </div>
-                <div class="p-badges">
-                    ${i.tags ? i.tags.map(t => `<span class="tag tag-gray">${t}</span>`).join('') : ''}
-                    <span class="tag tag-success">Без Спамблока</span>
-                </div>
-                <p class="p-desc">${i.desc || ''}</p>
-                <button class="action-btn" onclick="App.buy('${i.name}', ${i.price})">ОФОРМИТЬ ЗАКАЗ</button>
+    container.style.display = 'block';
+    container.innerHTML = items.map(i => `
+        <div class="product-card">
+            <div class="p-header">
+                <span class="p-title">${i.name}</span>
+                <span class="p-price">${this.getConvertedPrice(i.price)}</span>
             </div>
-        `).join('');
+            <div class="p-badges">
+                ${i.tags ? i.tags.map(t => `<span class="tag tag-gray">${t}</span>`).join('') : ''}
+                
+                <span class="tag tag-success">${i.status || 'Без Спамблока'}</span>
+            </div>
+            <p class="p-desc">${i.desc || ''}</p>
+            <button class="action-btn" onclick="App.buy('${i.name}', ${i.price})">ОФОРМИТЬ ЗАКАЗ</button>
+        </div>
+    `).join('');
     }
 },
 
