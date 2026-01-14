@@ -436,15 +436,46 @@ const App = {
     },
 
     createInvoice() {
-        const val = document.getElementById('pay-input').value;
-        if(!val) return;
-        tg.showConfirm(`Создать счет на ${val} ${this.symbols[this.currentCurrency]} через ${this.currentMethod.toUpperCase()}?`, (ok) => {
-            if(ok) {
-                tg.sendData(JSON.stringify({ type: "deposit", method: this.currentMethod, amount: Number(val), currency: this.currentCurrency }));
-                tg.close();
-            }
-        });
-    },
+    const val = document.getElementById('pay-input').value;
+    const amount = Number(val);
+    
+    if(!val || amount <= 0) return;
+
+    // 1. Проверка для Telegram Stars
+    if (this.currentMethod === 'stars') {
+        if (amount < 80) {
+            // Если сумма меньше 80, показываем уведомление и выходим
+            tg.showAlert('Минимальная сумма пополнения через Stars — 80 ⭐️');
+            return;
+        }
+    } 
+    
+    // 2. Проверка для Crypto (от 1$)
+    else if (this.currentMethod === 'crypto') {
+        // Рассчитываем курс: сколько в твоей валюте стоит 1$. 
+        // Если в App.rates нет usd, берем среднее: 450 для Тенге или 90 для Рубля
+        const rate = (this.rates && this.rates.usd) ? this.rates.usd : 450; 
+        const minCryptoAmount = 1 * rate;
+
+        if (amount < minCryptoAmount) {
+            tg.showAlert(`Минимальная сумма для Крипты — ${minCryptoAmount} ${this.symbols[this.currentCurrency]} ($1)`);
+            return;
+        }
+    }
+
+    // Если проверки пройдены, показываем подтверждение
+    tg.showConfirm(`Создать счет на ${val} ${this.symbols[this.currentCurrency]} через ${this.currentMethod.toUpperCase()}?`, (ok) => {
+        if(ok) {
+            tg.sendData(JSON.stringify({ 
+                type: "deposit", 
+                method: this.currentMethod, 
+                amount: amount, 
+                currency: this.currentCurrency 
+            }));
+            tg.close();
+        }
+    });
+},
 
     openCat(name) {
         const data = DB[name];
@@ -517,35 +548,22 @@ const App = {
         }).join('');
     } else {
     container.style.display = 'block';
-    container.innerHTML = items.map(i => {
-        // Создаем HTML для медалей (сделали размер 32px и добавили отступ 12px сверху)
-        const medalsHtml = i.medals ? `
-            <div style="display: flex; gap: 6px; align-items: center; margin-left: auto; margin-top: 12px;">
-                ${i.medals.map(m => `<img src="${m}" style="width: 32px; height: 32px; object-fit: contain;" alt="medal">`).join('')}
+    container.innerHTML = items.map(i => `
+        <div class="product-card">
+            <div class="p-header">
+                <span class="p-title">${i.name}</span>
+                <span class="p-price">${this.getConvertedPrice(i.price)}</span>
             </div>
-        ` : '';
-
-        return `
-            <div class="product-card" style="position: relative; padding: 16px;">
-                <div class="p-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div style="flex: 1;">
-                        <span class="p-title" style="font-size: 16px; font-weight: 700;">${i.name}</span>
-                        <div class="p-badges" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px;">
-                            ${i.tags ? i.tags.map(t => `<span class="tag tag-gray" style="font-size: 10px;">${t}</span>`).join('') : ''}
-                            <span class="tag tag-success" style="font-size: 10px;">${i.status || 'Без Спамблока'}</span>
-                        </div>
-                    </div>
-                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
-                        <span class="p-price" style="font-size: 18px; color: var(--accent); font-weight: 800;">${this.getConvertedPrice(i.price)}</span>
-                        ${medalsHtml}
-                    </div>
-                </div>
-                <p class="p-desc" style="margin-top: 15px; color: var(--text-dim); font-size: 13px; line-height: 1.4;">${i.desc || ''}</p>
-                <button class="action-btn" onclick="App.buy('${i.name}', ${i.price})" style="margin-top: 15px; width: 100%; height: 44px; font-weight: 700;">ОФОРМИТЬ ЗАКАЗ</button>
+            <div class="p-badges">
+                ${i.tags ? i.tags.map(t => `<span class="tag tag-gray">${t}</span>`).join('') : ''}
+                
+                <span class="tag tag-success">${i.status || 'Без Спамблока'}</span>
             </div>
-        `;
-    }).join('');
-}
+            <p class="p-desc">${i.desc || ''}</p>
+            <button class="action-btn" onclick="App.buy('${i.name}', ${i.price})">ОФОРМИТЬ ЗАКАЗ</button>
+        </div>
+    `).join('');
+    }
 },
 
     renderPopular() {
