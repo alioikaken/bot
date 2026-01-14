@@ -737,16 +737,43 @@ window.addEventListener('load', () => {
 
     // --- Создаем контейнер поиска ---
     const searchContainer = document.createElement('div');
-    searchContainer.style.cssText = "margin-bottom:15px; display:flex; gap:8px; display:none;";
+    searchContainer.style.cssText = `
+        margin-bottom:15px;
+        display:flex;
+        gap:8px;
+        opacity:0;
+        pointer-events:none;
+        transition: opacity 0.3s ease;
+    `;
 
     const input = document.createElement('input');
     input.type = 'text';
-    input.placeholder = 'Поиск...';
-    input.style.cssText = "flex:1; padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); background:var(--bg-card); color:#fff;";
+    input.placeholder = 'Введите текст для поиска...';
+    input.style.cssText = `
+        flex:1;
+        padding:10px;
+        border-radius:12px;
+        border:1px solid rgba(255,255,255,0.1);
+        background:var(--bg-card);
+        color:#fff;
+        transition: background 0.2s;
+    `;
 
     const btn = document.createElement('button');
     btn.innerText = '🔍';
-    btn.style.cssText = "padding:10px 15px; border-radius:12px; border:none; background:var(--accent); color:#000;";
+    btn.style.cssText = `
+        padding:10px 15px;
+        border-radius:12px;
+        border:none;
+        background:var(--accent);
+        color:#000;
+        cursor:pointer;
+        transition: background 0.2s;
+    `;
+
+    // Наведение кнопки (немного интерактива)
+    btn.addEventListener('mouseenter', () => btn.style.filter = 'brightness(1.1)');
+    btn.addEventListener('mouseleave', () => btn.style.filter = 'brightness(1)');
 
     searchContainer.appendChild(input);
     searchContainer.appendChild(btn);
@@ -770,16 +797,18 @@ window.addEventListener('load', () => {
     btn.addEventListener('click', filterItems);
     input.addEventListener('keyup', e => { if(e.key === 'Enter') filterItems(); });
 
-    // --- Отслеживаем смену категории ---
+    // --- Плавное появление/скрытие поиска ---
     const catTitle = document.getElementById('cat-title');
     const observer = new MutationObserver(() => {
         const currentTitle = catTitle.innerText;
 
         if (allowedCategories.includes(currentTitle)) {
-            searchContainer.style.display = 'flex';
+            searchContainer.style.pointerEvents = 'auto';
+            searchContainer.style.opacity = '1';
         } else {
-            searchContainer.style.display = 'none';
-            input.value = ''; // просто очищаем поле, не трогаем товары
+            searchContainer.style.pointerEvents = 'none';
+            searchContainer.style.opacity = '0';
+            input.value = '';
         }
     });
 
@@ -787,8 +816,12 @@ window.addEventListener('load', () => {
 
     // --- Первоначальная проверка ---
     const initialTitle = catTitle.innerText;
-    if (allowedCategories.includes(initialTitle)) searchContainer.style.display = 'flex';
+    if (allowedCategories.includes(initialTitle)) {
+        searchContainer.style.pointerEvents = 'auto';
+        searchContainer.style.opacity = '1';
+    }
 });
+
 
 
 
