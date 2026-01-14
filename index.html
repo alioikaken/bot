@@ -735,7 +735,7 @@ App.init();
 window.addEventListener('load', () => {
     const allowedCategories = ['Физические Номера', 'WhatsApp'];
 
-    // Создаем контейнер поиска
+    // --- Создаем контейнер поиска ---
     const searchContainer = document.createElement('div');
     searchContainer.style.cssText = "margin-bottom:15px; display:flex; gap:8px; display:none;";
 
@@ -751,11 +751,11 @@ window.addEventListener('load', () => {
     searchContainer.appendChild(input);
     searchContainer.appendChild(btn);
 
-    // Вставляем контейнер перед блоком с элементами
+    // Вставляем перед блоком с элементами
     const renderBlock = document.getElementById('cat-render');
     renderBlock.parentNode.insertBefore(searchContainer, renderBlock);
 
-    // Фильтрация
+    // --- Фильтрация ---
     const filterItems = () => {
         const currentTitle = document.getElementById('cat-title').innerText;
         if (!allowedCategories.includes(currentTitle)) return;
@@ -770,24 +770,26 @@ window.addEventListener('load', () => {
     btn.addEventListener('click', filterItems);
     input.addEventListener('keyup', e => { if(e.key === 'Enter') filterItems(); });
 
-    // Проверка категории через MutationObserver
+    // --- Отслеживаем смену категории ---
     const catTitle = document.getElementById('cat-title');
     const observer = new MutationObserver(() => {
         const currentTitle = catTitle.innerText;
+
         if (allowedCategories.includes(currentTitle)) {
             searchContainer.style.display = 'flex';
         } else {
             searchContainer.style.display = 'none';
-            input.value = '';
+            input.value = ''; // просто очищаем поле, не трогаем товары
         }
     });
 
     observer.observe(catTitle, { childList: true, subtree: true });
 
-    // Первичная проверка
+    // --- Первоначальная проверка ---
     const initialTitle = catTitle.innerText;
     if (allowedCategories.includes(initialTitle)) searchContainer.style.display = 'flex';
 });
+
 
 
 
