@@ -291,8 +291,8 @@
     </div>
 
     <div style="background: var(--bg-card); border-radius: 28px; padding: 25px; border: 1px solid var(--accent-soft); margin-bottom: 20px;">
-        <input id="ref-link" readonly style="width:100%; padding:15px; background: #000; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-size: 12px; outline: none; margin-bottom: 15px;" value="Загрузка...">
-        <button onclick="App.copyRef()" class="action-btn">СКОПИРОВАТЬ</button>
+        <input id="ref-link" readonly style="width:100%; padding:15px; background: #000; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-size: 12px; outline: none; margin-bottom: 15px;" placeholder="Генерация ссылки...">
+        <button onclick="copyMyRef()" class="action-btn">СКОПИРОВАТЬ</button>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -951,51 +951,48 @@ window.addEventListener('load', () => {
 
 
 
-function initReferralLogic() {
-    const refInput = document.getElementById('ref-link');
-    if (!refInput) return;
 
-    // ЗАМЕНИ Genius_MarketBot на юзернейм своего бота без @
-    const botUsername = "Genius_MarketBot"; 
-    
-    let userId = "";
-    
-    // Пытаемся достать ID из Телеграм
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
-        userId = window.Telegram.WebApp.initDataUnsafe.user.id;
+(function() {
+    function setupReferrals() {
+        const input = document.getElementById('ref-link');
+        if (!input) return;
+
+        // ЗАМЕНИ НА ЮЗЕРНЕЙМ СВОЕГО БОТА
+        const botName = "Genius_MarketBot"; 
+        
+        let link = "https://t.me/" + botName;
+
+        // Проверяем, есть ли данные Telegram
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+            const uid = window.Telegram.WebApp.initDataUnsafe.user.id;
+            link += "?start=" + uid;
+        }
+
+        // Устанавливаем только чистую ссылку
+        input.value = link;
     }
 
-    if (userId) {
-        refInput.value = "https://t.me/" + botUsername + "?start=" + userId;
-    } else {
-        // Если открыто не в ТГ, показываем просто ссылку на бота
-        refInput.value = "https://t.me/" + botUsername;
-    }
-}
+    // Функция для кнопки
+    window.copyMyRef = function() {
+        const input = document.getElementById('ref-link');
+        if (!input || !input.value) return;
 
-// Функция для кнопки копирования (привязываем к App, если он есть)
-if (typeof App === 'undefined') var App = {}; 
+        input.select();
+        input.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.showAlert("✅ Ссылка скопирована!");
+        } else {
+            alert("Скопировано!");
+        }
+    };
 
-App.copyRef = function() {
-    const refInput = document.getElementById('ref-link');
-    if (!refInput) return;
-    
-    refInput.select();
-    refInput.setSelectionRange(0, 99999);
-    document.execCommand("copy");
-    
-    if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.showAlert("✅ Ссылка скопирована!");
-    } else {
-        alert("Скопировано!");
-    }
-};
-
-// Запускаем генерацию ссылки всеми возможными способами
-window.addEventListener('DOMContentLoaded', initReferralLogic);
-window.addEventListener('load', initReferralLogic);
-// И на всякий случай через полсекунды после старта
-setTimeout(initReferralLogic, 500);
+    // Запуск
+    window.addEventListener('load', setupReferrals);
+    // Повтор через полсекунды для гарантии
+    setTimeout(setupReferrals, 500);
+})();
 
 </script>
 
