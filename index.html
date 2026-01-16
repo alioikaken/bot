@@ -959,51 +959,45 @@ window.addEventListener('load', () => {
     const tg = window.Telegram.WebApp;
     tg.ready();
 
-    // 1. Генерация ссылки при загрузке
     function generateLink() {
         const params = new URLSearchParams(window.location.search);
         const botName = params.get('bot') || "Genius_MarketBot";
         const input = document.getElementById('ref-link');
         
-        let finalLink = "https://t.me/" + botName;
+        if (!input) return;
 
-        // Проверяем наличие пользователя в Telegram
+        let finalLink = "https://t.me/" + botName + "?start=ref_";
+
+        // Проверяем, есть ли реальный пользователь Telegram
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            finalLink += "?start=ref_" + tg.initDataUnsafe.user.id;
+            finalLink += tg.initDataUnsafe.user.id; // Настоящий ID
         } else {
-            // Если мы в браузере, добавляем тестовый хвост, чтобы поле не было пустым
-            finalLink += "?start=ref_LOCAL_TEST";
+            // Генерируем случайное число от 100000000 до 999999999
+            const randomId = Math.floor(Math.random() * 900000000) + 100000000;
+            finalLink += randomId; // Рандомный ID для красоты на компе
         }
         
         input.value = finalLink;
     }
 
-    // 2. РЕАЛЬНОЕ КОПИРОВАНИЕ
+    // Функция для кнопки копирования
     window.copyMyRef = function() {
         const input = document.getElementById('ref-link');
+        input.select();
+        input.setSelectionRange(0, 99999);
         
-        // Способ 1: Современный (Navigator API)
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(input.value).then(() => {
-                handleSuccess();
-            });
-        } else {
-            // Способ 2: Запасной (execCommand) для старых браузеров и WebView
-            input.select();
-            input.setSelectionRange(0, 99999);
+        try {
             document.execCommand("copy");
-            handleSuccess();
+            if (tg.showAlert) {
+                tg.showAlert("✅ Ссылка скопирована!");
+                tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                alert("Скопировано!");
+            }
+        } catch (err) {
+            console.error("Ошибка копирования");
         }
     };
-
-    function handleSuccess() {
-        if (tg.showAlert) {
-            tg.showAlert("✅ Ссылка скопирована!");
-            tg.HapticFeedback.notificationOccurred('success');
-        } else {
-            alert("Скопировано!");
-        }
-    }
 
     generateLink();
 })();
