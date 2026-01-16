@@ -955,22 +955,29 @@ window.addEventListener('load', () => {
 
 
     (function() {
-    function setupReferrals() {
+    // 1. Функция для получения данных из URL (то, что передал Python)
+    function loadStatsAndLink() {
+        const params = new URLSearchParams(window.location.search);
+        
+        // Получаем значения из ссылки (если их нет, ставим 0)
+        const count = params.get('count') || "0";
+        const income = params.get('income') || "0";
+        const botNameFromUrl = params.get('bot') || "Genius_MarketBot";
+
+        // Вставляем статистику в текстовые блоки (убедись, что у них такие же ID)
+        const countElement = document.getElementById('ref-count');
+        const incomeElement = document.getElementById('ref-balance');
+
+        if (countElement) countElement.innerText = count;
+        if (incomeElement) incomeElement.innerText = income + " ₸";
+
+        // 2. Генерация реферальной ссылки в поле ввода
         const input = document.getElementById('ref-link');
-        if (!input) return;
-
-        // ЗАМЕНИ НА ЮЗЕРНЕЙМ СВОЕГО БОТА (без @)
-        const botName = "Genius_MarketBot"; 
-        let link = "https://t.me/" + botName;
-
-        // Пытаемся взять ID из Telegram
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+        if (input && window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
             const uid = window.Telegram.WebApp.initDataUnsafe.user.id;
-            link += "?start=" + uid;
+            // Создаем ссылку с обязательной приставкой ref_
+            input.value = "https://t.me/" + botNameFromUrl + "?start=ref_" + uid;
         }
-
-        // Прямая запись значения в поле
-        input.value = link;
     }
 
     // Функция копирования для кнопки
@@ -989,10 +996,10 @@ window.addEventListener('load', () => {
         }
     };
 
-    // Запускаем несколько раз, чтобы точно сработало
-    setupReferrals(); 
-    window.addEventListener('load', setupReferrals);
-    setTimeout(setupReferrals, 500); 
+    // Запускаем при загрузке страницы
+    window.addEventListener('load', loadStatsAndLink);
+    // Дополнительный запуск для надежности через 300мс
+    setTimeout(loadStatsAndLink, 300);
 })();
 
 </script>
