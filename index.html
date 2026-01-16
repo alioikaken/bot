@@ -951,29 +951,51 @@ window.addEventListener('load', () => {
 
 
 
+function initReferralLogic() {
+    const refInput = document.getElementById('ref-link');
+    if (!refInput) return;
+
+    // ЗАМЕНИ Genius_MarketBot на юзернейм своего бота без @
+    const botUsername = "Genius_MarketBot"; 
+    
+    let userId = "";
+    
+    // Пытаемся достать ID из Телеграм
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+        userId = window.Telegram.WebApp.initDataUnsafe.user.id;
+    }
+
+    if (userId) {
+        refInput.value = "https://t.me/" + botUsername + "?start=" + userId;
+    } else {
+        // Если открыто не в ТГ, показываем просто ссылку на бота
+        refInput.value = "https://t.me/" + botUsername;
+    }
+}
+
+// Функция для кнопки копирования (привязываем к App, если он есть)
+if (typeof App === 'undefined') var App = {}; 
+
 App.copyRef = function() {
     const refInput = document.getElementById('ref-link');
+    if (!refInput) return;
+    
     refInput.select();
     refInput.setSelectionRange(0, 99999);
     document.execCommand("copy");
     
     if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.showAlert("Скопировано!");
+        window.Telegram.WebApp.showAlert("✅ Ссылка скопирована!");
+    } else {
+        alert("Скопировано!");
     }
 };
 
-App.initReferral = function() {
-    if (window.Telegram && window.Telegram.WebApp.initDataUnsafe.user) {
-        const userId = window.Telegram.WebApp.initDataUnsafe.user.id;
-        const botUsername = "Genius_MarketBot"; 
-        const link = "https://t.me/" + botUsername + "?start=" + userId;
-        document.getElementById('ref-link').value = link;
-    }
-};
-
-window.addEventListener('DOMContentLoaded', function() {
-    App.initReferral();
-});
+// Запускаем генерацию ссылки всеми возможными способами
+window.addEventListener('DOMContentLoaded', initReferralLogic);
+window.addEventListener('load', initReferralLogic);
+// И на всякий случай через полсекунды после старта
+setTimeout(initReferralLogic, 500);
 
 </script>
 
