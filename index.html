@@ -284,6 +284,30 @@
             </div>
         </div>
     </section>
+	
+	<section id="referral-screen" class="screen">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h2 style="font-family: 'Unbounded'; font-size: 20px;">РЕФЕРАЛЫ</h2>
+    </div>
+
+    <div style="background: var(--bg-card); border-radius: 28px; padding: 25px; border: 1px solid var(--accent-soft); margin-bottom: 20px;">
+        <input id="ref-link" readonly style="width:100%; padding:15px; background: #000; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-size: 12px; outline: none; margin-bottom: 15px;" value="Загрузка...">
+        <button onclick="App.copyRef()" class="action-btn">СКОПИРОВАТЬ</button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="background: var(--bg-card); padding: 20px; border-radius: 24px; text-align: center;">
+            <span style="display:block; font-size: 10px; color: var(--text-dim);">ПРИГЛАШЕНО</span>
+            <b id="ref-count" style="font-family: 'Unbounded'; font-size: 18px;">0</b>
+        </div>
+        <div style="background: var(--bg-card); padding: 20px; border-radius: 24px; text-align: center;">
+            <span style="display:block; font-size: 10px; color: var(--text-dim);">ДОХОД</span>
+            <b id="ref-balance" style="font-family: 'Unbounded'; font-size: 18px; color: var(--success);">0 ₸</b>
+        </div>
+    </div>
+    </section>
+	
+	
 
 </div>
 
@@ -306,6 +330,7 @@
 <nav>
     <a href="javascript:void(0)" class="nav-item active" onclick="App.nav('market-screen', this)"><i class="fa-solid fa-house-chimney-window"></i><span>Главная</span></a>
     <a href="javascript:void(0)" class="nav-item" onclick="App.nav('wallet-screen', this)"><i class="fa-solid fa-wallet"></i><span>Кошелек</span></a>
+    <a href="javascript:void(0)" class="nav-item" onclick="App.nav('referral-screen', this)"><i class="fa-solid fa-users"></i><span>Рефералы</span></a>
     <a href="javascript:void(0)" class="nav-item" onclick="App.nav('profile-screen', this)"><i class="fa-solid fa-user-ninja"></i><span>Профиль</span></a>
 </nav>
 
@@ -448,12 +473,12 @@ const DB = {
 			
 ],
         'Звезды': [
-    { name: '50 Stars', id: '#ST-0050', price: 650, img: 'stars.mp4', link: '' },
-    { name: '100 Stars', id: '#ST-0100', price: 1250, img: 'stars.mp4', link: '' },
-    { name: '250 Stars', id: '#ST-0250', price: 3050, img: 'stars.mp4', link: '' },
-    { name: '500 Stars', id: '#ST-0500', price: 6100, img: 'stars.mp4', link: '' },
-    { name: '1000 Stars', id: '#ST-1000', price: 12200, img: 'stars.mp4', link: '' },
-    { name: '5000 Stars', id: '#ST-5000', price: 60500, img: 'stars.mp4', link: '' }
+    { name: '50 Stars', id: '#ST-0050', price: 650, img: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', link: 'https://t.me/stars' },
+    { name: '100 Stars', id: '#ST-0100', price: 1250, img: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', link: 'https://t.me/stars' },
+    { name: '250 Stars', id: '#ST-0250', price: 3050, img: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', link: 'https://t.me/stars' },
+    { name: '500 Stars', id: '#ST-0500', price: 6100, img: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', link: 'https://t.me/stars' },
+    { name: '1000 Stars', id: '#ST-1000', price: 12200, img: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', link: 'https://t.me/stars' },
+    { name: '5000 Stars', id: '#ST-5000', price: 60500, img: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', link: 'https://t.me/stars' }
 ]
     },
     'WhatsApp': [
@@ -926,7 +951,29 @@ window.addEventListener('load', () => {
 
 
 
+App.copyRef = function() {
+    const refInput = document.getElementById('ref-link');
+    refInput.select();
+    refInput.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.showAlert("Скопировано!");
+    }
+};
 
+App.initReferral = function() {
+    if (window.Telegram && window.Telegram.WebApp.initDataUnsafe.user) {
+        const userId = window.Telegram.WebApp.initDataUnsafe.user.id;
+        const botUsername = "Genius_MarketBot"; 
+        const link = "https://t.me/" + botUsername + "?start=" + userId;
+        document.getElementById('ref-link').value = link;
+    }
+};
+
+window.addEventListener('DOMContentLoaded', function() {
+    App.initReferral();
+});
 
 </script>
 
