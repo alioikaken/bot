@@ -291,11 +291,12 @@
     </div>
 
     <div style="background: var(--bg-card); border-radius: 28px; padding: 25px; border: 1px solid var(--accent-soft); margin-bottom: 20px;">
-        <input id="ref-link" readonly 
-       style="width:100%; padding:15px; background: #000; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-size: 12px; outline: none; margin-bottom: 15px;" 
-       value="">
-        <button onclick="copyMyRef()" class="action-btn">СКОПИРОВАТЬ</button>
+    <input id="ref-link" readonly 
+           style="width:100%; padding:15px; background: #000; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-size: 12px; outline: none; margin-bottom: 15px;" 
+           value="https://t.me/Genius_MarketBot"> <button onclick="copyMyRef()" class="action-btn" style="width: 100%; cursor: pointer;">СКОПИРОВАТЬ</button>
     </div>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
         <div style="background: var(--bg-card); padding: 20px; border-radius: 24px; text-align: center;">
@@ -958,26 +959,53 @@ window.addEventListener('load', () => {
     const tg = window.Telegram.WebApp;
     tg.ready();
 
-    function setupLink() {
+    // 1. Генерация ссылки при загрузке
+    function generateLink() {
         const params = new URLSearchParams(window.location.search);
-        // Берем имя бота из URL (передается из Python) или пишем вручную
-        const botName = params.get('bot') || "Genius_MarketBot"; 
+        const botName = params.get('bot') || "Genius_MarketBot";
         const input = document.getElementById('ref-link');
+        
+        let finalLink = "https://t.me/" + botName;
 
-        if (input) {
-            // Если мы внутри Telegram, берем настоящий ID
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const uid = tg.initDataUnsafe.user.id;
-                input.value = "https://t.me/" + botName + "?start=ref_" + uid;
-            } else {
-                // Если открыто не в телеге, поле будет пустым или с базовой ссылкой
-                input.value = "https://t.me/" + botName;
-            }
+        // Проверяем наличие пользователя в Telegram
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            finalLink += "?start=ref_" + tg.initDataUnsafe.user.id;
+        } else {
+            // Если мы в браузере, добавляем тестовый хвост, чтобы поле не было пустым
+            finalLink += "?start=ref_LOCAL_TEST";
+        }
+        
+        input.value = finalLink;
+    }
+
+    // 2. РЕАЛЬНОЕ КОПИРОВАНИЕ
+    window.copyMyRef = function() {
+        const input = document.getElementById('ref-link');
+        
+        // Способ 1: Современный (Navigator API)
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(input.value).then(() => {
+                handleSuccess();
+            });
+        } else {
+            // Способ 2: Запасной (execCommand) для старых браузеров и WebView
+            input.select();
+            input.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            handleSuccess();
+        }
+    };
+
+    function handleSuccess() {
+        if (tg.showAlert) {
+            tg.showAlert("✅ Ссылка скопирована!");
+            tg.HapticFeedback.notificationOccurred('success');
+        } else {
+            alert("Скопировано!");
         }
     }
 
-    // Запускаем сразу
-    setupLink();
+    generateLink();
 })();
 
 </script>
