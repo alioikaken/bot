@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Genius Market v4.0 | Industrial Digital Distribution</title>
-    
+   
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
-
     <style>
         :root {
             --bg-body: #020617;
@@ -23,9 +22,7 @@
             --gold: #fbbf24;
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-
         body {
             background-color: var(--bg-body);
             color: var(--text-main);
@@ -34,28 +31,22 @@
             overflow-x: hidden;
             min-height: 100vh;
         }
-
         .bg-glow {
             position: fixed; top: 0; left: 50%; transform: translateX(-50%);
             width: 100%; height: 500px;
             background: radial-gradient(circle at center, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
             z-index: 0; pointer-events: none;
         }
-
         canvas#snow { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.3; }
-
         header {
             position: sticky; top: 0; z-index: 2000;
             background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(20px);
             padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-
         .logo { font-family: 'Unbounded'; font-weight: 800; font-size: 14px; letter-spacing: 1px; color: var(--accent); }
         .logo span { color: #fff; }
-
         .header-right { display: flex; align-items: center; gap: 10px; }
-
         .currency-switch {
             background: var(--bg-accent);
             padding: 8px 12px;
@@ -68,60 +59,53 @@
             transition: var(--transition);
         }
         .currency-switch:active { transform: scale(0.9); }
-
         .balance-chip {
             background: var(--bg-card); padding: 8px 14px; border-radius: 12px;
             border: 1px solid var(--accent-soft); display: flex; align-items: center; gap: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
-
         .app-content { position: relative; z-index: 10; padding-bottom: 120px; }
         .screen { display: none; padding: 20px; animation: fadeIn 0.4s ease forwards; }
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-        .category-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 10px; 
-            margin-bottom: 25px; 
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
         }
         .cat-item {
-            background: var(--bg-card); 
-            border-radius: 16px; 
-            padding: 15px 5px; 
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 15px 5px;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.05);
             cursor: pointer;
             transition: var(--transition);
         }
         .cat-item:active { transform: scale(0.9); background: var(--bg-accent); }
         .cat-item i { font-size: 22px; margin-bottom: 8px; display: block; }
-        .cat-item .cat-label { 
-            font-size: 9px; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            color: var(--text-dim); 
+        .cat-item .cat-label {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-dim);
             display: block;
         }
-
         .product-card {
             background: var(--bg-card); border-radius: 24px; padding: 20px; margin-bottom: 16px;
             border: 1px solid rgba(255,255,255,0.04); transition: var(--transition);
         }
         .product-card:active { border-color: var(--accent); }
-        
+       
         .p-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
         .p-title { font-size: 15px; font-weight: 800; color: #fff; max-width: 70%; line-height: 1.3; }
         .p-price { font-family: 'Unbounded'; color: var(--accent); font-size: 16px; font-weight: 800; }
-
         .p-badges { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
         .tag { font-size: 9px; font-weight: 800; padding: 5px 10px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         .tag-gray { background: rgba(255,255,255,0.05); color: var(--text-dim); }
         .tag-success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-
         .p-desc { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; line-height: 1.5; }
-
         .action-btn {
             width: 100%; padding: 16px; border-radius: 18px; border: none;
             background: var(--accent); color: #000; font-family: 'Unbounded';
@@ -129,14 +113,13 @@
             box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
         }
         .action-btn:active { transform: translateY(2px); box-shadow: none; }
-
         .wallet-hero {
             background: linear-gradient(160deg, #0f172a 0%, #020617 100%);
             padding: 40px 24px; border-radius: 32px; border: 1px solid var(--accent-soft);
             text-align: center; margin-bottom: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
         .w-balance { font-family: 'Unbounded'; font-size: 42px; font-weight: 900; margin: 10px 0; }
-        
+       
         nav {
             position: fixed; bottom: 30px; left: 20px; right: 20px;
             background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px);
@@ -147,7 +130,6 @@
         .nav-item.active { color: var(--accent); }
         .nav-item i { font-size: 20px; }
         .nav-item span { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.85);
             display: none; align-items: center; justify-content: center; z-index: 5000; padding: 20px;
@@ -164,13 +146,80 @@
         }
         .modal-input:focus { border-color: var(--accent); }
 
+        /* ── Стили для ИИ-чата в Профиле ─────────────────────────────────────── */
+        #support-chat {
+            display: none;
+            margin-top: 16px;
+            background: rgba(15,23,42,0.75);
+            border-radius: 20px;
+            padding: 12px;
+            max-height: 360px;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid rgba(56,189,248,0.2);
+        }
+        #chat-messages {
+            margin-bottom: 64px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .chat-msg {
+            padding: 10px 14px;
+            border-radius: 16px;
+            max-width: 84%;
+            font-size: 13.5px;
+            line-height: 1.45;
+            word-wrap: break-word;
+        }
+        .chat-msg.bot {
+            background: rgba(255,255,255,0.08);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-msg.user {
+            background: var(--accent);
+            color: #000;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        #chat-input-area {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
+            display: flex;
+            gap: 8px;
+        }
+        #chat-input {
+            flex: 1;
+            padding: 11px 14px;
+            border-radius: 14px;
+            border: none;
+            background: var(--bg-card);
+            color: white;
+            font-size: 13.5px;
+            outline: none;
+        }
+        #chat-send {
+            padding: 11px 16px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .typing-indicator {
+            font-style: italic;
+            color: var(--text-dim);
+            padding: 10px 14px;
+        }
     </style>
 </head>
 <body>
-
 <div class="bg-glow"></div>
 <canvas id="snow"></canvas>
-
 <header>
     <div class="logo">GENIUS <span>MARKET</span></div>
     <div class="header-right">
@@ -179,16 +228,15 @@
     <option value="RUB">RUB ₽</option>
     <option value="XTR">STARS ⭐</option>
         </select>
-        
+       
         <div class="balance-chip">
             <span id="top-balance" style="font-weight: 800;">0</span>
             <span id="top-symbol" style="font-size: 10px; color: var(--accent); font-weight: 900;">₸</span>
         </div>
     </div>
 </header>
-
 <div class="app-content">
-    
+   
     <section id="market-screen" class="screen active">
         <div class="category-grid">
             <div class="cat-item" onclick="App.openCat('Telegram')">
@@ -224,42 +272,33 @@
                 <span class="cat-label">VPN</span>
             </div>
         </div>
-
         <h3 style="font-family: 'Unbounded'; font-size: 12px; margin-bottom: 20px; color: var(--accent);">🔥 ХИТЫ ПРОДАЖ</h3>
         <div id="popular-render"></div>
     </section>
-
     <section id="category-screen" class="screen">
-    <div onclick="App.handleBack()" style="color: var(--text-dим); ...">
-        <i class="fa-solid fa-arrow-left-long"></i> 
+    <div onclick="App.handleBack()" style="color: var(--text-dim); font-size: 13px; font-weight: 700; margin-bottom: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-arrow-left-long"></i>
         <span id="back-text">НАЗАД В МЕНЮ</span>
     </div>
     <h2 id="cat-title" style="font-family: 'Unbounded'; font-size: 24px; margin-bottom: 25px;">КАТЕГОРИЯ</h2>
-    
-
-
+   
     <div id="cat-render"></div>
     </section>
-
-
     <section id="wallet-screen" class="screen">
         <div class="wallet-hero">
             <span style="font-size: 11px; font-weight: 800; color: var(--text-dim); letter-spacing: 2px;">ТЕКУЩИЙ БАЛАНС</span>
             <div class="w-balance"><span id="w-val">0</span><span class="curr-sym" style="color: var(--accent); font-size: 20px; margin-left: 8px;">₸</span></div>
             <p id="user-id" style="font-size: 10px; color: var(--text-dim); margin-top: 10px; font-weight: 700;">USER ID: ---</p>
         </div>
-
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px;">
             <button class="action-btn" onclick="App.toggleModal(true)" style="background: #fff; box-shadow: none;">ПОПОЛНИТЬ</button>
             <button class="action-btn" style="background: var(--bg-accent); color: #fff; box-shadow: none; border: 1px solid rgba(255,255,255,0.05);">ВЫВОД</button>
         </div>
-
         <div style="background: var(--bg-card); border-radius: 24px; padding: 25px; border: 1px dashed rgba(255,255,255,0.1); text-align: center;">
             <i class="fa-solid fa-clock-rotate-left" style="font-size: 24px; color: var(--bg-accent); margin-bottom: 12px;"></i>
             <p style="font-size: 12px; color: var(--text-dim);">История пополнений пуста</p>
         </div>
     </section>
-
     <section id="profile-screen" class="screen">
         <div style="text-align: center; margin: 20px 0 40px;">
             <div style="width: 110px; height: 110px; border-radius: 40px; background: var(--bg-card); border: 2px solid var(--accent); margin: 0 auto 20px; transform: rotate(-5deg); display: flex; align-items: center; justify-content: center; font-size: 40px; color: var(--accent); box-shadow: 0 15px 30px var(--accent-soft);">
@@ -278,26 +317,30 @@
                 <span style="font-size: 13px; color: var(--text-dim);">Общая сумма</span>
                 <span id="profile-total" style="font-weight: 800; color: var(--accent);">0 ₸</span>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 15px; cursor: pointer;" onclick="toggleSupportChat()">
                 <span style="font-size: 13px; color: var(--text-dim);">Поддержка</span>
-                <span style="font-weight: 800; color: var(--gold);">@GeniusMarketSupport</span>
+                <span style="font-weight: 800; color: var(--gold);">Grok AI (чат)</span>
+            </div>
+
+            <!-- Блок ИИ-чата -->
+            <div id="support-chat">
+                <div id="chat-messages"></div>
+                <div id="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Спрашивай что угодно..." autocomplete="off">
+                    <button id="chat-send" onclick="sendAIMessage()">→</button>
+                </div>
             </div>
         </div>
     </section>
-	
-	<section id="referral-screen" class="screen">
+<section id="referral-screen" class="screen">
     <div style="text-align: center; margin-bottom: 30px;">
         <h2 style="font-family: 'Unbounded'; font-size: 20px;">РЕФЕРАЛЫ</h2>
     </div>
-
     <div style="background: var(--bg-card); border-radius: 28px; padding: 25px; border: 1px solid var(--accent-soft); margin-bottom: 20px;">
-    <input id="ref-link" readonly 
-           style="width:100%; padding:15px; background: #000; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-size: 12px; outline: none; margin-bottom: 15px;" 
+    <input id="ref-link" readonly
+           style="width:100%; padding:15px; background: #000; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-size: 12px; outline: none; margin-bottom: 15px;"
            value="https://t.me/Genius_MarketBot"> <button onclick="copyMyRef()" class="action-btn" style="width: 100%; cursor: pointer;">СКОПИРОВАТЬ</button>
     </div>
-
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
         <div style="background: var(--bg-card); padding: 20px; border-radius: 24px; text-align: center;">
             <span style="display:block; font-size: 10px; color: var(--text-dim);">ПРИГЛАШЕНО</span>
@@ -309,27 +352,21 @@
         </div>
     </div>
     </section>
-	
-	
-
 </div>
-
 <div class="modal-overlay" id="modal-pay">
     <div class="modal-card">
         <h3 style="font-family: 'Unbounded'; font-size: 16px;">ВЫБЕРИТЕ СПОСОБ</h3>
-        
+       
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
             <button onclick="App.setPayMethod('crypto')" id="btn-crypto" style="background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 12px; font-weight: 800; font-size: 10px;">CRYPTO</button>
             <button onclick="App.setPayMethod('stars')" id="btn-stars" style="background: var(--bg-accent); color: #fff; border: none; padding: 10px; border-radius: 12px; font-weight: 800; font-size: 10px;">STARS ⭐</button>
         </div>
-
         <input type="number" id="pay-input" class="modal-input" placeholder="0" autofocus>
-        
+       
         <button class="action-btn" onclick="App.createInvoice()" style="padding: 20px; font-size: 14px;">СОЗДАТЬ СЧЕТ</button>
         <button onclick="App.toggleModal(false)" style="background: transparent; border: none; color: var(--text-dim); margin-top: 20px; font-weight: 700; font-size: 12px;">ОТМЕНА</button>
     </div>
 </div>
-
 <nav>
     <a href="javascript:void(0)" class="nav-item active" onclick="App.nav('market-screen', this)"><i class="fa-solid fa-house-chimney-window"></i><span>Главная</span></a>
     <a href="javascript:void(0)" class="nav-item" onclick="App.nav('wallet-screen', this)"><i class="fa-solid fa-wallet"></i><span>Кошелек</span></a>
@@ -359,7 +396,7 @@ const DB = {
             { name: 'Вьетнам (+84) | Telegram номера', price: 390, tags: ['Asia', 'Fast'], desc: 'Высокая проходимость SMS. Быстрая регистрация аккаунтов Telegram.' },
             { name: 'Египет (+20) | Telegram номера', price: 710, tags: ['EG', 'Old'], desc: 'Номера с большой отлежкой. Подходят для долгосрочных аккаунтов.' },
             { name: 'ОАЭ (+971) | Premium номера', price: 1250, tags: ['Elite', 'UAE'], desc: 'Премиальные номера Дубая. Максимальный траст и высокая стабильность.' },
-			// ... предыдущие страны ...
+// ... предыдущие страны ...
             { name: 'Германия (+49) | Telegram номера', price: 780, tags: ['EU', 'Stable'], desc: 'Немецкие номера с чистой историей. Стабильный приём SMS, высокий уровень доверия.' },
             { name: 'Чехия (+420) | Telegram номера', price: 720, tags: ['EU', 'Safe'], desc: 'Физическое оборудование, хорошая проходимость, подходят для рабочих аккаунтов.' },
             { name: 'Румыния (+40) | Telegram номера', price: 650, tags: ['EU', 'Fast'], desc: 'Быстрая выдача кода, удобны для инвайта и рассылок.' },
@@ -385,7 +422,7 @@ const DB = {
             { name: 'Северная Македония (+389) | Telegram номера', price: 470, tags: ['Balkans', 'Stable'], desc: 'Стабильные номера Южной Европы.' },
             { name: 'Таджикистан (+992) | Telegram номера', price: 320, tags: ['CIS', 'Fast'], desc: 'Низкая цена, быстрая активация.' },
             { name: 'Туркменистан (+993) | Telegram номера', price: 650, tags: ['CIS', 'Rare'], desc: 'Редкий регион, высокая ценность номеров.' },
-			/* --- ПРОДОЛЖЕНИЕ: ЕВРОПА И СНГ (ОСТАТКИ) --- */
+/* --- ПРОДОЛЖЕНИЕ: ЕВРОПА И СНГ (ОСТАТКИ) --- */
             { name: 'Албания (+355) | Telegram номера', price: 540, tags: ['Balkans'], desc: 'Стабильный прием СМС, физическое оборудование.' },
             { name: 'Андорра (+376) | Premium SIM', price: 1600, tags: ['Elite', 'EU'], desc: 'Редчайший регион, максимальный траст.' },
             { name: 'Босния и Герцеговина (+387) | Telegram номера', price: 520, tags: ['Balkans'], desc: 'Чистые номера, подходят для личных целей.' },
@@ -400,7 +437,7 @@ const DB = {
             { name: 'Сан-Марино (+378) | Telegram номера', price: 1300, tags: ['EU', 'Rare'], desc: 'Редкий европейский регион.' },
             { name: 'Таджикистан (+992) | Telegram номера', price: 320, tags: ['CIS'], desc: 'Низкая цена, быстрая активация.' },
             { name: 'Туркменистан (+993) | Telegram номера', price: 650, tags: ['CIS', 'Rare'], desc: 'Сложный регион, высокая ценность.' },
-			{ name: 'США (+1) | Telegram номера', price: 1300, tags: ['USA', 'Premium'], desc: 'Американские номера с высоким уровнем доверия и стабильной работой.' },
+{ name: 'США (+1) | Telegram номера', price: 1300, tags: ['USA', 'Premium'], desc: 'Американские номера с высоким уровнем доверия и стабильной работой.' },
             { name: 'Канада (+1) | Telegram номера', price: 1200, tags: ['NA', 'Premium'], desc: 'Канадские SIM с чистой историей и хорошей отлежкой.' },
             { name: 'Великобритания (+44) | Telegram номера', price: 1100, tags: ['EU', 'Premium'], desc: 'Высокий траст Telegram, подходят для долгосрочных аккаунтов.' },
             { name: 'Австралия (+61) | Telegram номера', price: 1150, tags: ['AU', 'Premium'], desc: 'Редкий регион, стабильный приём SMS.' },
@@ -424,7 +461,7 @@ const DB = {
             { name: 'Парагвай (+595) | Telegram номера', price: 410, tags: ['Latam', 'Cheap'], desc: 'Доступные номера для Telegram.' },
             { name: 'Уругвай (+598) | Telegram номера', price: 520, tags: ['Latam', 'Stable'], desc: 'Надёжные номера с хорошей историей.' },
             { name: 'Эквадор (+593) | Telegram номера', price: 450, tags: ['Latam', 'Fast'], desc: 'Быстрая регистрация, стабильная работа.' },
-			{ name: 'Швейцария (+41) | Telegram номера', price: 800, tags: ['EU', 'Premium'], desc: 'Высокий уровень доверия, стабильная регистрация и чистая история.' },
+{ name: 'Швейцария (+41) | Telegram номера', price: 800, tags: ['EU', 'Premium'], desc: 'Высокий уровень доверия, стабильная регистрация и чистая история.' },
             { name: 'Австрия (+43) | Telegram номера', price: 760, tags: ['EU', 'Stable'], desc: 'Центральная Европа, хорошие показатели входа.' },
             { name: 'Бельгия (+32) | Telegram номера', price: 740, tags: ['EU', 'Safe'], desc: 'Чистые номера, подходят для долгосрочной работы.' },
             { name: 'Нидерланды (+31) | Telegram номера', price: 780, tags: ['EU', 'Stable'], desc: 'Высокий траст Telegram, стабильный приём SMS.' },
@@ -448,7 +485,7 @@ const DB = {
             { name: 'Сенегал (+221) | Telegram номера', price: 300, tags: ['Africa', 'Cheap'], desc: 'Низкая цена, подходит для регистрации.' },
             { name: 'Перу (+51) | Telegram номера', price: 410, tags: ['Latam', 'Stable'], desc: 'Южная Америка, стабильный вход.' },
             { name: 'Чили (+56) | Telegram номера', price: 450, tags: ['Latam', 'Safe'], desc: 'Чистые номера с хорошей историей.' },
-            { name: 'Колумбия (+57) | Telegram номера', price: 430, tags: ['Latam', 'Stable'], desc: 'Подходят для долгосрочных аккаунтов.' }		
+            { name: 'Колумбия (+57) | Telegram номера', price: 430, tags: ['Latam', 'Stable'], desc: 'Подходят для долгосрочных аккаунтов.' }
         ],
         'NFT': [
             { name: 'Moon Pendant', id: '#68435', price: 3979, img: 'ch.mp4', link: 'https://t.me/nft/MoonPendant-68435' },
@@ -463,17 +500,15 @@ const DB = {
             { name: 'Kissed Frog', id: '#12784', price: 25092, img: '10.mp4', link: 'https://t.me/nft/KissedFrog-12784' },
             { name: 'Eternal Rose', id: '#29974', price: 14004, img: '11.mp4', link: 'https://t.me/nft/EternalRose-29974' },
             { name: 'Sky Stilettos', id: '#29845', price: 7002, img: '13.mp4', link: 'http://t.me/nft/SkyStilettos-29845' },
-			{ name: 'Neko Helmet', id: '#10290', price: 19780, img: '14.mp4', link: 'https://t.me/nft/NekoHelmet-10290' },
-			{ name: 'Whip Cupcake', id: '#30028', price: 2577, img: '15.mp4', link: 'https://t.me/nft/WhipCupcake-30028' },
-			{ name: 'Happy Brownie', id: '#149007', price: 2682, img: '16.mp4', link: 'https://t.me/nft/HappyBrownie-149007' },
-			{ name: 'Diamond Ring', id: '#18507', price: 15708, img: '17.mp4', link: 'http://t.me/nft/DiamondRing-18507' },
-			{ name: 'Candy Cane', id: ' #197857', price: 3019, img: '18.mp4', link: 'https://t.me/nft/CandyCane-197857' },
-			{ name: 'Mini Oscar', id: ' #3760', price: 76794, img: '19.mp4', link: 'https://t.me/nft/MiniOscar-3760' },
-			{ name: 'Fresh Socks', id: ' #64303', price: 3123, img: '20.mp4', link: 'https://t.me/nft/FreshSocks-64303' },
-			{ name: 'Signet Ring', id: ' #11143', price: 20361, img: '21.mp4', link: 'http://t.me/nft/SignetRing-11143' },
-			{ name: 'Jester Hat', id: ' #14273', price: 3036, img: '22.mp4', link: 'https://t.me/nft/JesterHat-14273' }
-			
-			
+{ name: 'Neko Helmet', id: '#10290', price: 19780, img: '14.mp4', link: 'https://t.me/nft/NekoHelmet-10290' },
+{ name: 'Whip Cupcake', id: '#30028', price: 2577, img: '15.mp4', link: 'https://t.me/nft/WhipCupcake-30028' },
+{ name: 'Happy Brownie', id: '#149007', price: 2682, img: '16.mp4', link: 'https://t.me/nft/HappyBrownie-149007' },
+{ name: 'Diamond Ring', id: '#18507', price: 15708, img: '17.mp4', link: 'http://t.me/nft/DiamondRing-18507' },
+{ name: 'Candy Cane', id: ' #197857', price: 3019, img: '18.mp4', link: 'https://t.me/nft/CandyCane-197857' },
+{ name: 'Mini Oscar', id: ' #3760', price: 76794, img: '19.mp4', link: 'https://t.me/nft/MiniOscar-3760' },
+{ name: 'Fresh Socks', id: ' #64303', price: 3123, img: '20.mp4', link: 'https://t.me/nft/FreshSocks-64303' },
+{ name: 'Signet Ring', id: ' #11143', price: 20361, img: '21.mp4', link: 'http://t.me/nft/SignetRing-11143' },
+{ name: 'Jester Hat', id: ' #14273', price: 3036, img: '22.mp4', link: 'https://t.me/nft/JesterHat-14273' }
 ],
         'Звезды': [
     { name: '50 Stars', id: '#ST-0050', price: 650, img: 'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', link: 'https://t.me/stars' },
@@ -524,13 +559,13 @@ const DB = {
         { name: 'Genius VPN | 2026 Premium', price: 5000, tags: ['Fast', 'No Logs'], desc: 'Наш собственный сервис. 100+ стран, без ограничений.' }
     ],
     'Steam': [
-        { 
-    name: 'Steam CS2 Prime "824 ч." Авто - Рег', 
-    price: 3500, 
-    tags: ['SDA', '1 Месяц Гарантии'], 
-    status: 'В НАЛИЧИИ', 
+        {
+    name: 'Steam CS2 Prime "824 ч." Авто - Рег',
+    price: 3500,
+    tags: ['SDA', '1 Месяц Гарантии'],
+    status: 'В НАЛИЧИИ',
     medals:['m1.png', 'm2.png', 'm3.png', 'm4.png', 'm5.png'], // Список твоих файлов медалей
-    desc: 'На аккаунте включен Steam Guard через Steam Desktop Authenticator.' 
+    desc: 'На аккаунте включен Steam Guard через Steam Desktop Authenticator.'
         }
     ],
     'Spotify': [
@@ -540,27 +575,24 @@ const DB = {
         { name: 'Insta 2015-2018', price: 900, tags: ['Old'], desc: 'Аккаунты с большой отлежкой.' }
     ]
 };
-
 const tg = window.Telegram.WebApp;
-
 const App = {
-    currentMethod: 'crypto', 
+    currentMethod: 'crypto',
     currentCurrency: 'USD', // Доллар по умолчанию
     lastMainCat: null,
     // Курсы относительно Тенге (так как цены в базе в тенге)
-    rates: { 
-        'KZT': 1, 
+    rates: {
+        'KZT': 1,
         'USD': 1 / 510, // 1 доллар = 510 тенге
         'RUB': 1 / 6.8, // 1 рубль = 6.8 тенге
-        'XTR': 1 / 11 
+        'XTR': 1 / 11
     },
     symbols: { 'KZT': '₸', 'RUB': '₽', 'USD': '$', 'XTR': '⭐' },
-
     init() {
         tg.expand();
         // Принудительно ставим символ доллара в баланс при старте
         document.getElementById('top-symbol').innerText = '$';
-        
+       
         this.syncUser();
         this.updateCurrencyUI();
         this.renderPopular();
@@ -568,8 +600,7 @@ const App = {
         this.liveUser();
         setTimeout(() => tg.ready(), 500);
     },
-        
-
+       
     init() {
         tg.expand();
         this.renderPopular();
@@ -579,7 +610,6 @@ const App = {
         this.liveUser();
         setTimeout(() => tg.ready(), 500);
     },
-
     handleCurrencyChange(val) {
         this.currentCurrency = val;
         this.setPayMethod(val === 'XTR' ? 'stars' : 'crypto');
@@ -597,7 +627,6 @@ const App = {
         }
         tg.HapticFeedback.impactOccurred('medium');
     },
-
     updateCurrencyUI() {
         const sym = this.symbols[this.currentCurrency];
         document.getElementById('top-symbol').innerText = sym;
@@ -606,15 +635,13 @@ const App = {
         const wVal = document.getElementById('w-val');
         if (wVal && wVal.nextElementSibling) wVal.nextElementSibling.innerText = sym;
     },
-
     getConvertedPrice(priceKzt) {
         // Базовый курс (тенге к доллару)
-        const usdRate = 510; 
+        const usdRate = 510;
         const rubRate = 75; // Сколько тенге в одном рубле (700/75 = 9.33 руб) или (1 руб = 6.8 тенге)
-        
+       
         let final;
         const sym = this.symbols[this.currentCurrency];
-
         if (this.currentCurrency === 'KZT') {
             final = priceKzt;
         } else if (this.currentCurrency === 'USD') {
@@ -624,11 +651,9 @@ const App = {
         } else if (this.currentCurrency === 'XTR') {
             final = priceKzt / 11; // Примерный курс звезд
         }
-
         let formatted = (this.currentCurrency === 'USD') ? final.toFixed(2) : Math.ceil(final).toLocaleString();
         return `${formatted} ${sym}`;
-    },	
-
+    },
     setPayMethod(method) {
         this.currentMethod = method;
         document.getElementById('btn-crypto').style.background = method === 'crypto' ? 'var(--accent)' : 'var(--bg-accent)';
@@ -636,23 +661,20 @@ const App = {
         document.getElementById('btn-stars').style.background = method === 'stars' ? 'var(--gold)' : 'var(--bg-accent)';
         document.getElementById('btn-stars').style.color = method === 'stars' ? '#000' : '#fff';
     },
-
     createInvoice() {
         const val = document.getElementById('pay-input').value;
         if(!val) return;
         const amount = Number(val);
-        
+       
         if(amount <= 0) return;
-
         const method = this.currentMethod;
         const currency = this.currentCurrency;
-
         // 1. Лимит для Stars
         if (method === 'stars' && amount < 80) {
             tg.showAlert('Минимальная сумма — 80 ⭐️');
             return;
-        } 
-        
+        }
+       
         // 2. Лимит для Crypto (Всегда 1$ в эквиваленте)
         if (method === 'crypto') {
             // Если выбраны доллары — минимум 1
@@ -660,34 +682,30 @@ const App = {
             // Если рубли — минимум 75
             const limits = { 'USD': 1, 'KZT': 510, 'RUB': 75 };
             const minNeeded = limits[currency] || 1;
-
             if (amount < minNeeded) {
                 const sym = (this.symbols && this.symbols[currency]) ? this.symbols[currency] : currency;
                 tg.showAlert(`Минимальная сумма: ${minNeeded} ${sym} ($1)`);
             }
         }
-
         tg.showConfirm(`Создать счет на ${amount} ${this.symbols[currency]}?`, (ok) => {
             if(ok) {
-                tg.sendData(JSON.stringify({ 
-                    type: "deposit", 
-                    method: method, 
-                    amount: amount, 
-                    currency: currency 
+                tg.sendData(JSON.stringify({
+                    type: "deposit",
+                    method: method,
+                    amount: amount,
+                    currency: currency
                 }));
                 tg.close();
             }
         });
     },
-
     openCat(name) {
         const data = DB[name];
         const container = document.getElementById('cat-render');
         document.getElementById('cat-title').innerText = name;
         document.getElementById('back-text').innerText = "НАЗАД В МЕНЮ";
-        this.lastMainCat = null; 
+        this.lastMainCat = null;
         this.nav('category-screen');
-
         if (data && !Array.isArray(data)) {
             container.style.display = 'block';
             container.innerHTML = Object.keys(data).map(sub => `
@@ -700,15 +718,13 @@ const App = {
             this.renderItems(data || [], 'cat-render');
         }
     },
-
     renderSubCat(mainCat, subCat) {
-        this.lastMainCat = mainCat; 
+        this.lastMainCat = mainCat;
         document.getElementById('back-text').innerText = "НАЗАД";
         document.getElementById('cat-title').innerText = subCat;
         this.renderItems(DB[mainCat][subCat], 'cat-render');
         tg.HapticFeedback.impactOccurred('light');
     },
-
     handleBack() {
         if (this.lastMainCat) {
             this.openCat(this.lastMainCat);
@@ -716,28 +732,24 @@ const App = {
             this.nav('market-screen');
         }
     },
-
     renderItems(items, targetId) {
     const container = document.getElementById(targetId);
     if(!items || !items.length) {
         container.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding: 40px 0;">Товары скоро появятся...</p>';
         return;
     }
-
     if (items[0] && items[0].img) {
         // Рендер NFT (плиткой)
         container.style.display = 'grid';
-        container.style.gridTemplateColumns = 'repeat(3, 1fr)'; 
-        container.style.gap = '8px'; 
+        container.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        container.style.gap = '8px';
         container.innerHTML = items.map(i => {
             const isVideo = i.img.toLowerCase().endsWith('.mp4');
-            const mediaTag = isVideo 
+            const mediaTag = isVideo
                 ? `<video src="${i.img}" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover;"></video>`
                 : `<img src="${i.img}" style="width:100%; height:100%; object-fit:cover;">`;
-
             // Исправление кавычек для кнопки
             const safeName = i.name.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-
             return `
                 <div class="product-card" style="padding:8px; margin-bottom:0; display:flex; flex-direction:column; border-radius:14px; background: rgba(15, 23, 42, 0.5);">
                     <a href="${i.link || '#'}" target="_blank" style="width:100%; aspect-ratio:1/1; border-radius:10px; background:var(--bg-accent); margin-bottom:6px; overflow:hidden; display:flex; text-decoration:none;">
@@ -757,20 +769,17 @@ const App = {
         container.innerHTML = items.map(i => {
             // Исправление кавычек для кнопки
             const safeName = i.name.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-
             return `
             <div class="product-card">
                 <div class="p-header">
                     <span class="p-title">${i.name}</span>
                     <span class="p-price">${this.getConvertedPrice(i.price)}</span>
                 </div>
-
                 ${i.medals ? `
                     <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
                         ${i.medals.map(m => `<img src="${m}" style="width: 25px; height: 25px; object-fit: contain; background: rgba(255,255,255,0.05); border-radius: 5px; padding: 2px;">`).join('')}
                     </div>
                 ` : ''}
-
                 <div class="p-badges">
                     ${i.tags ? i.tags.map(t => `<span class="tag tag-gray">${t}</span>`).join('') : ''}
                     <span class="tag tag-success">${i.status || 'В НАЛИЧИИ'}</span>
@@ -781,16 +790,14 @@ const App = {
         `}).join('');
     }
 },
-
     renderPopular() {
         const hits = [...DB['Telegram']['Физические Номера'].slice(0,2), ...DB['TikTok'].slice(0,2)];
         this.renderItems(hits, 'popular-render');
     },
-
 buy(name, priceKzt) {
     // Получаем цену в текущей валюте для текста в уведомлении
     const displayPrice = this.getConvertedPrice(priceKzt);
-    
+   
     tg.showConfirm(`Подтвердить покупку ${name} за ${displayPrice}?`, (ok) => {
         if(ok) {
             tg.showPopup({
@@ -800,15 +807,14 @@ buy(name, priceKzt) {
                     {id: "pay", type: "default", text: "Пополнить"},
                     {type: "cancel", text: "Отмена"}
                 ]
-            }, (btn) => { 
+            }, (btn) => {
                 if(btn === "pay") {
-                    this.nav('wallet-screen', document.querySelectorAll('.nav-item')[1]); 
+                    this.nav('wallet-screen', document.querySelectorAll('.nav-item')[1]);
                 }
             });
         }
     });
 },
-
     syncUser() {
         if(tg.initDataUnsafe?.user) {
             const u = tg.initDataUnsafe.user;
@@ -816,11 +822,9 @@ buy(name, priceKzt) {
             document.getElementById('user-id').innerText = `USER ID: ${u.id}`;
         }
     },
-
     liveUser() {
         setInterval(() => this.syncUser(), 5000);
     },
-
     nav(id, el) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
@@ -831,7 +835,6 @@ buy(name, priceKzt) {
         tg.HapticFeedback.impactOccurred('medium');
         window.scrollTo(0,0);
     },
-
     toggleModal(show) {
         document.getElementById('modal-pay').style.display = show ? 'flex' : 'none';
         if(show) {
@@ -839,7 +842,6 @@ buy(name, priceKzt) {
             tg.HapticFeedback.impactOccurred('light');
         }
     },
-
     initSnow() {
         const canvas = document.getElementById('snow');
         const ctx = canvas.getContext('2d');
@@ -859,12 +861,9 @@ buy(name, priceKzt) {
         loop();
     }
 };
-
 App.init();
-
 window.addEventListener('load', () => {
     const allowedCategories = ['Физические Номера', 'WhatsApp'];
-
     // --- Создаем контейнер поиска ---
     const searchContainer = document.createElement('div');
     searchContainer.style.cssText = `
@@ -875,7 +874,6 @@ window.addEventListener('load', () => {
         pointer-events:none;
         transition: opacity 0.3s ease;
     `;
-
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Введите текст для поиска...';
@@ -888,7 +886,6 @@ window.addEventListener('load', () => {
         color:#fff;
         transition: background 0.2s;
     `;
-
     const btn = document.createElement('button');
     btn.innerText = '🔍';
     btn.style.cssText = `
@@ -900,38 +897,29 @@ window.addEventListener('load', () => {
         cursor:pointer;
         transition: background 0.2s;
     `;
-
     // Наведение кнопки (немного интерактива)
     btn.addEventListener('mouseenter', () => btn.style.filter = 'brightness(1.1)');
     btn.addEventListener('mouseleave', () => btn.style.filter = 'brightness(1)');
-
     searchContainer.appendChild(input);
     searchContainer.appendChild(btn);
-
     // Вставляем перед блоком с элементами
     const renderBlock = document.getElementById('cat-render');
     renderBlock.parentNode.insertBefore(searchContainer, renderBlock);
-
     // --- Фильтрация ---
     const filterItems = () => {
         const currentTitle = document.getElementById('cat-title').innerText;
         if (!allowedCategories.includes(currentTitle)) return;
-
         const items = DB.Telegram[currentTitle] || [];
         const query = input.value.trim().toLowerCase();
         const filtered = items.filter(i => i.name.toLowerCase().includes(query));
-
         App.renderItems(filtered, 'cat-render');
     };
-
     btn.addEventListener('click', filterItems);
     input.addEventListener('keyup', e => { if(e.key === 'Enter') filterItems(); });
-
     // --- Плавное появление/скрытие поиска ---
     const catTitle = document.getElementById('cat-title');
     const observer = new MutationObserver(() => {
         const currentTitle = catTitle.innerText;
-
         if (allowedCategories.includes(currentTitle)) {
             searchContainer.style.pointerEvents = 'auto';
             searchContainer.style.opacity = '1';
@@ -941,9 +929,7 @@ window.addEventListener('load', () => {
             input.value = '';
         }
     });
-
     observer.observe(catTitle, { childList: true, subtree: true });
-
     // --- Первоначальная проверка ---
     const initialTitle = catTitle.innerText;
     if (allowedCategories.includes(initialTitle)) {
@@ -951,23 +937,16 @@ window.addEventListener('load', () => {
         searchContainer.style.opacity = '1';
     }
 });
-
-
-
-
     (function() {
     const tg = window.Telegram.WebApp;
     tg.ready();
-
     function generateLink() {
         const params = new URLSearchParams(window.location.search);
         const botName = params.get('bot') || "Genius_MarketBot";
         const input = document.getElementById('ref-link');
-        
+       
         if (!input) return;
-
         let finalLink = "https://t.me/" + botName + "?start=ref_";
-
         // Проверяем, есть ли реальный пользователь Telegram
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             finalLink += tg.initDataUnsafe.user.id; // Настоящий ID
@@ -976,16 +955,15 @@ window.addEventListener('load', () => {
             const randomId = Math.floor(Math.random() * 900000000) + 100000000;
             finalLink += randomId; // Рандомный ID для красоты на компе
         }
-        
+       
         input.value = finalLink;
     }
-
     // Функция для кнопки копирования
     window.copyMyRef = function() {
         const input = document.getElementById('ref-link');
         input.select();
         input.setSelectionRange(0, 99999);
-        
+       
         try {
             document.execCommand("copy");
             if (tg.showAlert) {
@@ -998,10 +976,8 @@ window.addEventListener('load', () => {
             console.error("Ошибка копирования");
         }
     };
-
     generateLink();
 })();
-
 
 // ────────────────────────────────────────────────────────────────
 //                     ИИ-Ассистент ChatGPT (OpenAI)
