@@ -1002,6 +1002,109 @@ window.addEventListener('load', () => {
     generateLink();
 })();
 
+
+// ────────────────────────────────────────────────────────────────
+//                     ИИ-Ассистент ChatGPT (OpenAI)
+// ────────────────────────────────────────────────────────────────
+
+const OPENAI_API_KEY = 'sk-YOUR_OPENAI_KEY_HERE';   // ← ВСТАВЬ СВОЙ КЛЮЧ ЗДЕСЬ !!!!
+const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+
+let conversationHistory = [
+    {
+        role: "system",
+        content: "Ты — умный, быстрый и немного дерзкий помощник Genius Market. Отвечай на русском языке, кратко, по делу, с лёгким юмором, когда это уместно. Помогай по магазину, товарам, оплате, статусам заказов, рефералкам, техническим вопросам. Если не знаешь точного ответа — честно говори и предлагай написать @GeniusMarketSupport."
+    }
+];
+
+async function sendAIMessage() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    addUserMessage(text);
+    input.value = '';
+
+    // Показываем индикатор "ChatGPT думает..."
+    const typingElement = addBotMessage("ChatGPT думает...");
+
+    try {
+        conversationHistory.push({ role: "user", content: text });
+
+        const res = await fetch(OPENAI_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",           // можно поставить gpt-4o, gpt-4-turbo, gpt-3.5-turbo
+                messages: conversationHistory,
+                temperature: 0.75,
+                max_tokens: 600
+            })
+        });
+
+        if (!res.ok) {
+            throw new Error(`API ответил ${res.status}`);
+        }
+
+        const data = await res.json();
+        const reply = data.choices[0].message.content.trim();
+
+        conversationHistory.push({ role: "assistant", content: reply });
+
+        typingElement.remove();
+        addBotMessage(reply);
+
+    } catch (err) {
+        typingElement.remove();
+        addBotMessage(`Ошибка связи с ИИ 😓\n\n${err.message}\n\nПопробуй позже или пиши @GeniusMarketSupport`);
+    }
+}
+
+// ─────── Остальные функции без изменений ───────
+
+function addBotMessage(text) {
+    const div = document.createElement('div');
+    div.className = 'chat-msg bot';
+    div.textContent = text;
+    document.getElementById('chat-messages').appendChild(div);
+    scrollChatToBottom();
+    return div;
+}
+
+function addUserMessage(text) {
+    const div = document.createElement('div');
+    div.className = 'chat-msg user';
+    div.textContent = text;
+    document.getElementById('chat-messages').appendChild(div);
+    scrollChatToBottom();
+}
+
+function scrollChatToBottom() {
+    const container = document.getElementById('chat-messages');
+    container.scrollTop = container.scrollHeight;
+}
+
+function toggleSupportChat() {
+    const chat = document.getElementById('support-chat');
+    const visible = chat.style.display === 'block';
+
+    chat.style.display = visible ? 'none' : 'block';
+
+    if (!visible && document.getElementById('chat-messages').children.length === 0) {
+        addBotMessage("Привет! Я ChatGPT — твой ИИ-помощник в Genius Market.\nЧем займёмся? 🚀");
+    }
+}
+
+document.getElementById('chat-input')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        sendAIMessage();
+    }
+});
+
 </script>
 
 </body>
